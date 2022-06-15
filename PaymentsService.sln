@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentsService.FunctionApp", "PaymentsService.FunctionApp\PaymentsService.FunctionApp.csproj", "{C338143F-8715-48BB-9999-411F8A01F4F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentsService.Abstractions", "PaymentsService.Abstractions\PaymentsService.Abstractions.csproj", "{093F169F-4C8C-4F29-8AF0-71C6D0609FB9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionFolder", "{287CA8BC-FD73-437C-85B1-27745431F719}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C338143F-8715-48BB-9999-411F8A01F4F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C338143F-8715-48BB-9999-411F8A01F4F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C338143F-8715-48BB-9999-411F8A01F4F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C338143F-8715-48BB-9999-411F8A01F4F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{093F169F-4C8C-4F29-8AF0-71C6D0609FB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{093F169F-4C8C-4F29-8AF0-71C6D0609FB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{093F169F-4C8C-4F29-8AF0-71C6D0609FB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{093F169F-4C8C-4F29-8AF0-71C6D0609FB9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

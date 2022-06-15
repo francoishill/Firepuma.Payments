@@ -2,6 +2,8 @@
 
 A repository containing code for a payments micro service.
 
+[![Deploy function app](https://github.com/francoishill/Firepuma-Payments-MicroService/actions/workflows/deploy-function-app.yml/badge.svg)](https://github.com/francoishill/Firepuma-Payments-MicroService/actions/workflows/deploy-function-app.yml)
+
 ## The plan
 
 The plan of building this repo contained in these steps, not necessarily in this order:

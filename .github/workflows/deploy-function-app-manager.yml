@@ -4,8 +4,8 @@ on:
   [push]
 
 env:
-  AZURE_MANAGER_FUNCTIONAPP_NAME: 'Firepuma-PaymentsService-Manager'
-  AZURE_MANAGER_FUNCTIONAPP_PACKAGE_PATH: 'PaymentsService.FunctionAppManager'
+  AZURE_FUNCTIONAPP_NAME: 'Firepuma-PaymentsService-Manager'
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'PaymentsService.FunctionAppManager'
   DOTNET_VERSION: '6.0'
 
 jobs:

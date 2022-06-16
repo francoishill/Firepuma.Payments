@@ -30,7 +30,7 @@ public static class ValidateAndStorePayFastItn
         HttpRequest req,
         ILogger log,
         [Table("PaymentsConfigPerApplication", "PayFast", "{applicationId}")]
-        ApplicationConfig config,
+        ClientAppConfig clientAppConfig,
         [ServiceBus("payfast-itn-requests", EntityType = ServiceBusEntityType.Queue, Connection = "FirepumaPaymentsServiceBus")]
         IAsyncCollector<ServiceBusMessage> itnRequestsCollector,
         string applicationId,
@@ -38,12 +38,12 @@ public static class ValidateAndStorePayFastItn
     {
         log.LogInformation("C# HTTP trigger function processed a request");
 
-        if (config == null)
+        if (clientAppConfig == null)
         {
             return CreateBadRequestResponse($"Config not found for application with id {applicationId}");
         }
 
-        if (!ValidationHelpers.ValidateDataAnnotations(config, out var validationResultsForConfig))
+        if (!ValidationHelpers.ValidateDataAnnotations(clientAppConfig, out var validationResultsForConfig))
         {
             return CreateBadRequestResponse(new[] { "Application config is invalid" }.Concat(validationResultsForConfig.Select(s => s.ErrorMessage)).ToArray());
         }
@@ -85,7 +85,7 @@ public static class ValidateAndStorePayFastItn
             return CreateBadRequestResponse("The remote ip is required but null");
         }
 
-        payFastRequest.SetPassPhrase(config.PassPhrase);
+        payFastRequest.SetPassPhrase(clientAppConfig.PassPhrase);
 
         var calculatedSignature = payFastRequest.GetCalculatedSignature();
         var signatureIsValid = payFastRequest.signature == calculatedSignature;
@@ -99,10 +99,10 @@ public static class ValidateAndStorePayFastItn
 
         var subsetOfPayFastSettings = new PayFastSettings
         {
-            MerchantId = config.MerchantId,
-            MerchantKey = config.MerchantKey,
-            PassPhrase = config.PassPhrase,
-            ValidateUrl = PayFastSettingsFactory.GetValidateUrl(config.IsSandbox),
+            MerchantId = clientAppConfig.MerchantId,
+            MerchantKey = clientAppConfig.MerchantKey,
+            PassPhrase = clientAppConfig.PassPhrase,
+            ValidateUrl = PayFastSettingsFactory.GetValidateUrl(clientAppConfig.IsSandbox),
         };
         var payfastValidator = new PayFastValidator(subsetOfPayFastSettings, payFastRequest, remoteIp);
 

@@ -5,7 +5,7 @@ using Microsoft.Azure.Cosmos.Table;
 
 namespace Firepuma.PaymentsService.FunctionApp.PayFast.Config;
 
-public class ApplicationConfig : TableEntity
+public class ClientAppConfig : TableEntity
 {
     public bool IsSandbox { get; set; }
 

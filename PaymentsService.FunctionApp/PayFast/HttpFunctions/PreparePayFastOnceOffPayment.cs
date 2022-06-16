@@ -27,7 +27,7 @@ public static class PreparePayFastOnceOffPayment
         HttpRequest req,
         ILogger log,
         [Table("PaymentsConfigPerApplication", "PayFast", "{applicationId}")]
-        ApplicationConfig applicationConfig,
+        ClientAppConfig clientAppConfig,
         [Table("PayFastOnceOffPayments")] IAsyncCollector<PayFastOnceOffPayment> paymentsCollector,
         string applicationId,
         CancellationToken cancellationToken)
@@ -40,12 +40,12 @@ public static class PreparePayFastOnceOffPayment
             return CreateBadRequestResponse("Environment variable FIREPUMA_PROCESS_PAYFAST_ITN_BASE_URL is required but empty");
         }
 
-        if (applicationConfig == null)
+        if (clientAppConfig == null)
         {
             return CreateBadRequestResponse($"Config not found for application with id {applicationId}");
         }
 
-        if (!ValidationHelpers.ValidateDataAnnotations(applicationConfig, out var validationResultsForConfig))
+        if (!ValidationHelpers.ValidateDataAnnotations(clientAppConfig, out var validationResultsForConfig))
         {
             return CreateBadRequestResponse(new[] { "Application config is invalid" }.Concat(validationResultsForConfig.Select(s => s.ErrorMessage)).ToArray());
         }
@@ -79,7 +79,7 @@ public static class PreparePayFastOnceOffPayment
         await paymentsCollector.AddAsync(payment, cancellationToken);
 
         var payFastSettings = PayFastSettingsFactory.CreatePayFastSettings(
-            applicationConfig,
+            clientAppConfig,
             validateAndStoreItnUrlWithAppName,
             payment.PaymentId.Value,
             requestDTO.ReturnUrl,

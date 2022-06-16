@@ -9,7 +9,7 @@ public static class PayFastSettingsFactory
     public const string TRANSACTION_ID_QUERY_PARAM_NAME = "tx";
 
     public static PayFastPaymentSettings CreatePayFastSettings(
-        ApplicationConfig applicationConfig,
+        ClientAppConfig clientAppConfig,
         string backendNotifyUrl,
         string transactionId,
         string returnUrl,
@@ -22,14 +22,14 @@ public static class PayFastSettingsFactory
 
         return new PayFastPaymentSettings
         {
-            MerchantId = applicationConfig.MerchantId,
-            MerchantKey = applicationConfig.MerchantKey,
-            PassPhrase = applicationConfig.PassPhrase,
+            MerchantId = clientAppConfig.MerchantId,
+            MerchantKey = clientAppConfig.MerchantKey,
+            PassPhrase = clientAppConfig.PassPhrase,
             ReturnUrl = returnUrl,
             CancelUrl = cancelUrl,
             NotifyUrl = notifyUrl,
-            ProcessUrl = applicationConfig.IsSandbox ? "https://sandbox.payfast.co.za/eng/process" : "https://www.payfast.co.za/eng/process",
-            ValidateUrl = GetValidateUrl(applicationConfig.IsSandbox),
+            ProcessUrl = clientAppConfig.IsSandbox ? "https://sandbox.payfast.co.za/eng/process" : "https://www.payfast.co.za/eng/process",
+            ValidateUrl = GetValidateUrl(clientAppConfig.IsSandbox),
         };
     }
 

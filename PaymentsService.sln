@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionF
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentsService.FunctionAppManager", "PaymentsService.FunctionAppManager\PaymentsService.FunctionAppManager.csproj", "{389FB385-90FC-483E-96BF-868935DD9CB8}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentsService.Implementations", "PaymentsService.Implementations\PaymentsService.Implementations.csproj", "{2F4842C6-750F-4B7C-BC6F-A9F94D974504}"
 EndProject
 Global
@@ -26,6 +28,10 @@ Global
 		{093F169F-4C8C-4F29-8AF0-71C6D0609FB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{093F169F-4C8C-4F29-8AF0-71C6D0609FB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{093F169F-4C8C-4F29-8AF0-71C6D0609FB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{389FB385-90FC-483E-96BF-868935DD9CB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{389FB385-90FC-483E-96BF-868935DD9CB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{389FB385-90FC-483E-96BF-868935DD9CB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{389FB385-90FC-483E-96BF-868935DD9CB8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2F4842C6-750F-4B7C-BC6F-A9F94D974504}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2F4842C6-750F-4B7C-BC6F-A9F94D974504}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F4842C6-750F-4B7C-BC6F-A9F94D974504}.Release|Any CPU.ActiveCfg = Release|Any CPU

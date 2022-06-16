@@ -25,5 +25,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\PaymentsService.Abstractions\PaymentsService.Abstractions.csproj" />
+      <ProjectReference Include="..\PaymentsService.Implementations\PaymentsService.Implementations.csproj" />
     </ItemGroup>
 </Project>

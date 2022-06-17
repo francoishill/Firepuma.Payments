@@ -1,4 +1,4 @@
-﻿name: Deploy function app
+﻿name: Deploy FunctionApp
 
 on:
   [push]

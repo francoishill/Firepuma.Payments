@@ -1,4 +1,4 @@
-﻿name: Deploy manager function app
+﻿name: Deploy FunctionAppManager
 
 on:
   [push]

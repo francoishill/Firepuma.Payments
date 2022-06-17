@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.PaymentsService.Abstractions.DTOs.Requests;
 using Firepuma.PaymentsService.Abstractions.Infrastructure.Validation;
+using Firepuma.PaymentsService.FunctionAppManager.Helpers;
+using Firepuma.PaymentsService.FunctionAppManager.Services;
 using Firepuma.PaymentsService.Implementations.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,12 +17,22 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
+// ReSharper disable RedundantNameQualifier
+
 namespace Firepuma.PaymentsService.FunctionAppManager.HttpFunctions;
 
-public static class CreatePayFastClientApplication
+public class CreatePayFastClientApplication
 {
+    private readonly IClientAppManagerService _clientAppManagerService;
+
+    public CreatePayFastClientApplication(
+        IClientAppManagerService clientAppManagerService)
+    {
+        _clientAppManagerService = clientAppManagerService;
+    }
+
     [FunctionName("CreatePayFastClientApplication")]
-    public static async Task<IActionResult> RunAsync(
+    public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = "CreatePayFastClientApplication/{applicationId}")]
         HttpRequest req,
         ILogger log,
@@ -29,6 +41,8 @@ public static class CreatePayFastClientApplication
         CancellationToken cancellationToken)
     {
         log.LogInformation("C# HTTP trigger function processed a request");
+
+        var serviceBusConnectionString = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("ServiceBusConnectionString");
 
         var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
         var requestDTO = JsonConvert.DeserializeObject<CreatePayFastClientApplicationRequest>(requestBody);
@@ -43,6 +57,20 @@ public static class CreatePayFastClientApplication
             return CreateBadRequestResponse(new[] { "Request body is invalid" }.Concat(validationResultsForRequest.Select(s => s.ErrorMessage)).ToArray());
         }
 
+        await _clientAppManagerService.CreateServiceBusQueueIfNotExists(
+            serviceBusConnectionString,
+            applicationId,
+            cancellationToken);
+
+        //TODO:
+        //  * Expand to create:
+        //    * [DONE] Queues
+        //    * New Function Key/code to authenticate
+        //    * New Shared access policies key for client app to listen on Service Bus
+        //  * Add function to GetAllClientApplications
+        //  * Add function to ...
+        //  * Is there a native Azure way to authenticate the function calls (instead of 'code') and that can automatically derive the "Application Id" from the auth token?
+
         var newClientAppConfig = new ClientAppConfig(
             "PayFast",
             applicationId,
@@ -54,15 +82,6 @@ public static class CreatePayFastClientApplication
         try
         {
             await clientAppConfigTable.ExecuteAsync(TableOperation.Insert(newClientAppConfig), cancellationToken);
-
-            //TODO:
-            //  * Expand to create:
-            //    * Queues
-            //    * New Function Key/code to authenticate
-            //    * New Shared access policies key for client app to listen on Service Bus
-            //  * Add function to GetAllClientApplications
-            //  * Add function to ...
-            //  * Is there a native Azure way to authenticate the function calls (instead of 'code') and that can automatically derive the "Application Id" from the auth token?
 
             return new OkResult();
         }

@@ -72,7 +72,7 @@ public class CreatePayFastClientApplication
         //TODO:
         //  * Expand to create:
         //    * [DONE] Queues
-        //    * New Function Key/code to authenticate
+        //    * [DONE] New Function Key/code to authenticate
         //    * New Shared access policies key for client app to listen on Service Bus
         //  * Add function to GetAllClientApplications
         //  * Add function to ...

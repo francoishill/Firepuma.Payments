@@ -1,12 +1,17 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Azure;
+using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Firepuma.PaymentsService.Abstractions.Infrastructure.Queues;
 using Firepuma.PaymentsService.FunctionAppManager.Services.Results;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+
+// ReSharper disable RedundantAssignment
 
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ClassNeverInstantiated.Local
@@ -31,23 +36,27 @@ public class ClientAppManagerService : IClientAppManagerService
         string applicationId,
         CancellationToken cancellationToken)
     {
+        var parsedConnectionString = ServiceBusConnectionStringProperties.Parse(serviceBusConnectionString);
         var busAdminClient = new ServiceBusAdministrationClient(serviceBusConnectionString);
 
         var queueName = QueueNameFormatter.GetPaymentUpdatedQueueName(applicationId);
+        var authorizationRule = new SharedAccessAuthorizationRule("DefaultFirepumaListenerKey", new[] { AccessRights.Listen });
+
+        QueueProperties queue = null;
+        var createResult = new CreateQueueResult
+        {
+            QueueName = queueName,
+        };
 
         if (await busAdminClient.QueueExistsAsync(queueName, cancellationToken))
         {
-            var queue = await busAdminClient.GetQueueAsync(queueName, cancellationToken);
+            queue = await busAdminClient.GetQueueAsync(queueName, cancellationToken);
 
-            var propertiesToLog = _mapper.Map<QueueOptionsToLog>(queue.Value);
+            var propertiesToLog = _mapper.Map<QueueOptionsToLog>(queue);
             _logger.LogInformation("Queue '{Name}' already existed with the following properties: {Properties}", queueName, JsonConvert.SerializeObject(propertiesToLog));
 
-            return new CreateQueueResult
-            {
-                QueueName = queueName,
-                IsNew = false,
-                QueueProperties = propertiesToLog,
-            };
+            createResult.IsNew = false;
+            createResult.QueueProperties = propertiesToLog;
         }
         else
         {
@@ -62,19 +71,33 @@ public class ClientAppManagerService : IClientAppManagerService
                 DeadLetteringOnMessageExpiration = true,
             };
 
-            var queue = await busAdminClient.CreateQueueAsync(options, cancellationToken);
+            queue = await busAdminClient.CreateQueueAsync(options, cancellationToken);
 
-            var propertiesToLog = _mapper.Map<QueueOptionsToLog>(queue.Value);
+            var propertiesToLog = _mapper.Map<QueueOptionsToLog>(queue);
             _logger.LogInformation("Queue '{Name}' created with properties: {Properties}", queueName, JsonConvert.SerializeObject(propertiesToLog));
 
-            return new CreateQueueResult
-            {
-                QueueName = queueName,
-                IsNew = true,
-                QueueProperties = propertiesToLog,
-            };
+            createResult.IsNew = true;
+            createResult.QueueProperties = propertiesToLog;
         }
+
+        if (queue.AuthorizationRules.FirstOrDefault(rule =>
+                rule.KeyName == authorizationRule.KeyName
+                && authorizationRule.Rights.All(right => rule.Rights.Contains(right))) is SharedAccessAuthorizationRule existingAuthorizationRule)
+        {
+            authorizationRule = existingAuthorizationRule;
+        }
+        else
+        {
+            queue.AuthorizationRules.Add(authorizationRule);
+
+            queue = await busAdminClient.UpdateQueueAsync(queue, cancellationToken);
+        }
+
+        createResult.ConnectionString = $"Endpoint=sb://{parsedConnectionString.FullyQualifiedNamespace}/;SharedAccessKeyName={authorizationRule.KeyName};SharedAccessKey={authorizationRule.PrimaryKey};EntityPath={queueName}";
+
+        return createResult;
     }
+
 
     [AutoMap(typeof(QueueProperties))]
     private class QueueOptionsToLog

@@ -24,12 +24,12 @@ namespace Firepuma.PaymentsService.FunctionAppManager.HttpFunctions;
 
 public class CreatePayFastClientApplication
 {
-    private readonly IClientAppManagerService _clientAppManagerService;
+    private readonly IServiceBusManager _serviceBusManager;
 
     public CreatePayFastClientApplication(
-        IClientAppManagerService clientAppManagerService)
+        IServiceBusManager serviceBusManager)
     {
-        _clientAppManagerService = clientAppManagerService;
+        _serviceBusManager = serviceBusManager;
     }
 
     [FunctionName("CreatePayFastClientApplication")]
@@ -60,9 +60,10 @@ public class CreatePayFastClientApplication
 
         var responseObjects = new List<KeyValuePair<string, object>>();
 
-        var createQueueResult = await _clientAppManagerService.CreateServiceBusQueueIfNotExists(
+        var queueName = QueueNameFormatter.GetPaymentUpdatedQueueName(applicationId);
+        var createQueueResult = await _serviceBusManager.CreateQueueIfNotExists(
             serviceBusConnectionString,
-            applicationId,
+            queueName,
             cancellationToken);
 
         responseObjects.Add(new KeyValuePair<string, object>(

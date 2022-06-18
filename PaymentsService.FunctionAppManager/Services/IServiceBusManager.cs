@@ -4,10 +4,10 @@ using Firepuma.PaymentsService.FunctionAppManager.Services.Results;
 
 namespace Firepuma.PaymentsService.FunctionAppManager.Services;
 
-public interface IClientAppManagerService
+public interface IServiceBusManager
 {
-    Task<CreateQueueResult> CreateServiceBusQueueIfNotExists(
+    Task<CreateQueueResult> CreateQueueIfNotExists(
         string serviceBusConnectionString,
-        string applicationId,
+        string queueName,
         CancellationToken cancellationToken);
 }

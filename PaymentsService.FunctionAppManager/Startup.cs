@@ -14,7 +14,7 @@ public class Startup : FunctionsStartup
     {
         var services = builder.Services;
 
-        services.AddSingleton<IClientAppManagerService, ClientAppManagerService>();
+        services.AddSingleton<IServiceBusManager, ServiceBusManager>();
 
         services.AddAutoMapper(typeof(Startup));
         services.BuildServiceProvider().GetRequiredService<IMapper>().ConfigurationProvider.AssertConfigurationIsValid();

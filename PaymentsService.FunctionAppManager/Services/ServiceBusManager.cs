@@ -16,28 +16,27 @@ using Newtonsoft.Json;
 
 namespace Firepuma.PaymentsService.FunctionAppManager.Services;
 
-public class ClientAppManagerService : IClientAppManagerService
+public class ServiceBusManager : IServiceBusManager
 {
-    private readonly ILogger<ClientAppManagerService> _logger;
+    private readonly ILogger<ServiceBusManager> _logger;
     private readonly IMapper _mapper;
 
-    public ClientAppManagerService(
-        ILogger<ClientAppManagerService> logger,
+    public ServiceBusManager(
+        ILogger<ServiceBusManager> logger,
         IMapper mapper)
     {
         _logger = logger;
         _mapper = mapper;
     }
 
-    public async Task<CreateQueueResult> CreateServiceBusQueueIfNotExists(
+    public async Task<CreateQueueResult> CreateQueueIfNotExists(
         string serviceBusConnectionString,
-        string applicationId,
+        string queueName,
         CancellationToken cancellationToken)
     {
         var parsedConnectionString = ServiceBusConnectionStringProperties.Parse(serviceBusConnectionString);
         var busAdminClient = new ServiceBusAdministrationClient(serviceBusConnectionString);
 
-        var queueName = QueueNameFormatter.GetPaymentUpdatedQueueName(applicationId);
         var authorizationRule = new SharedAccessAuthorizationRule("DefaultFirepumaListenerKey", new[] { AccessRights.Listen });
 
         QueueProperties queue = null;

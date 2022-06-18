@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Azure;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Firepuma.PaymentsService.Abstractions.Infrastructure.Queues;
@@ -12,7 +11,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 // ReSharper disable RedundantAssignment
-
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ClassNeverInstantiated.Local
 

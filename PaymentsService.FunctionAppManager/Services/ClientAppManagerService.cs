@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Azure.Messaging.ServiceBus.Administration;
 using Firepuma.PaymentsService.Abstractions.Infrastructure.Queues;
+using Firepuma.PaymentsService.FunctionAppManager.Services.Results;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -25,7 +26,7 @@ public class ClientAppManagerService : IClientAppManagerService
         _mapper = mapper;
     }
 
-    public async Task CreateServiceBusQueueIfNotExists(
+    public async Task<CreateQueueResult> CreateServiceBusQueueIfNotExists(
         string serviceBusConnectionString,
         string applicationId,
         CancellationToken cancellationToken)
@@ -40,6 +41,13 @@ public class ClientAppManagerService : IClientAppManagerService
 
             var propertiesToLog = _mapper.Map<QueueOptionsToLog>(queue.Value);
             _logger.LogInformation("Queue '{Name}' already existed with the following properties: {Properties}", queueName, JsonConvert.SerializeObject(propertiesToLog));
+
+            return new CreateQueueResult
+            {
+                QueueName = queueName,
+                IsNew = false,
+                QueueProperties = propertiesToLog,
+            };
         }
         else
         {
@@ -58,6 +66,13 @@ public class ClientAppManagerService : IClientAppManagerService
 
             var propertiesToLog = _mapper.Map<QueueOptionsToLog>(queue.Value);
             _logger.LogInformation("Queue '{Name}' created with properties: {Properties}", queueName, JsonConvert.SerializeObject(propertiesToLog));
+
+            return new CreateQueueResult
+            {
+                QueueName = queueName,
+                IsNew = true,
+                QueueProperties = propertiesToLog,
+            };
         }
     }
 

@@ -57,10 +57,17 @@ public class CreatePayFastClientApplication
             return CreateBadRequestResponse(new[] { "Request body is invalid" }.Concat(validationResultsForRequest.Select(s => s.ErrorMessage)).ToArray());
         }
 
-        await _clientAppManagerService.CreateServiceBusQueueIfNotExists(
+        var responseMessages = new List<string>();
+
+        var result = await _clientAppManagerService.CreateServiceBusQueueIfNotExists(
             serviceBusConnectionString,
             applicationId,
             cancellationToken);
+
+        responseMessages.Add(
+            result.IsNew
+                ? $"Queue '{result.QueueName}' created with properties: {result.QueueProperties}"
+                : $"Queue '{result.QueueName}' already existed with the following properties: {result.QueueProperties}");
 
         //TODO:
         //  * Expand to create:
@@ -83,12 +90,14 @@ public class CreatePayFastClientApplication
         {
             await clientAppConfigTable.ExecuteAsync(TableOperation.Insert(newClientAppConfig), cancellationToken);
 
-            return new OkResult();
+            responseMessages.Add($"{clientAppConfigTable.Name} table record created");
         }
         catch (StorageException storageException) when (storageException.RequestInformation.HttpStatusCode == (int)HttpStatusCode.Conflict)
         {
-            return CreateBadRequestResponse("Application config already exists, cannot overwrite existing");
+            responseMessages.Add($"{clientAppConfigTable.Name} table record already existed, cannot overwrite existing");
         }
+
+        return new OkObjectResult(responseMessages);
     }
 
     private static IActionResult CreateBadRequestResponse(params string[] errors)

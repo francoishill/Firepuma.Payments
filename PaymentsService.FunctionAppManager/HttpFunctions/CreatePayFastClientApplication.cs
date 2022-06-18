@@ -8,6 +8,7 @@ using Firepuma.PaymentsService.Abstractions.DTOs.Requests;
 using Firepuma.PaymentsService.Abstractions.Infrastructure.Validation;
 using Firepuma.PaymentsService.FunctionAppManager.Helpers;
 using Firepuma.PaymentsService.FunctionAppManager.Services;
+using Firepuma.PaymentsService.FunctionAppManager.Services.Results;
 using Firepuma.PaymentsService.Implementations.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -57,17 +58,16 @@ public class CreatePayFastClientApplication
             return CreateBadRequestResponse(new[] { "Request body is invalid" }.Concat(validationResultsForRequest.Select(s => s.ErrorMessage)).ToArray());
         }
 
-        var responseMessages = new List<string>();
+        var responseObjects = new List<KeyValuePair<string, object>>();
 
-        var result = await _clientAppManagerService.CreateServiceBusQueueIfNotExists(
+        var createQueueResult = await _clientAppManagerService.CreateServiceBusQueueIfNotExists(
             serviceBusConnectionString,
             applicationId,
             cancellationToken);
 
-        responseMessages.Add(
-            result.IsNew
-                ? $"Queue '{result.QueueName}' created with properties: {result.QueueProperties}"
-                : $"Queue '{result.QueueName}' already existed with the following properties: {result.QueueProperties}");
+        responseObjects.Add(new KeyValuePair<string, object>(
+            createQueueResult.IsNew ? "Queue created" : "Queue already existed",
+            createQueueResult));
 
         //TODO:
         //  * Expand to create:
@@ -86,18 +86,27 @@ public class CreatePayFastClientApplication
             requestDTO.MerchantKey,
             requestDTO.PassPhrase);
 
+        var addTableRecordResult = new AddTableRecordResult
+        {
+            TableName = clientAppConfigTable.Name,
+        };
+
         try
         {
             await clientAppConfigTable.ExecuteAsync(TableOperation.Insert(newClientAppConfig), cancellationToken);
 
-            responseMessages.Add($"{clientAppConfigTable.Name} table record created");
+            addTableRecordResult.IsNew = true;
         }
         catch (StorageException storageException) when (storageException.RequestInformation.HttpStatusCode == (int)HttpStatusCode.Conflict)
         {
-            responseMessages.Add($"{clientAppConfigTable.Name} table record already existed, cannot overwrite existing");
+            addTableRecordResult.IsNew = false;
         }
 
-        return new OkObjectResult(responseMessages);
+        responseObjects.Add(new KeyValuePair<string, object>(
+            addTableRecordResult.IsNew ? "Table record added" : "Table record already existed",
+            addTableRecordResult));
+
+        return new OkObjectResult(new Dictionary<string, object> { { "results", responseObjects } });
     }
 
     private static IActionResult CreateBadRequestResponse(params string[] errors)

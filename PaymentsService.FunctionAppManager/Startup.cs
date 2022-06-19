@@ -32,6 +32,11 @@ public class Startup : FunctionsStartup
                 client.DefaultRequestHeaders.Add("x-functions-key", paymentsServiceFunctionsKey);
             });
 
+        AddMediator(services);
+    }
+
+    private static void AddMediator(IServiceCollection services)
+    {
         services.AddMediatR(typeof(Startup));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceLogBehavior<,>));
     }

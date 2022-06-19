@@ -1,6 +1,7 @@
 ﻿using System;
 using AutoMapper;
 using Firepuma.PaymentsService.FunctionAppManager;
+using Firepuma.PaymentsService.FunctionAppManager.Infrastructure.Config;
 using Firepuma.PaymentsService.FunctionAppManager.Infrastructure.Constants;
 using Firepuma.PaymentsService.FunctionAppManager.Infrastructure.Helpers;
 using Firepuma.PaymentsService.FunctionAppManager.Infrastructure.PipelineBehaviors;
@@ -23,6 +24,13 @@ public class Startup : FunctionsStartup
 
         var paymentsServiceFunctionsUrl = new Uri(EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("PaymentsServiceFunctionsUrl"));
         var paymentsServiceFunctionsKey = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("PaymentsServiceFunctionsKey");
+
+        services.Configure<PaymentsServiceOptions>(config =>
+        {
+            config.FunctionsUrl = paymentsServiceFunctionsUrl;
+            config.FunctionsKey = paymentsServiceFunctionsKey;
+        });
+
         services
             .AddHttpClient(HttpClientConstants.PAYMENTS_SERVICE_FUNCTIONS_HTTP_CLIENT_NAME)
             .ConfigureHttpClient(client =>

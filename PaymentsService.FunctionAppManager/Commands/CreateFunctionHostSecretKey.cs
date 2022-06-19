@@ -3,9 +3,11 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.PaymentsService.FunctionAppManager.Commands.Results;
+using Firepuma.PaymentsService.FunctionAppManager.Infrastructure.Config;
 using Firepuma.PaymentsService.FunctionAppManager.Infrastructure.Constants;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 // ReSharper disable ClassNeverInstantiated.Global
@@ -27,13 +29,16 @@ public class CreateFunctionHostSecretKey : IRequest<object>
     public class Handler : IRequestHandler<CreateFunctionHostSecretKey, object>
     {
         private readonly ILogger<Handler> _logger;
+        private readonly IOptions<PaymentsServiceOptions> _paymentsServiceOptions;
         private readonly HttpClient _httpClient;
 
         public Handler(
             ILogger<Handler> logger,
+            IOptions<PaymentsServiceOptions> paymentsServiceOptions,
             IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
+            _paymentsServiceOptions = paymentsServiceOptions;
             _httpClient = httpClientFactory.CreateClient(HttpClientConstants.PAYMENTS_SERVICE_FUNCTIONS_HTTP_CLIENT_NAME);
         }
 
@@ -46,6 +51,7 @@ public class CreateFunctionHostSecretKey : IRequest<object>
             var createResult = new CreateFunctionsHostSecretKeyResult
             {
                 KeyName = keyName,
+                FunctionsBaseUrl = _paymentsServiceOptions.Value.FunctionsUrl.AbsoluteUri,
             };
 
             if (keyResponse.IsSuccessStatusCode)

@@ -101,9 +101,8 @@ public class CreatePayFastClientApplication
         //    * [DONE] New Function Key/code to authenticate
         //    * [DONE] New Shared access policies key for client app to listen on Service Bus
         //  * [DONE] Rework each step (create queue, create function host secret key, etc) into a Task/Command
-        //  * Add function to GetAllClientApplications
+        //  * [DONE] Add function to GetAllClientApplications
         //  * Add function to ...
-        //  * Is there a native Azure way to authenticate the function calls (instead of 'code') and that can automatically derive the "Application Id" from the auth token?
         //  * [DONE] Alternative way to secure is to generate AppSecret (for each AppId) so they cannot simply act on behalf of another app
 
         responseObjects.Add(new KeyValuePair<string, object>("logs", logsForResponse));

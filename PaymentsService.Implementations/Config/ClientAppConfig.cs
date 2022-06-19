@@ -11,6 +11,7 @@ public class ClientAppConfig : TableEntity
     public string PaymentProviderName => PartitionKey;
     public string ApplicationId => RowKey;
 
+    [Required]
     public string ApplicationSecret { get; set; }
 
     public bool IsSandbox { get; set; }

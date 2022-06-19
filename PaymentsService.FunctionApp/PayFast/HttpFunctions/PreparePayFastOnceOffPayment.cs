@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.PaymentsService.Abstractions.Constants;
 using Firepuma.PaymentsService.Abstractions.DTOs.Requests;
 using Firepuma.PaymentsService.Abstractions.DTOs.Responses;
 using Firepuma.PaymentsService.Abstractions.Infrastructure.Validation;
@@ -48,6 +50,15 @@ public static class PreparePayFastOnceOffPayment
         if (!ValidationHelpers.ValidateDataAnnotations(clientAppConfig, out var validationResultsForConfig))
         {
             return CreateBadRequestResponse(new[] { "Application config is invalid" }.Concat(validationResultsForConfig.Select(s => s.ErrorMessage)).ToArray());
+        }
+
+        var requestAppSecret = req.Headers[PaymentHttpRequestHeaderKeys.APP_SECRET].FirstOrDefault();
+        if (clientAppConfig.ApplicationSecret != requestAppSecret)
+        {
+            return new ObjectResult("Invalid or missing app secret")
+            {
+                StatusCode = (int)HttpStatusCode.Unauthorized
+            };
         }
 
         var validateAndStoreItnUrlWithAppName = AddApplicationIdToItnBaseUrl(validateAndStoreItnBaseUrl, applicationId);

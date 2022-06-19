@@ -1,4 +1,4 @@
-﻿namespace Firepuma.PaymentsService.FunctionAppManager.Services.Results;
+﻿namespace Firepuma.PaymentsService.FunctionAppManager.Commands.Results;
 
 public class CreateFunctionsHostSecretKeyResult
 {

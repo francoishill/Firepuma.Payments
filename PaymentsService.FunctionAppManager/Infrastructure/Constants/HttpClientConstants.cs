@@ -1,4 +1,4 @@
-﻿namespace Firepuma.PaymentsService.FunctionAppManager.Constants;
+﻿namespace Firepuma.PaymentsService.FunctionAppManager.Infrastructure.Constants;
 
 public static class HttpClientConstants
 {

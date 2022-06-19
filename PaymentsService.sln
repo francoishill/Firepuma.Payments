@@ -4,10 +4,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentsService.FunctionApp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentsService.Abstractions", "PaymentsService.Abstractions\PaymentsService.Abstractions.csproj", "{093F169F-4C8C-4F29-8AF0-71C6D0609FB9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionFolder", "{287CA8BC-FD73-437C-85B1-27745431F719}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OtherFiles", "OtherFiles", "{287CA8BC-FD73-437C-85B1-27745431F719}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{A1F75B5D-C028-4152-87CF-8C67CDBB3B1D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{E75BD86D-92B2-4AB2-81C0-4BFB87756E26}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\deploy-function-app.yml = .github\workflows\deploy-function-app.yml
+		.github\workflows\deploy-function-app-manager.yml = .github\workflows\deploy-function-app-manager.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentsService.FunctionAppManager", "PaymentsService.FunctionAppManager\PaymentsService.FunctionAppManager.csproj", "{389FB385-90FC-483E-96BF-868935DD9CB8}"

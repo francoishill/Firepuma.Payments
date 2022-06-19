@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
-using Firepuma.PaymentsService.Abstractions.Infrastructure.Queues;
 using Firepuma.PaymentsService.FunctionAppManager.Services.Results;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;

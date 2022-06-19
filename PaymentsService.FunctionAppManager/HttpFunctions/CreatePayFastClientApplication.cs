@@ -95,16 +95,6 @@ public class CreatePayFastClientApplication
             logsForResponse.Add($"Command {commandName} duration {durationInSeconds}s");
         }
 
-        //TODO:
-        //  * Expand to create:
-        //    * [DONE] Queues
-        //    * [DONE] New Function Key/code to authenticate
-        //    * [DONE] New Shared access policies key for client app to listen on Service Bus
-        //  * [DONE] Rework each step (create queue, create function host secret key, etc) into a Task/Command
-        //  * [DONE] Add function to GetAllClientApplications
-        //  * Add function to ...
-        //  * [DONE] Alternative way to secure is to generate AppSecret (for each AppId) so they cannot simply act on behalf of another app
-
         responseObjects.Add(new KeyValuePair<string, object>("logs", logsForResponse));
 
         return new OkObjectResult(new Dictionary<string, object> { { "results", responseObjects } });

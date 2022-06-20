@@ -2,7 +2,6 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.PaymentsService.FunctionAppManager.Commands.Results;
 using Firepuma.PaymentsService.FunctionAppManager.Infrastructure.Config;
 using Firepuma.PaymentsService.FunctionAppManager.Infrastructure.Constants;
 using MediatR;
@@ -16,17 +15,28 @@ using Newtonsoft.Json;
 
 namespace Firepuma.PaymentsService.FunctionAppManager.Commands;
 
-public class CreateFunctionHostSecretKey : IRequest<object>
+public static class CreateFunctionHostSecretKey
 {
-    public string FunctionHostKeyName { get; set; }
-
-    public CreateFunctionHostSecretKey(string functionHostKeyName)
+    public class Command : IRequest<Result>
     {
-        FunctionHostKeyName = functionHostKeyName;
+        public string FunctionHostKeyName { get; set; }
+
+        public Command(string functionHostKeyName)
+        {
+            FunctionHostKeyName = functionHostKeyName;
+        }
+    }
+
+    public class Result
+    {
+        public string KeyName { get; set; }
+        public bool IsNew { get; set; }
+        public string KeyValue { get; set; }
+        public string FunctionsBaseUrl { get; set; }
     }
 
 
-    public class Handler : IRequestHandler<CreateFunctionHostSecretKey, object>
+    public class Handler : IRequestHandler<Command, Result>
     {
         private readonly ILogger<Handler> _logger;
         private readonly IOptions<PaymentsServiceOptions> _paymentsServiceOptions;
@@ -42,13 +52,13 @@ public class CreateFunctionHostSecretKey : IRequest<object>
             _httpClient = httpClientFactory.CreateClient(HttpClientConstants.PAYMENTS_SERVICE_FUNCTIONS_HTTP_CLIENT_NAME);
         }
 
-        public async Task<object> Handle(CreateFunctionHostSecretKey command, CancellationToken cancellationToken)
+        public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
         {
             var keyName = command.FunctionHostKeyName;
 
             var keyResponse = await _httpClient.GetAsync($"/admin/host/keys/{keyName}", cancellationToken);
 
-            var createResult = new CreateFunctionsHostSecretKeyResult
+            var result = new Result
             {
                 KeyName = keyName,
                 FunctionsBaseUrl = _paymentsServiceOptions.Value.FunctionsUrl.AbsoluteUri,
@@ -65,8 +75,8 @@ public class CreateFunctionHostSecretKey : IRequest<object>
                     throw new Exception("Unable to parse function host key response as KeyResponse");
                 }
 
-                createResult.IsNew = false;
-                createResult.KeyValue = key.Value;
+                result.IsNew = false;
+                result.KeyValue = key.Value;
             }
             else
             {
@@ -82,12 +92,12 @@ public class CreateFunctionHostSecretKey : IRequest<object>
                     throw new Exception("Unable to parse (newly generated) function host key response as KeyResponse");
                 }
 
-                createResult.IsNew = true;
-                createResult.KeyValue = key.Value;
+                result.IsNew = true;
+                result.KeyValue = key.Value;
             }
 
 
-            return createResult;
+            return result;
         }
 
         private class KeyResponse

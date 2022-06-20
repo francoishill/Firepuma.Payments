@@ -75,16 +75,16 @@ public class CreatePayFastClientApplication
 
         var commands = new IBaseRequest[]
         {
-            new CreateQueue(serviceBusConnectionString, queueName),
-            new CreateFunctionHostSecretKey(functionHostKeyName),
-            new AddClientAppTableRecord(clientAppConfigTable, newClientAppConfig),
+            new CreateQueue.Command(serviceBusConnectionString, queueName),
+            new CreateFunctionHostSecretKey.Command(functionHostKeyName),
+            new AddClientAppTableRecord.Command(clientAppConfigTable, newClientAppConfig),
         };
 
         var responseObjects = new List<KeyValuePair<string, object>>();
         var logsForResponse = new List<string>();
         foreach (var command in commands)
         {
-            var commandName = command.GetType().Name;
+            var commandName = command.GetType().GetShortTypeName();
 
             var stopwatch = Stopwatch.StartNew();
 

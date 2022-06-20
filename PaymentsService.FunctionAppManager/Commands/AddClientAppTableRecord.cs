@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.PaymentsService.FunctionAppManager.Commands.Results;
 using Firepuma.PaymentsService.Implementations.Config;
 using MediatR;
 using Microsoft.Azure.Cosmos.Table;
@@ -13,19 +12,31 @@ using Microsoft.Extensions.Logging;
 
 namespace Firepuma.PaymentsService.FunctionAppManager.Commands;
 
-public class AddClientAppTableRecord : IRequest<object>
+public static class AddClientAppTableRecord
 {
-    public CloudTable CloudTable { get; set; }
-    public ClientAppConfig TableRow { get; set; }
-
-    public AddClientAppTableRecord(CloudTable cloudTable, ClientAppConfig tableRow)
+    public class Command : IRequest<Result>
     {
-        CloudTable = cloudTable;
-        TableRow = tableRow;
+        public CloudTable CloudTable { get; set; }
+        public ClientAppConfig TableRow { get; set; }
+
+        public Command(
+            CloudTable cloudTable,
+            ClientAppConfig tableRow)
+        {
+            CloudTable = cloudTable;
+            TableRow = tableRow;
+        }
+    }
+
+    public class Result
+    {
+        public string TableName { get; set; }
+        public bool IsNew { get; set; }
+        public ClientAppConfig TableRow { get; set; }
     }
 
 
-    public class Handler : IRequestHandler<AddClientAppTableRecord, object>
+    public class Handler : IRequestHandler<Command, Result>
     {
         private readonly ILogger<Handler> _logger;
 
@@ -35,12 +46,12 @@ public class AddClientAppTableRecord : IRequest<object>
             _logger = logger;
         }
 
-        public async Task<object> Handle(AddClientAppTableRecord command, CancellationToken cancellationToken)
+        public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
         {
             var table = command.CloudTable;
             var newRow = command.TableRow;
 
-            var addTableRecordResult = new AddTableRecordResult
+            var result = new Result
             {
                 TableName = table.Name,
             };
@@ -49,8 +60,8 @@ public class AddClientAppTableRecord : IRequest<object>
             {
                 await table.ExecuteAsync(TableOperation.Insert(newRow), cancellationToken);
 
-                addTableRecordResult.IsNew = true;
-                addTableRecordResult.TableRow = newRow;
+                result.IsNew = true;
+                result.TableRow = newRow;
             }
             catch (Microsoft.Azure.Cosmos.Table.StorageException storageException) when (storageException.RequestInformation.HttpStatusCode == (int)HttpStatusCode.Conflict)
             {
@@ -60,11 +71,11 @@ public class AddClientAppTableRecord : IRequest<object>
                     newRow.ApplicationId,
                     cancellationToken);
 
-                addTableRecordResult.IsNew = false;
-                addTableRecordResult.TableRow = existingTableRow;
+                result.IsNew = false;
+                result.TableRow = existingTableRow;
             }
 
-            return addTableRecordResult;
+            return result;
         }
 
         private async Task<ClientAppConfig> LoadClientAppConfig(

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
-using Firepuma.PaymentsService.FunctionAppManager.Commands.Results;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -18,21 +17,32 @@ using Newtonsoft.Json;
 
 namespace Firepuma.PaymentsService.FunctionAppManager.Commands;
 
-public class CreateQueue : IRequest<object>
+public static class CreateQueue
 {
-    public string ServiceBusConnectionString { get; set; }
-    public string QueueName { get; set; }
-
-    public CreateQueue(
-        string serviceBusConnectionString,
-        string queueName)
+    public class Command : IRequest<Result>
     {
-        ServiceBusConnectionString = serviceBusConnectionString;
-        QueueName = queueName;
+        public string ServiceBusConnectionString { get; set; }
+        public string QueueName { get; set; }
+
+        public Command(
+            string serviceBusConnectionString,
+            string queueName)
+        {
+            ServiceBusConnectionString = serviceBusConnectionString;
+            QueueName = queueName;
+        }
+    }
+
+    public class Result
+    {
+        public string QueueName { get; set; }
+        public bool IsNew { get; set; }
+        public object QueueProperties { get; set; }
+        public string ConnectionString { get; set; }
     }
 
 
-    public class Handler : IRequestHandler<CreateQueue, object>
+    public class Handler : IRequestHandler<Command, Result>
     {
         private readonly ILogger<Handler> _logger;
         private readonly IMapper _mapper;
@@ -45,7 +55,7 @@ public class CreateQueue : IRequest<object>
             _mapper = mapper;
         }
 
-        public async Task<object> Handle(CreateQueue command, CancellationToken cancellationToken)
+        public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
         {
             var serviceBusConnectionString = command.ServiceBusConnectionString;
             var queueName = command.QueueName;
@@ -56,7 +66,7 @@ public class CreateQueue : IRequest<object>
             var authorizationRule = new SharedAccessAuthorizationRule("DefaultFirepumaListenerKey", new[] { AccessRights.Listen });
 
             QueueProperties queue;
-            var createResult = new CreateQueueResult
+            var result = new Result
             {
                 QueueName = queueName,
             };
@@ -68,8 +78,8 @@ public class CreateQueue : IRequest<object>
                 var propertiesToLog = _mapper.Map<QueueOptionsToLog>(queue);
                 _logger.LogInformation("Queue '{Name}' already existed with the following properties: {Properties}", queueName, JsonConvert.SerializeObject(propertiesToLog));
 
-                createResult.IsNew = false;
-                createResult.QueueProperties = propertiesToLog;
+                result.IsNew = false;
+                result.QueueProperties = propertiesToLog;
             }
             else
             {
@@ -89,8 +99,8 @@ public class CreateQueue : IRequest<object>
                 var propertiesToLog = _mapper.Map<QueueOptionsToLog>(queue);
                 _logger.LogInformation("Queue '{Name}' created with properties: {Properties}", queueName, JsonConvert.SerializeObject(propertiesToLog));
 
-                createResult.IsNew = true;
-                createResult.QueueProperties = propertiesToLog;
+                result.IsNew = true;
+                result.QueueProperties = propertiesToLog;
             }
 
             if (queue.AuthorizationRules.FirstOrDefault(rule =>
@@ -106,9 +116,9 @@ public class CreateQueue : IRequest<object>
                 queue = await busAdminClient.UpdateQueueAsync(queue, cancellationToken);
             }
 
-            createResult.ConnectionString = $"Endpoint=sb://{parsedConnectionString.FullyQualifiedNamespace}/;SharedAccessKeyName={authorizationRule.KeyName};SharedAccessKey={authorizationRule.PrimaryKey};EntityPath={queueName}";
+            result.ConnectionString = $"Endpoint=sb://{parsedConnectionString.FullyQualifiedNamespace}/;SharedAccessKeyName={authorizationRule.KeyName};SharedAccessKey={authorizationRule.PrimaryKey};EntityPath={queueName}";
 
-            return createResult;
+            return result;
         }
 
         [AutoMap(typeof(QueueProperties))]

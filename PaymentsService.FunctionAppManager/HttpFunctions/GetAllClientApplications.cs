@@ -41,7 +41,7 @@ public class GetAllClientApplications
     {
         log.LogInformation("C# HTTP trigger function processed a request");
 
-        var query = new GetAllClientApps(clientAppConfigTable);
+        var query = new GetAllClientApps.Query(clientAppConfigTable);
 
         var result = await _mediator.Send(query, cancellationToken);
         var mappedResults = _mapper.Map<IEnumerable<ClientAppResponseDto>>(result);

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.PaymentsService.FunctionAppManager.Infrastructure.Helpers;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -22,7 +23,7 @@ public class PerformanceLogBehavior<TRequest, TResponse>
         CancellationToken cancellationToken,
         RequestHandlerDelegate<TResponse> next)
     {
-        var requestTypeName = typeof(TRequest).Name;
+        var requestTypeName = typeof(TRequest).GetShortTypeName();
 
         var stopwatch = Stopwatch.StartNew();
         _logger.LogInformation(
@@ -34,7 +35,7 @@ public class PerformanceLogBehavior<TRequest, TResponse>
         stopwatch.Stop();
         var durationInSeconds = stopwatch.Elapsed.TotalSeconds.ToString("F");
 
-        var responseTypeName = typeof(TResponse).Name;
+        var responseTypeName = typeof(TResponse).GetShortTypeName();
         _logger.LogInformation(
             "Finished request {Name} (with response type {ResponseType}) in {Duration}s",
             requestTypeName, responseTypeName, durationInSeconds);

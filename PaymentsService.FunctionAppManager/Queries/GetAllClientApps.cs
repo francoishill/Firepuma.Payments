@@ -10,19 +10,22 @@ using Microsoft.Azure.Cosmos.Table;
 
 namespace Firepuma.PaymentsService.FunctionAppManager.Queries;
 
-public class GetAllClientApps : IRequest<IEnumerable<ClientAppConfig>>
+public static class GetAllClientApps
 {
-    public CloudTable CloudTable { get; set; }
-
-    public GetAllClientApps(CloudTable cloudTable)
+    public class Query : IRequest<IEnumerable<ClientAppConfig>>
     {
-        CloudTable = cloudTable;
+        public CloudTable CloudTable { get; set; }
+
+        public Query(CloudTable cloudTable)
+        {
+            CloudTable = cloudTable;
+        }
     }
 
-    public class Handler : IRequestHandler<GetAllClientApps, IEnumerable<ClientAppConfig>>
+    public class Handler : IRequestHandler<Query, IEnumerable<ClientAppConfig>>
     {
         public async Task<IEnumerable<ClientAppConfig>> Handle(
-            GetAllClientApps query,
+            Query query,
             CancellationToken cancellationToken)
         {
             var table = query.CloudTable;

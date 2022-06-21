@@ -21,8 +21,7 @@ public static class ProcessPayFastItnBusMessage
     [FunctionName("ProcessPayFastItnBusMessage")]
     public static async Task RunAsync(
         ILogger log,
-        [ServiceBusTrigger("payfast-itn-requests", Connection = "FirepumaPaymentsServiceBus")]
-        ServiceBusReceivedMessage busReceivedMessage,
+        [ServiceBusTrigger("payfast-itn-requests", Connection = "FirepumaPaymentsServiceBus")] ServiceBusReceivedMessage busReceivedMessage,
         [Table("PayFastItnTraces")] IAsyncCollector<PayFastItnTrace> itnTracesCollector,
         [Table("PayFastOnceOffPayments")] CloudTable paymentsTable,
         ServiceBusClient client,

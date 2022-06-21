@@ -25,11 +25,9 @@ public static class PreparePayFastOnceOffPayment
 {
     [FunctionName("PreparePayFastOnceOffPayment")]
     public static async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "PreparePayFastOnceOffPayment/{applicationId}")]
-        HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "PreparePayFastOnceOffPayment/{applicationId}")] HttpRequest req,
         ILogger log,
-        [Table("PaymentsConfigPerApplication", "PayFast", "{applicationId}")]
-        ClientAppConfig clientAppConfig,
+        [Table("PaymentsConfigPerApplication", "PayFast", "{applicationId}")] ClientAppConfig clientAppConfig,
         [Table("PayFastOnceOffPayments")] IAsyncCollector<PayFastOnceOffPayment> paymentsCollector,
         string applicationId,
         CancellationToken cancellationToken)

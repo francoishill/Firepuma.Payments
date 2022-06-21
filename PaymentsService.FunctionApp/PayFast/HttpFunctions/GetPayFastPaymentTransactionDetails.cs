@@ -11,8 +11,7 @@ public static class GetPayFastPaymentTransactionDetails
 {
     [FunctionName("GetPayFastPaymentTransactionDetails")]
     public static async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]
-        HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
         ILogger log)
     {
         log.LogInformation("C# HTTP trigger function processed a request");

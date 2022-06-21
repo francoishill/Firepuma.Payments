@@ -26,13 +26,10 @@ public static class ValidateAndStorePayFastItn
 {
     [FunctionName("ValidateAndStorePayFastItn")]
     public static async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "ValidateAndStorePayFastItn/{applicationId}")]
-        HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "ValidateAndStorePayFastItn/{applicationId}")] HttpRequest req,
         ILogger log,
-        [Table("PaymentsConfigPerApplication", "PayFast", "{applicationId}")]
-        ClientAppConfig clientAppConfig,
-        [ServiceBus("payfast-itn-requests", EntityType = ServiceBusEntityType.Queue, Connection = "FirepumaPaymentsServiceBus")]
-        IAsyncCollector<ServiceBusMessage> itnRequestsCollector,
+        [Table("PaymentsConfigPerApplication", "PayFast", "{applicationId}")] ClientAppConfig clientAppConfig,
+        [ServiceBus("payfast-itn-requests", EntityType = ServiceBusEntityType.Queue, Connection = "FirepumaPaymentsServiceBus")] IAsyncCollector<ServiceBusMessage> itnRequestsCollector,
         string applicationId,
         CancellationToken cancellationToken)
     {

@@ -10,6 +10,7 @@ using Firepuma.PaymentsService.Abstractions.Infrastructure.Validation;
 using Firepuma.PaymentsService.FunctionAppManager.Commands;
 using Firepuma.PaymentsService.FunctionAppManager.Infrastructure.Helpers;
 using Firepuma.PaymentsService.Implementations.Config;
+using Firepuma.PaymentsService.Implementations.Factories;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -51,12 +52,12 @@ public class CreatePayFastClientApplication
 
         if (requestDTO == null)
         {
-            return CreateBadRequestResponse("Request body is required but empty");
+            return HttpResponseFactory.CreateBadRequestResponse("Request body is required but empty");
         }
 
         if (!ValidationHelpers.ValidateDataAnnotations(requestDTO, out var validationResultsForRequest))
         {
-            return CreateBadRequestResponse(new[] { "Request body is invalid" }.Concat(validationResultsForRequest.Select(s => s.ErrorMessage)).ToArray());
+            return HttpResponseFactory.CreateBadRequestResponse(new[] { "Request body is invalid" }.Concat(validationResultsForRequest.Select(s => s.ErrorMessage)).ToArray());
         }
 
         var queueName = QueueNameFormatter.GetPaymentUpdatedQueueName(applicationId);
@@ -98,13 +99,5 @@ public class CreatePayFastClientApplication
         responseObjects.Add(new KeyValuePair<string, object>("logs", logsForResponse));
 
         return new OkObjectResult(new Dictionary<string, object> { { "results", responseObjects } });
-    }
-
-    private static IActionResult CreateBadRequestResponse(params string[] errors)
-    {
-        return new BadRequestObjectResult(new Dictionary<string, object>
-        {
-            { "Errors", errors }
-        });
     }
 }

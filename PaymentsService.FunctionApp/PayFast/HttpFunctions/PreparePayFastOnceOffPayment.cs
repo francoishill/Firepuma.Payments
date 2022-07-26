@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.PaymentsService.Abstractions.Constants;
 using Firepuma.PaymentsService.Abstractions.DTOs.Requests;
 using Firepuma.PaymentsService.Abstractions.DTOs.Responses;
 using Firepuma.PaymentsService.Abstractions.Infrastructure.Validation;
 using Firepuma.PaymentsService.FunctionApp.PayFast.Factories;
 using Firepuma.PaymentsService.FunctionApp.PayFast.TableModels;
+using Firepuma.PaymentsService.FunctionApp.PayFast.Validation;
 using Firepuma.PaymentsService.Implementations.Config;
+using Firepuma.PaymentsService.Implementations.Factories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -37,25 +37,19 @@ public static class PreparePayFastOnceOffPayment
         var validateAndStoreItnBaseUrl = Environment.GetEnvironmentVariable("FirepumaValidateAndStorePayFastItnBaseUrl");
         if (string.IsNullOrWhiteSpace(validateAndStoreItnBaseUrl))
         {
-            return CreateBadRequestResponse("Environment variable FIREPUMA_PROCESS_PAYFAST_ITN_BASE_URL is required but empty");
+            return HttpResponseFactory.CreateBadRequestResponse("Environment variable FIREPUMA_PROCESS_PAYFAST_ITN_BASE_URL is required but empty");
         }
 
-        if (clientAppConfig == null)
+        if (!clientAppConfig.ValidateClientAppConfig(applicationId, req.Headers, out var validationStatusCode, out var validationErrors))
         {
-            return CreateBadRequestResponse($"Config not found for application with id {applicationId}");
-        }
-
-        if (!ValidationHelpers.ValidateDataAnnotations(clientAppConfig, out var validationResultsForConfig))
-        {
-            return CreateBadRequestResponse(new[] { "Application config is invalid" }.Concat(validationResultsForConfig.Select(s => s.ErrorMessage)).ToArray());
-        }
-
-        var requestAppSecret = req.Headers[PaymentHttpRequestHeaderKeys.APP_SECRET].FirstOrDefault();
-        if (clientAppConfig.ApplicationSecret != requestAppSecret)
-        {
-            return new ObjectResult("Invalid or missing app secret")
+            if (validationStatusCode == HttpStatusCode.BadRequest)
             {
-                StatusCode = (int)HttpStatusCode.Unauthorized
+                return HttpResponseFactory.CreateBadRequestResponse(validationErrors?.ToArray() ?? new[] { "Validation failed" });
+            }
+
+            return new ObjectResult(validationErrors?.ToArray() ?? new[] { "Validation failed" })
+            {
+                StatusCode = (int)validationStatusCode,
             };
         }
 
@@ -66,19 +60,19 @@ public static class PreparePayFastOnceOffPayment
 
         if (requestDTO == null)
         {
-            return CreateBadRequestResponse("Request body is required but empty");
+            return HttpResponseFactory.CreateBadRequestResponse("Request body is required but empty");
         }
 
         if (!ValidationHelpers.ValidateDataAnnotations(requestDTO, out var validationResultsForRequest))
         {
-            return CreateBadRequestResponse(new[] { "Request body is invalid" }.Concat(validationResultsForRequest.Select(s => s.ErrorMessage)).ToArray());
+            return HttpResponseFactory.CreateBadRequestResponse(new[] { "Request body is invalid" }.Concat(validationResultsForRequest.Select(s => s.ErrorMessage)).ToArray());
         }
 
         if (requestDTO.SplitPayment != null)
         {
             if (!ValidationHelpers.ValidateDataAnnotations(requestDTO.SplitPayment, out var validationResultsForSplitPayment))
             {
-                return CreateBadRequestResponse(new[] { "SplitPayment is invalid" }.Concat(validationResultsForSplitPayment.Select(s => s.ErrorMessage)).ToArray());
+                return HttpResponseFactory.CreateBadRequestResponse(new[] { "SplitPayment is invalid" }.Concat(validationResultsForSplitPayment.Select(s => s.ErrorMessage)).ToArray());
             }
         }
 
@@ -109,7 +103,8 @@ public static class PreparePayFastOnceOffPayment
             payfastRequest,
             requestDTO.SplitPayment);
 
-
+        var TODO_move = "Move all TODO stuff into TODO comments instead?";
+        
         var TODO = "";
         // Get the PayfastSettings for the given ApplicationId
         // Insert new record with new ID into PayfastOnceOffPayment table
@@ -139,14 +134,6 @@ public static class PreparePayFastOnceOffPayment
         return questionMarkIndex >= 0
             ? validateAndStoreItnBaseUrl.Substring(0, questionMarkIndex).TrimEnd('/') + $"/{applicationId}?{validateAndStoreItnBaseUrl.Substring(questionMarkIndex + 1)}"
             : validateAndStoreItnBaseUrl + $"/{applicationId}";
-    }
-
-    private static IActionResult CreateBadRequestResponse(params string[] errors)
-    {
-        return new BadRequestObjectResult(new Dictionary<string, object>
-        {
-            { "Errors", errors }
-        });
     }
 
     private static PayFastOnceOffPayment CreatePayment(

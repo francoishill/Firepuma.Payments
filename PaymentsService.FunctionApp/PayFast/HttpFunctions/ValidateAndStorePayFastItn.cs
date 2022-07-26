@@ -10,6 +10,7 @@ using Firepuma.PaymentsService.Abstractions.Infrastructure.Validation;
 using Firepuma.PaymentsService.FunctionApp.PayFast.DTOs.Events;
 using Firepuma.PaymentsService.FunctionApp.PayFast.Factories;
 using Firepuma.PaymentsService.Implementations.Config;
+using Firepuma.PaymentsService.Implementations.Factories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -37,12 +38,12 @@ public static class ValidateAndStorePayFastItn
 
         if (clientAppConfig == null)
         {
-            return CreateBadRequestResponse($"Config not found for application with id {applicationId}");
+            return HttpResponseFactory.CreateBadRequestResponse($"Config not found for application with id {applicationId}");
         }
 
         if (!ValidationHelpers.ValidateDataAnnotations(clientAppConfig, out var validationResultsForConfig))
         {
-            return CreateBadRequestResponse(new[] { "Application config is invalid" }.Concat(validationResultsForConfig.Select(s => s.ErrorMessage)).ToArray());
+            return HttpResponseFactory.CreateBadRequestResponse(new[] { "Application config is invalid" }.Concat(validationResultsForConfig.Select(s => s.ErrorMessage)).ToArray());
         }
 
         var TODO = "";
@@ -61,7 +62,7 @@ public static class ValidateAndStorePayFastItn
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             log.LogCritical("Request body is not form but contained content: {Body}", requestBody);
 
-            return CreateBadRequestResponse("Invalid content type, expected form data");
+            return HttpResponseFactory.CreateBadRequestResponse("Invalid content type, expected form data");
         }
 
         var TODO3 = "";
@@ -72,14 +73,14 @@ public static class ValidateAndStorePayFastItn
         if (payFastRequest == null)
         {
             log.LogCritical("The body is null or empty, aborting processing of it");
-            return CreateBadRequestResponse("The body is null or empty");
+            return HttpResponseFactory.CreateBadRequestResponse("The body is null or empty");
         }
 
         var remoteIp = GetRemoteIp(log, req);
         if (remoteIp == null)
         {
             log.LogCritical("The remote ip is required but null");
-            return CreateBadRequestResponse("The remote ip is required but null");
+            return HttpResponseFactory.CreateBadRequestResponse("The remote ip is required but null");
         }
 
         payFastRequest.SetPassPhrase(clientAppConfig.PassPhrase);
@@ -91,7 +92,7 @@ public static class ValidateAndStorePayFastItn
         if (!signatureIsValid)
         {
             log.LogCritical("PayFast ITN signature validation failed");
-            return CreateBadRequestResponse("PayFast ITN signature validation failed");
+            return HttpResponseFactory.CreateBadRequestResponse("PayFast ITN signature validation failed");
         }
 
         var subsetOfPayFastSettings = new PayFastSettings
@@ -110,7 +111,7 @@ public static class ValidateAndStorePayFastItn
         if (!merchantIdValidationResult)
         {
             log.LogCritical("PayFast ITN merchant id validation failed, merchant id is {MerchantId}", payFastRequest.merchant_id);
-            return CreateBadRequestResponse($"PayFast ITN merchant id validation failed, merchant id is {payFastRequest.merchant_id}");
+            return HttpResponseFactory.CreateBadRequestResponse($"PayFast ITN merchant id validation failed, merchant id is {payFastRequest.merchant_id}");
         }
 
         var ipAddressValidationResult = await payfastValidator.ValidateSourceIp();
@@ -118,7 +119,7 @@ public static class ValidateAndStorePayFastItn
         if (!ipAddressValidationResult)
         {
             log.LogCritical("PayFast ITN IPAddress validation failed, ip is {RemoteIp}", remoteIp);
-            return CreateBadRequestResponse($"PayFast ITN IPAddress validation failed, ip is {remoteIp}");
+            return HttpResponseFactory.CreateBadRequestResponse($"PayFast ITN IPAddress validation failed, ip is {remoteIp}");
         }
 
         // TODO: Currently seems that the data validation only works for success
@@ -129,7 +130,7 @@ public static class ValidateAndStorePayFastItn
             if (!dataValidationResult)
             {
                 log.LogCritical("PayFast ITN data validation failed");
-                return CreateBadRequestResponse("PayFast ITN data validation failed");
+                return HttpResponseFactory.CreateBadRequestResponse("PayFast ITN data validation failed");
             }
         }
 
@@ -137,7 +138,7 @@ public static class ValidateAndStorePayFastItn
             && payFastRequest.payment_status != PayFastStatics.CancelledPaymentConfirmation)
         {
             log.LogCritical("Invalid PayFast ITN payment status '{Status}'", payFastRequest.payment_status);
-            return CreateBadRequestResponse($"Invalid PayFast ITN payment status '{payFastRequest.payment_status}'");
+            return HttpResponseFactory.CreateBadRequestResponse($"Invalid PayFast ITN payment status '{payFastRequest.payment_status}'");
         }
 
         var dto = new PayFastPaymentItnValidatedEvent(
@@ -188,14 +189,6 @@ public static class ValidateAndStorePayFastItn
         }
 
         return req.HttpContext.Connection.RemoteIpAddress;
-    }
-
-    private static IActionResult CreateBadRequestResponse(params string[] errors)
-    {
-        return new BadRequestObjectResult(new Dictionary<string, object>
-        {
-            { "Errors", errors }
-        });
     }
 
     private static PayFastNotify ExtractPayFastNotifyOrNull(IFormCollection formCollection)

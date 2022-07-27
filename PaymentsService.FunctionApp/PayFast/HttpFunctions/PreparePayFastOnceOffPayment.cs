@@ -103,26 +103,6 @@ public static class PreparePayFastOnceOffPayment
             payfastRequest,
             requestDTO.SplitPayment);
 
-        var TODO_move = "Move all TODO stuff into TODO comments instead?";
-        
-        var TODO = "";
-        // Get the PayfastSettings for the given ApplicationId
-        // Insert new record with new ID into PayfastOnceOffPayment table
-        // Use PayFastSettingsHelper and PayFastRequestFactory to CreateOnceOffPaymentRequest, pass the new request:
-        //    - Payment ID from PayfastOnceOffPayment instance
-        //    - ImmediateAmount
-        //    - ItemName
-        //    - ItemDescription
-        //    - ActorName
-        //    - ActorEmail
-        // Store the DTO in the Abstractions csproj and publish it as a Nuget package
-        // Ensure we do validation of PayFastConfigForApplication
-        // Ensure we do validation of DataAnnotations on the request DTO
-        // Test the validation of SplitPayment nested fields in PreparePayFastOnceOffPaymentRequest
-        // Change the BackendNotifyUrl to point to the online Function once it is published (of application config stored in Azure Table ConfigPerApplication)
-        // Respond with redirect url, remember to cater for:
-        //    - { "split_payment": { "merchant_id": "??", "amount": "??" } }
-
         var response = new PreparePayFastOnceOffPaymentResponse(paymentId, redirectUrl);
         return new OkObjectResult(response);
     }

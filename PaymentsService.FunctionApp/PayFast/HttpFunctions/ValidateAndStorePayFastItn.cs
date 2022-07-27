@@ -46,11 +46,6 @@ public static class ValidateAndStorePayFastItn
             return HttpResponseFactory.CreateBadRequestResponse(new[] { "Application config is invalid" }.Concat(validationResultsForConfig.Select(s => s.ErrorMessage)).ToArray());
         }
 
-        var TODO = "";
-        // Include all the Payfast validation (Signature, ValidateMerchantId, ValidateSourceIp)
-        // Do ValidateData when `payfastRequest.payment_status == PayFastStatics.CompletePaymentConfirmation`
-        // Respond by adding a message to the relevant app/client Service Bus queue, to be consumed by client
-
         var transactionIdQueryParam = req.Query[PayFastSettingsFactory.TRANSACTION_ID_QUERY_PARAM_NAME];
         if (!string.IsNullOrWhiteSpace(transactionIdQueryParam))
         {
@@ -64,9 +59,6 @@ public static class ValidateAndStorePayFastItn
 
             return HttpResponseFactory.CreateBadRequestResponse("Invalid content type, expected form data");
         }
-
-        var TODO3 = "";
-        // Determine what all the relevant info is to send through ServiceBus (by checking what Snaptask uses from the processed PayFast ITN)
 
         var payFastRequest = ExtractPayFastNotifyOrNull(req.Form);
 

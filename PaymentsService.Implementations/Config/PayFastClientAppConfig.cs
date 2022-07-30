@@ -6,7 +6,7 @@ using Microsoft.Azure.Cosmos.Table;
 
 namespace Firepuma.PaymentsService.Implementations.Config;
 
-public class ClientAppConfig : TableEntity
+public class PayFastClientAppConfig : TableEntity
 {
     public string PaymentProviderName => PartitionKey;
     public string ApplicationId => RowKey;
@@ -25,12 +25,12 @@ public class ClientAppConfig : TableEntity
     public string PassPhrase { get; set; }
 
     // ReSharper disable once UnusedMember.Global
-    public ClientAppConfig()
+    public PayFastClientAppConfig()
     {
         // used by input bindings of functions
     }
 
-    public ClientAppConfig(
+    public PayFastClientAppConfig(
         string paymentProviderName,
         string applicationId,
         string applicationSecret,
@@ -51,7 +51,7 @@ public class ClientAppConfig : TableEntity
 
     public static TableOperation GetRetrieveOperation(string paymentProviderName, string applicationId)
     {
-        return TableOperation.Retrieve<ClientAppConfig>(paymentProviderName, applicationId);
+        return TableOperation.Retrieve<PayFastClientAppConfig>(paymentProviderName, applicationId);
     }
 
     public static string GenerateRandomSecret()

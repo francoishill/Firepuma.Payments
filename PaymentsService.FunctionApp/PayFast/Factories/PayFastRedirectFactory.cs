@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using Firepuma.PaymentsService.Abstractions.DTOs.Requests;
+using Firepuma.PaymentsService.FunctionApp.PayFast.Commands;
 using Firepuma.PaymentsService.FunctionApp.PayFast.ValueObjects;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -15,7 +15,7 @@ public static class PayFastRedirectFactory
         ILogger logger,
         PayFastPaymentSettings payFastSettings,
         PayFastRequest payfastRequest,
-        PreparePayFastOnceOffPaymentRequest.SplitPaymentConfig splitPaymentConfig)
+        AddPayFastOnceOffPayment.Command.SplitPaymentConfig splitPaymentConfig)
     {
         var fullQuery = payfastRequest.ToString();
 
@@ -38,7 +38,7 @@ public static class PayFastRedirectFactory
 
     private static string GetSplitPaymentSetupJsonString(
         ILogger logger,
-        PreparePayFastOnceOffPaymentRequest.SplitPaymentConfig splitPaymentConfig)
+        AddPayFastOnceOffPayment.Command.SplitPaymentConfig splitPaymentConfig)
     {
         try
         {
@@ -59,7 +59,7 @@ public static class PayFastRedirectFactory
                 },
             };
 
-            var splitPaymentJson = JsonConvert.SerializeObject(splitPaymentData);
+            var splitPaymentJson = JsonConvert.SerializeObject(splitPaymentData, new Newtonsoft.Json.Converters.StringEnumConverter());
             return splitPaymentJson;
         }
         catch (Exception exception)

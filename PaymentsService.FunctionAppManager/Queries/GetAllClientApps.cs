@@ -12,7 +12,7 @@ namespace Firepuma.PaymentsService.FunctionAppManager.Queries;
 
 public static class GetAllClientApps
 {
-    public class Query : IRequest<IEnumerable<ClientAppConfig>>
+    public class Query : IRequest<IEnumerable<PayFastClientAppConfig>>
     {
         public CloudTable CloudTable { get; set; }
 
@@ -22,17 +22,17 @@ public static class GetAllClientApps
         }
     }
 
-    public class Handler : IRequestHandler<Query, IEnumerable<ClientAppConfig>>
+    public class Handler : IRequestHandler<Query, IEnumerable<PayFastClientAppConfig>>
     {
-        public async Task<IEnumerable<ClientAppConfig>> Handle(
+        public async Task<IEnumerable<PayFastClientAppConfig>> Handle(
             Query query,
             CancellationToken cancellationToken)
         {
             var table = query.CloudTable;
 
-            var rows = new List<ClientAppConfig>();
+            var rows = new List<PayFastClientAppConfig>();
             TableContinuationToken token = null;
-            var tableFilter = new TableQuery<ClientAppConfig>();
+            var tableFilter = new TableQuery<PayFastClientAppConfig>();
 
             do
             {

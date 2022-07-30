@@ -5,46 +5,38 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure.Messaging.ServiceBus;
-using Firepuma.PaymentsService.Abstractions.Infrastructure.Validation;
-using Firepuma.PaymentsService.FunctionApp.PayFast.DTOs.Events;
+using Firepuma.PaymentsService.FunctionApp.PayFast.Commands;
 using Firepuma.PaymentsService.FunctionApp.PayFast.Factories;
-using Firepuma.PaymentsService.Implementations.Config;
 using Firepuma.PaymentsService.Implementations.Factories;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.ServiceBus;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using PayFast;
 
 namespace Firepuma.PaymentsService.FunctionApp.PayFast.HttpFunctions;
 
-public static class ValidateAndStorePayFastItn
+public class ValidateAndStorePayFastItn
 {
+    private readonly IMediator _mediator;
+
+    public ValidateAndStorePayFastItn(
+        IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
     [FunctionName("ValidateAndStorePayFastItn")]
-    public static async Task<IActionResult> RunAsync(
+    public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = "ValidateAndStorePayFastItn/{applicationId}")] HttpRequest req,
         ILogger log,
-        [Table("PaymentsConfigPerApplication", "PayFast", "{applicationId}")] ClientAppConfig clientAppConfig,
-        [ServiceBus("payfast-itn-requests", EntityType = ServiceBusEntityType.Queue, Connection = "FirepumaPaymentsServiceBus")] IAsyncCollector<ServiceBusMessage> itnRequestsCollector,
         string applicationId,
         CancellationToken cancellationToken)
     {
         log.LogInformation("C# HTTP trigger function processed a request");
-
-        if (clientAppConfig == null)
-        {
-            return HttpResponseFactory.CreateBadRequestResponse($"Config not found for application with id {applicationId}");
-        }
-
-        if (!ValidationHelpers.ValidateDataAnnotations(clientAppConfig, out var validationResultsForConfig))
-        {
-            return HttpResponseFactory.CreateBadRequestResponse(new[] { "Application config is invalid" }.Concat(validationResultsForConfig.Select(s => s.ErrorMessage)).ToArray());
-        }
 
         var transactionIdQueryParam = req.Query[PayFastSettingsFactory.TRANSACTION_ID_QUERY_PARAM_NAME];
         if (!string.IsNullOrWhiteSpace(transactionIdQueryParam))
@@ -75,79 +67,23 @@ public static class ValidateAndStorePayFastItn
             return HttpResponseFactory.CreateBadRequestResponse("The remote ip is required but null");
         }
 
-        payFastRequest.SetPassPhrase(clientAppConfig.PassPhrase);
-
-        var calculatedSignature = payFastRequest.GetCalculatedSignature();
-        var signatureIsValid = payFastRequest.signature == calculatedSignature;
-
-        log.LogInformation("PayFast ITN signature valid: {IsValid}", signatureIsValid);
-        if (!signatureIsValid)
+        var command = new EnqueuePayFastItnForProcessing.Command
         {
-            log.LogCritical("PayFast ITN signature validation failed");
-            return HttpResponseFactory.CreateBadRequestResponse("PayFast ITN signature validation failed");
-        }
-
-        var subsetOfPayFastSettings = new PayFastSettings
-        {
-            MerchantId = clientAppConfig.MerchantId,
-            MerchantKey = clientAppConfig.MerchantKey,
-            PassPhrase = clientAppConfig.PassPhrase,
-            ValidateUrl = PayFastSettingsFactory.GetValidateUrl(clientAppConfig.IsSandbox),
-        };
-        var payfastValidator = new PayFastValidator(subsetOfPayFastSettings, payFastRequest, remoteIp);
-
-        var merchantIdValidationResult = payfastValidator.ValidateMerchantId();
-        log.LogInformation(
-            "Merchant Id valid: {MerchantIdValidationResult}, merchant id is {RequestMerchantId}",
-            merchantIdValidationResult, payFastRequest.merchant_id);
-        if (!merchantIdValidationResult)
-        {
-            log.LogCritical("PayFast ITN merchant id validation failed, merchant id is {MerchantId}", payFastRequest.merchant_id);
-            return HttpResponseFactory.CreateBadRequestResponse($"PayFast ITN merchant id validation failed, merchant id is {payFastRequest.merchant_id}");
-        }
-
-        var ipAddressValidationResult = await payfastValidator.ValidateSourceIp();
-        log.LogInformation("Ip Address valid: {IpAddressValidationResult}, remote IP is {RemoteIp}", ipAddressValidationResult, remoteIp);
-        if (!ipAddressValidationResult)
-        {
-            log.LogCritical("PayFast ITN IPAddress validation failed, ip is {RemoteIp}", remoteIp);
-            return HttpResponseFactory.CreateBadRequestResponse($"PayFast ITN IPAddress validation failed, ip is {remoteIp}");
-        }
-
-        // TODO: Currently seems that the data validation only works for success
-        if (payFastRequest.payment_status == PayFastStatics.CompletePaymentConfirmation)
-        {
-            var dataValidationResult = await payfastValidator.ValidateData();
-            log.LogInformation("Data Validation Result: {DataValidationResult}", dataValidationResult);
-            if (!dataValidationResult)
-            {
-                log.LogCritical("PayFast ITN data validation failed");
-                return HttpResponseFactory.CreateBadRequestResponse("PayFast ITN data validation failed");
-            }
-        }
-
-        if (payFastRequest.payment_status != PayFastStatics.CompletePaymentConfirmation
-            && payFastRequest.payment_status != PayFastStatics.CancelledPaymentConfirmation)
-        {
-            log.LogCritical("Invalid PayFast ITN payment status '{Status}'", payFastRequest.payment_status);
-            return HttpResponseFactory.CreateBadRequestResponse($"Invalid PayFast ITN payment status '{payFastRequest.payment_status}'");
-        }
-
-        var dto = new PayFastPaymentItnValidatedEvent(
-            applicationId,
-            payFastRequest.m_payment_id,
-            payFastRequest,
-            req.GetDisplayUrl());
-
-        var messageJson = JsonConvert.SerializeObject(dto);
-
-        var busMessage = new ServiceBusMessage(messageJson)
-        {
-            CorrelationId = req.HttpContext.TraceIdentifier
+            CorrelationId = req.HttpContext.TraceIdentifier,
+            ApplicationId = applicationId,
+            PayFastRequest = payFastRequest,
+            RemoteIp = remoteIp.ToString(),
+            IncomingRequestUri = req.GetDisplayUrl(),
         };
 
-        await itnRequestsCollector.AddAsync(busMessage, cancellationToken);
-        await itnRequestsCollector.FlushAsync(cancellationToken);
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (!result.IsSuccessful)
+        {
+            log.LogCritical("Command execution was unsuccessful, reason {Reason}, errors {Errors}", result.FailedReason.ToString(), string.Join(", ", result.FailedErrors));
+
+            return HttpResponseFactory.CreateBadRequestResponse($"{result.FailedReason.ToString()}, {string.Join(", ", result.FailedErrors)}");
+        }
 
         return new OkResult();
     }

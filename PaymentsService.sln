@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OtherFiles", "OtherFiles", 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentsService.Client", "PaymentsService.Client\PaymentsService.Client.csproj", "{8CE1F91F-2A8A-4C8E-9238-4A469880C1E1}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{A1F75B5D-C028-4152-87CF-8C67CDBB3B1D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{E75BD86D-92B2-4AB2-81C0-4BFB87756E26}"
@@ -17,6 +19,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\deploy-function-app.yml = .github\workflows\deploy-function-app.yml
 		.github\workflows\deploy-function-app-manager.yml = .github\workflows\deploy-function-app-manager.yml
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{947CDF29-1B1A-4013-98BB-9F32BA8DE4DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.PaymentsClientApp.Simple", "Samples\Sample.PaymentsClientApp.Simple\Sample.PaymentsClientApp.Simple.csproj", "{A2C2100F-09BC-45EC-8C00-EB143DB4F42F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentsService.FunctionAppManager", "PaymentsService.FunctionAppManager\PaymentsService.FunctionAppManager.csproj", "{389FB385-90FC-483E-96BF-868935DD9CB8}"
 EndProject
@@ -36,6 +42,14 @@ Global
 		{093F169F-4C8C-4F29-8AF0-71C6D0609FB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{093F169F-4C8C-4F29-8AF0-71C6D0609FB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{093F169F-4C8C-4F29-8AF0-71C6D0609FB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CE1F91F-2A8A-4C8E-9238-4A469880C1E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CE1F91F-2A8A-4C8E-9238-4A469880C1E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CE1F91F-2A8A-4C8E-9238-4A469880C1E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CE1F91F-2A8A-4C8E-9238-4A469880C1E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2C2100F-09BC-45EC-8C00-EB143DB4F42F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2C2100F-09BC-45EC-8C00-EB143DB4F42F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2C2100F-09BC-45EC-8C00-EB143DB4F42F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2C2100F-09BC-45EC-8C00-EB143DB4F42F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{389FB385-90FC-483E-96BF-868935DD9CB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{389FB385-90FC-483E-96BF-868935DD9CB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{389FB385-90FC-483E-96BF-868935DD9CB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -44,5 +58,10 @@ Global
 		{2F4842C6-750F-4B7C-BC6F-A9F94D974504}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F4842C6-750F-4B7C-BC6F-A9F94D974504}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F4842C6-750F-4B7C-BC6F-A9F94D974504}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A1F75B5D-C028-4152-87CF-8C67CDBB3B1D} = {287CA8BC-FD73-437C-85B1-27745431F719}
+		{E75BD86D-92B2-4AB2-81C0-4BFB87756E26} = {A1F75B5D-C028-4152-87CF-8C67CDBB3B1D}
+		{A2C2100F-09BC-45EC-8C00-EB143DB4F42F} = {947CDF29-1B1A-4013-98BB-9F32BA8DE4DC}
 	EndGlobalSection
 EndGlobal

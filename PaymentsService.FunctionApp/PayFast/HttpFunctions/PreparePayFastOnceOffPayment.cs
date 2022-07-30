@@ -1,17 +1,16 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
+using Firepuma.PaymentsService.Abstractions.Constants;
 using Firepuma.PaymentsService.Abstractions.DTOs.Requests;
 using Firepuma.PaymentsService.Abstractions.DTOs.Responses;
 using Firepuma.PaymentsService.Abstractions.Infrastructure.Validation;
-using Firepuma.PaymentsService.FunctionApp.PayFast.Factories;
-using Firepuma.PaymentsService.FunctionApp.PayFast.TableModels;
-using Firepuma.PaymentsService.FunctionApp.PayFast.Validation;
-using Firepuma.PaymentsService.Implementations.Config;
+using Firepuma.PaymentsService.FunctionApp.PayFast.Commands;
 using Firepuma.PaymentsService.Implementations.Factories;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -21,39 +20,33 @@ using Newtonsoft.Json;
 
 namespace Firepuma.PaymentsService.FunctionApp.PayFast.HttpFunctions;
 
-public static class PreparePayFastOnceOffPayment
+public class PreparePayFastOnceOffPayment
 {
+    private readonly IMediator _mediator;
+    private readonly IMapper _mapper;
+
+    public PreparePayFastOnceOffPayment(
+        IMediator mediator,
+        IMapper mapper)
+    {
+        _mediator = mediator;
+        _mapper = mapper;
+    }
+
     [FunctionName("PreparePayFastOnceOffPayment")]
-    public static async Task<IActionResult> RunAsync(
+    public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = "PreparePayFastOnceOffPayment/{applicationId}")] HttpRequest req,
         ILogger log,
-        [Table("PaymentsConfigPerApplication", "PayFast", "{applicationId}")] ClientAppConfig clientAppConfig,
-        [Table("PayFastOnceOffPayments")] IAsyncCollector<PayFastOnceOffPayment> paymentsCollector,
         string applicationId,
         CancellationToken cancellationToken)
     {
         log.LogInformation("C# HTTP trigger function processed a request");
 
-        var validateAndStoreItnBaseUrl = Environment.GetEnvironmentVariable("FirepumaValidateAndStorePayFastItnBaseUrl");
-        if (string.IsNullOrWhiteSpace(validateAndStoreItnBaseUrl))
+        var requestAppSecret = req.Headers[PaymentHttpRequestHeaderKeys.APP_SECRET].FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(requestAppSecret))
         {
-            return HttpResponseFactory.CreateBadRequestResponse("Environment variable FIREPUMA_PROCESS_PAYFAST_ITN_BASE_URL is required but empty");
+            return HttpResponseFactory.CreateBadRequestResponse($"A value is required for header {PaymentHttpRequestHeaderKeys.APP_SECRET}");
         }
-
-        if (!clientAppConfig.ValidateClientAppConfig(applicationId, req.Headers, out var validationStatusCode, out var validationErrors))
-        {
-            if (validationStatusCode == HttpStatusCode.BadRequest)
-            {
-                return HttpResponseFactory.CreateBadRequestResponse(validationErrors?.ToArray() ?? new[] { "Validation failed" });
-            }
-
-            return new ObjectResult(validationErrors?.ToArray() ?? new[] { "Validation failed" })
-            {
-                StatusCode = (int)validationStatusCode,
-            };
-        }
-
-        var validateAndStoreItnUrlWithAppName = AddApplicationIdToItnBaseUrl(validateAndStoreItnBaseUrl, applicationId);
 
         var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
         var requestDTO = JsonConvert.DeserializeObject<PreparePayFastOnceOffPaymentRequest>(requestBody);
@@ -77,58 +70,42 @@ public static class PreparePayFastOnceOffPayment
         }
 
         var paymentId = requestDTO.PaymentId;
-        var payment = CreatePayment(applicationId, paymentId, requestDTO);
 
-        await paymentsCollector.AddAsync(payment, cancellationToken);
+        var mappedCommandSplitPaymentConfig = _mapper.Map<AddPayFastOnceOffPayment.Command.SplitPaymentConfig>(requestDTO.SplitPayment);
 
-        var payFastSettings = PayFastSettingsFactory.CreatePayFastSettings(
-            clientAppConfig,
-            validateAndStoreItnUrlWithAppName,
-            payment.PaymentId.Value,
-            requestDTO.ReturnUrl,
-            requestDTO.CancelUrl);
+        var addCommand = new AddPayFastOnceOffPayment.Command
+        {
+            ApplicationSecret = requestAppSecret,
+            ApplicationId = applicationId,
+            PaymentId = paymentId,
+            BuyerEmailAddress = requestDTO.BuyerEmailAddress,
+            BuyerFirstName = requestDTO.BuyerFirstName,
+            ImmediateAmountInRands = requestDTO.ImmediateAmountInRands ?? throw new ArgumentNullException(nameof(requestDTO.ImmediateAmountInRands)),
+            ItemName = requestDTO.ItemName,
+            ItemDescription = requestDTO.ItemDescription,
+            ReturnUrl = requestDTO.ReturnUrl,
+            CancelUrl = requestDTO.CancelUrl,
+            SplitPayment = mappedCommandSplitPaymentConfig,
+        };
 
-        var payfastRequest = PayFastRequestFactory.CreateOnceOffPaymentRequest(
-            payFastSettings,
-            payment.PaymentId,
-            requestDTO.BuyerEmailAddress,
-            requestDTO.BuyerFirstName,
-            requestDTO.ImmediateAmountInRands ?? throw new ArgumentNullException(nameof(requestDTO.ImmediateAmountInRands)),
-            requestDTO.ItemName,
-            requestDTO.ItemDescription);
+        var result = await _mediator.Send(addCommand, cancellationToken);
 
-        var redirectUrl = PayFastRedirectFactory.CreateRedirectUrl(
-            log,
-            payFastSettings,
-            payfastRequest,
-            requestDTO.SplitPayment);
+        if (!result.IsSuccessful)
+        {
+            return HttpResponseFactory.CreateBadRequestResponse($"{result.FailedReason.ToString()}, {string.Join(", ", result.FailedErrors)}");
+        }
 
-        var response = new PreparePayFastOnceOffPaymentResponse(paymentId, redirectUrl);
+
+        var response = new PreparePayFastOnceOffPaymentResponse(paymentId, result.RedirectUrl);
         return new OkObjectResult(response);
     }
 
-    private static string AddApplicationIdToItnBaseUrl(string validateAndStoreItnBaseUrl, string applicationId)
+    // ReSharper disable once UnusedType.Local
+    private class SplitPaymentMappingProfile : Profile
     {
-        var questionMarkIndex = validateAndStoreItnBaseUrl.IndexOf("?", StringComparison.Ordinal);
-
-        return questionMarkIndex >= 0
-            ? validateAndStoreItnBaseUrl.Substring(0, questionMarkIndex).TrimEnd('/') + $"/{applicationId}?{validateAndStoreItnBaseUrl.Substring(questionMarkIndex + 1)}"
-            : validateAndStoreItnBaseUrl + $"/{applicationId}";
-    }
-
-    private static PayFastOnceOffPayment CreatePayment(
-        string applicationId,
-        string paymentId,
-        PreparePayFastOnceOffPaymentRequest requestDTO)
-    {
-        var payment = new PayFastOnceOffPayment(
-            applicationId,
-            paymentId,
-            requestDTO.BuyerEmailAddress,
-            requestDTO.BuyerFirstName,
-            requestDTO.ImmediateAmountInRands ?? throw new ArgumentNullException(nameof(requestDTO.ImmediateAmountInRands)),
-            requestDTO.ItemName,
-            requestDTO.ItemDescription);
-        return payment;
+        public SplitPaymentMappingProfile()
+        {
+            CreateMap<PreparePayFastOnceOffPaymentRequest.SplitPaymentConfig, AddPayFastOnceOffPayment.Command.SplitPaymentConfig>();
+        }
     }
 }

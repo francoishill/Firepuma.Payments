@@ -49,7 +49,7 @@ public class GetAllClientApplications
         return new OkObjectResult(mappedResults);
     }
 
-    [AutoMap(typeof(ClientAppConfig))]
+    [AutoMap(typeof(PayFastClientAppConfig))]
     private class ClientAppResponseDto
     {
         public string PaymentProviderName { get; set; }

@@ -1,34 +1,32 @@
 ﻿using System;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using Firepuma.PaymentsService.Abstractions.DTOs.Events;
-using Firepuma.PaymentsService.Abstractions.Infrastructure.Queues;
-using Firepuma.PaymentsService.Abstractions.ValueObjects;
+using Firepuma.PaymentsService.FunctionApp.PayFast.Commands;
 using Firepuma.PaymentsService.FunctionApp.PayFast.DTOs.Events;
-using Firepuma.PaymentsService.FunctionApp.PayFast.TableModels;
-using Microsoft.Azure.Cosmos.Table;
+using MediatR;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using PayFast;
 
 namespace Firepuma.PaymentsService.FunctionApp.PayFast.ServiceBusQueueFunctions;
 
-public static class ProcessPayFastItnBusMessage
+public class ProcessPayFastItnBusMessage
 {
+    private readonly IMediator _mediator;
+
+    public ProcessPayFastItnBusMessage(
+        IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
     [FunctionName("ProcessPayFastItnBusMessage")]
-    public static async Task RunAsync(
+    public async Task RunAsync(
         ILogger log,
         [ServiceBusTrigger("payfast-itn-requests", Connection = "FirepumaPaymentsServiceBus")] ServiceBusReceivedMessage busReceivedMessage,
-        [Table("PayFastItnTraces")] IAsyncCollector<PayFastItnTrace> itnTracesCollector,
-        [Table("PayFastOnceOffPayments")] CloudTable paymentsTable,
-        ServiceBusClient client,
         CancellationToken cancellationToken)
     {
-        var serviceBusClient = client; // we have to do this and cannot rename the parameter to serviceBusClient, otherwise the function fails to bind on startup
-
         var messageJson = busReceivedMessage.Body.ToString();
 
         log.LogInformation("C# ServiceBus queue trigger function processing message: {QueueMessage}", messageJson);
@@ -40,23 +38,25 @@ public static class ProcessPayFastItnBusMessage
             throw new Exception("Dto is null, unable to deserialize messageJson to PayFastPaymentItnValidatedEvent");
         }
 
+        var correlationId = busReceivedMessage.CorrelationId;
         var applicationId = dto.ApplicationId;
         var payFastRequest = dto.PayFastRequest;
 
-        var busMessageSender = serviceBusClient.CreateSender(QueueNameFormatter.GetPaymentUpdatedQueueName(applicationId));
-
         try
         {
-            var payfastNotificationJson = JsonConvert.SerializeObject(payFastRequest);
-            var traceRecord = new PayFastItnTrace(
-                applicationId,
-                payFastRequest.m_payment_id,
-                payFastRequest.pf_payment_id,
-                payfastNotificationJson,
-                dto.IncomingRequestUri);
+            var addTraceCommand = new AddPayFastItnTrace.Command
+            {
+                ApplicationId = applicationId,
+                PayFastRequest = payFastRequest,
+                IncomingRequestUri = dto.IncomingRequestUri,
+            };
 
-            await itnTracesCollector.AddAsync(traceRecord, cancellationToken);
-            await itnTracesCollector.FlushAsync(cancellationToken);
+            var addTraceResult = await _mediator.Send(addTraceCommand, cancellationToken);
+
+            if (!addTraceResult.IsSuccessful)
+            {
+                log.LogError("AddPayFastItnTrace command execution was unsuccessful, reason {Reason}, errors {Errors}", addTraceResult.FailedReason.ToString(), string.Join(", ", addTraceResult.FailedErrors));
+            }
         }
         catch (Exception exception)
         {
@@ -65,98 +65,22 @@ public static class ProcessPayFastItnBusMessage
 
         log.LogInformation("Payment status is {Status}", payFastRequest.payment_status);
 
-        var onceOffPayment = await LoadOnceOffPayment(log, paymentsTable, applicationId, payFastRequest.m_payment_id, cancellationToken);
-        if (onceOffPayment == null)
+        var command = new UpdatePayFastOnceOffPaymentStatus.Command
         {
-            log.LogCritical("Unable to load onceOffPayment for applicationId: {AppId} and paymentId: {PaymentId}, it was null", applicationId, payFastRequest.m_payment_id);
-            throw new Exception("Unable to load onceOffPayment");
-        }
+            CorrelationId = correlationId,
+            ApplicationId = applicationId,
+            PaymentId = payFastRequest.m_payment_id,
+            PaymentStatus = payFastRequest.payment_status,
+            RequestToken = payFastRequest.token,
+        };
 
-        if (payFastRequest.payment_status == PayFastStatics.CompletePaymentConfirmation)
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (!result.IsSuccessful)
         {
-            if (string.IsNullOrWhiteSpace(payFastRequest.token))
-            {
-                log.LogWarning("PayFast ITN for paymentId '{PaymentId}' does not have a payfastToken", payFastRequest.m_payment_id);
-            }
+            log.LogCritical("UpdatePayFastOnceOffPaymentStatus command execution was unsuccessful, reason {Reason}, errors {Errors}", result.FailedReason.ToString(), string.Join(", ", result.FailedErrors));
 
-            onceOffPayment.SetStatus(PayFastSubscriptionStatus.UpToDate);
-            onceOffPayment.PayfastPaymentToken = payFastRequest.token;
-        }
-        else if (payFastRequest.payment_status == PayFastStatics.CancelledPaymentConfirmation)
-        {
-            onceOffPayment.SetStatus(PayFastSubscriptionStatus.Cancelled);
-        }
-        else
-        {
-            throw new Exception("Unsupported status");
-        }
-
-        await SavePaymentAndAddServiceBusMessage(
-            log,
-            busReceivedMessage.CorrelationId,
-            paymentsTable,
-            busMessageSender,
-            onceOffPayment,
-            cancellationToken);
-    }
-
-    private static async Task<PayFastOnceOffPayment> LoadOnceOffPayment(
-        ILogger log,
-        CloudTable paymentsTable,
-        string applicationId,
-        string paymentId,
-        CancellationToken cancellationToken)
-    {
-        var retrieveOperation = TableOperation.Retrieve<PayFastOnceOffPayment>(applicationId, paymentId);
-        var loadResult = await paymentsTable.ExecuteAsync(retrieveOperation, cancellationToken);
-
-        if (loadResult.Result == null)
-        {
-            log.LogError("loadResult.Result was null for applicationId: {AppId} and paymentId: {PaymentId}", applicationId, paymentId);
-            return null;
-        }
-
-        return loadResult.Result as PayFastOnceOffPayment;
-    }
-
-    private static async Task SavePaymentAndAddServiceBusMessage(
-        ILogger log,
-        string correlationId,
-        CloudTable paymentsTable,
-        ServiceBusSender serviceBusSender,
-        PayFastOnceOffPayment onceOffPayment,
-        CancellationToken cancellationToken)
-    {
-        var replaceOperation = TableOperation.Replace(onceOffPayment);
-
-        try
-        {
-            await paymentsTable.ExecuteAsync(replaceOperation, cancellationToken);
-
-            var status = Enum.Parse<PayFastSubscriptionStatus>(onceOffPayment.Status);
-            
-            var paymentDto = new PayFastPaymentUpdatedEvent(
-                onceOffPayment.PaymentId,
-                status,
-                onceOffPayment.StatusChangedOn,
-                correlationId);
-
-            var messageJson = JsonConvert.SerializeObject(paymentDto);
-
-            var busMessage = new ServiceBusMessage(messageJson)
-            {
-                CorrelationId = correlationId,
-                ApplicationProperties =
-                {
-                    { "applicationId", onceOffPayment.ApplicationId }, // not really used now but add it for easier traceability
-                },
-            };
-            await serviceBusSender.SendMessageAsync(busMessage, cancellationToken);
-        }
-        catch (StorageException storageException) when (storageException.RequestInformation.HttpStatusCode == (int)HttpStatusCode.PreconditionFailed)
-        {
-            log.LogCritical(storageException, "Unable to update table due to ETag mismatch, exception message is: {Message}", storageException.Message);
-            throw new Exception($"Unable to update table due to ETag mismatch, exception message is: {storageException.Message}");
+            throw new Exception($"{result.FailedReason.ToString()}, {string.Join(", ", result.FailedErrors)}");
         }
     }
 }

@@ -9,7 +9,7 @@ public static class PayFastSettingsFactory
     public const string TRANSACTION_ID_QUERY_PARAM_NAME = "tx";
 
     public static PayFastPaymentSettings CreatePayFastSettings(
-        ClientAppConfig clientAppConfig,
+        PayFastClientAppConfig clientAppConfig,
         string backendNotifyUrl,
         string transactionId,
         string returnUrl,

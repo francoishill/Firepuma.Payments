@@ -17,11 +17,11 @@ public static class AddClientAppTableRecord
     public class Command : IRequest<Result>
     {
         public CloudTable CloudTable { get; set; }
-        public ClientAppConfig TableRow { get; set; }
+        public PayFastClientAppConfig TableRow { get; set; }
 
         public Command(
             CloudTable cloudTable,
-            ClientAppConfig tableRow)
+            PayFastClientAppConfig tableRow)
         {
             CloudTable = cloudTable;
             TableRow = tableRow;
@@ -32,7 +32,7 @@ public static class AddClientAppTableRecord
     {
         public string TableName { get; set; }
         public bool IsNew { get; set; }
-        public ClientAppConfig TableRow { get; set; }
+        public PayFastClientAppConfig TableRow { get; set; }
     }
 
 
@@ -78,13 +78,13 @@ public static class AddClientAppTableRecord
             return result;
         }
 
-        private async Task<ClientAppConfig> LoadClientAppConfig(
+        private async Task<PayFastClientAppConfig> LoadClientAppConfig(
             CloudTable table,
             string paymentProviderName,
             string applicationId,
             CancellationToken cancellationToken)
         {
-            var retrieveOperation = ClientAppConfig.GetRetrieveOperation(paymentProviderName, applicationId);
+            var retrieveOperation = PayFastClientAppConfig.GetRetrieveOperation(paymentProviderName, applicationId);
             var loadResult = await table.ExecuteAsync(retrieveOperation, cancellationToken);
 
             if (loadResult.Result == null)
@@ -95,7 +95,7 @@ public static class AddClientAppTableRecord
                 return null;
             }
 
-            return loadResult.Result as ClientAppConfig;
+            return loadResult.Result as PayFastClientAppConfig;
         }
     }
 }

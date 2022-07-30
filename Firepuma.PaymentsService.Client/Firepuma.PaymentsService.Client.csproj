@@ -6,6 +6,16 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <IsPackable>true</IsPackable>
+        <RepositoryUrl>https://github.com/francoishill/Firepuma-Payments-MicroService</RepositoryUrl>
+        <PackageTags>Payments, PayFast</PackageTags>
+        <Company>Firepuma</Company>
+        <Authors>Francois Hill</Authors>
+        <Description>This library can be used to interact with the PaymentsService function app.</Description>
+        <VersionPrefix>0.0.1</VersionPrefix>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="2.1.0" />

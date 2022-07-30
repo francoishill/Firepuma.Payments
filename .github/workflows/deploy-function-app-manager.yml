@@ -1,7 +1,9 @@
 ﻿name: Deploy FunctionAppManager
 
 on:
-  [push]
+  push:
+    branches:
+      - main
 
 env:
   AZURE_FUNCTIONAPP_NAME: 'Firepuma-PaymentsService-Manager'

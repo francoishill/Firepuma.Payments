@@ -24,7 +24,7 @@ public class ProcessPayFastItnBusMessage
     [FunctionName("ProcessPayFastItnBusMessage")]
     public async Task RunAsync(
         ILogger log,
-        [ServiceBusTrigger("payfast-itn-requests", Connection = "FirepumaPaymentsServiceBus")] ServiceBusReceivedMessage busReceivedMessage,
+        [ServiceBusTrigger("%QueueName%", Connection = "ServiceBus")] ServiceBusReceivedMessage busReceivedMessage,
         CancellationToken cancellationToken)
     {
         var messageJson = busReceivedMessage.Body.ToString();

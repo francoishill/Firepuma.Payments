@@ -60,8 +60,8 @@ public class Startup : FunctionsStartup
 
     private static void AddServiceBus(IServiceCollection services)
     {
-        var connectionString = GetRequiredEnvironmentVariable("FirepumaPaymentsServiceBus");
-        var queueName = GetRequiredEnvironmentVariable("FirepumaPaymentsQueueName");
+        var connectionString = GetRequiredEnvironmentVariable("ServiceBus");
+        var queueName = GetRequiredEnvironmentVariable("QueueName");
 
         services.AddSingleton<ServiceBusClient>(_ =>
             new ServiceBusClient(connectionString));

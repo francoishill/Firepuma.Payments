@@ -14,11 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\PaymentsService.Abstractions\PaymentsService.Abstractions.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="ServiceBus" />
+      <ProjectReference Include="..\Firepuma.PaymentsService.Abstractions\Firepuma.PaymentsService.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>

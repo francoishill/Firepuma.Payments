@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Azure;
-using PaymentsService.Client;
+﻿using Firepuma.PaymentsService.Client;
+using Microsoft.Extensions.Azure;
 using Sample.PaymentsClientApp.Simple.Config;
 using Sample.PaymentsClientApp.Simple.Config.Validation;
 using Sample.PaymentsClientApp.Simple.Services;

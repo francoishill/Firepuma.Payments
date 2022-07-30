@@ -1,6 +1,6 @@
 #pragma warning disable CS8618
 
-namespace PaymentsService.Client.Configuration;
+namespace Firepuma.PaymentsService.Client.Configuration;
 
 public class PaymentServiceClientOptions
 {

@@ -3,7 +3,7 @@ using Firepuma.PaymentsService.Abstractions.DTOs.Responses;
 
 // ReSharper disable UnusedMember.Global
 
-namespace PaymentsService.Client.HttpClient;
+namespace Firepuma.PaymentsService.Client.HttpClient;
 
 public interface IPaymentsServiceClient
 {

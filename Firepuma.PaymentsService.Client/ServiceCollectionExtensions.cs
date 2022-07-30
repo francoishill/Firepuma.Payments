@@ -1,11 +1,11 @@
 ﻿using Firepuma.PaymentsService.Abstractions.Constants;
+using Firepuma.PaymentsService.Client.Configuration;
+using Firepuma.PaymentsService.Client.HttpClient;
 using Microsoft.Extensions.DependencyInjection;
-using PaymentsService.Client.Configuration;
-using PaymentsService.Client.HttpClient;
 
 // ReSharper disable UnusedMember.Global
 
-namespace PaymentsService.Client;
+namespace Firepuma.PaymentsService.Client;
 
 // ReSharper disable once CheckNamespace
 public static class ServiceCollectionExtensions

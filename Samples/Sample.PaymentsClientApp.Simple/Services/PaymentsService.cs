@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Firepuma.PaymentsService.Abstractions.DTOs.Requests;
-using PaymentsService.Client.HttpClient;
+using Firepuma.PaymentsService.Client.HttpClient;
 using Sample.PaymentsClientApp.Simple.Services.Results;
 
 namespace Sample.PaymentsClientApp.Simple.Services;

@@ -2,12 +2,12 @@
 using Firepuma.PaymentsService.Abstractions.DTOs.Requests;
 using Firepuma.PaymentsService.Abstractions.DTOs.Responses;
 using Firepuma.PaymentsService.Abstractions.Infrastructure.Validation;
+using Firepuma.PaymentsService.Client.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using PaymentsService.Client.Configuration;
 
-namespace PaymentsService.Client.HttpClient;
+namespace Firepuma.PaymentsService.Client.HttpClient;
 
 internal class PaymentsServiceClient : IPaymentsServiceClient
 {

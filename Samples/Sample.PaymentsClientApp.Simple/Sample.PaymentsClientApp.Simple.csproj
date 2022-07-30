@@ -18,8 +18,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\PaymentsService.Abstractions\PaymentsService.Abstractions.csproj" />
-      <ProjectReference Include="..\..\PaymentsService.Client\PaymentsService.Client.csproj" />
+      <ProjectReference Include="..\..\Firepuma.PaymentsService.Abstractions\Firepuma.PaymentsService.Abstractions.csproj" />
+      <ProjectReference Include="..\..\Firepuma.PaymentsService.Client\Firepuma.PaymentsService.Client.csproj" />
     </ItemGroup>
 
 </Project>

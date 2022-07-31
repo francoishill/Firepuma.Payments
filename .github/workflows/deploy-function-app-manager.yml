@@ -22,15 +22,24 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: 'Resolve Project Dependencies Using Dotnet'
-        shell: pwsh
+      - name: Install dependencies
         run: |
-          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-          dotnet build --configuration Release --output ./output
-          popd
-      - name: 'Run Azure Functions Action'
+          dotnet restore Firepuma.PaymentsService.Abstractions
+          dotnet restore Firepuma.PaymentsService.Client
+          dotnet restore Firepuma.PaymentsService.FunctionApp
+          dotnet restore Firepuma.PaymentsService.FunctionAppManager
+          dotnet restore Firepuma.PaymentsService.Tests
+
+      - name: Build FunctionApp
+        run: dotnet build --configuration Release --no-restore --output ./output
+        working-directory: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+
+      - name: Test
+        run: dotnet test --no-restore
+
+      - name: 'Deploy FunctionApp'
         uses: Azure/functions-action@v1
-        id: fa
+        id: deploy_functionapp
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
           package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'

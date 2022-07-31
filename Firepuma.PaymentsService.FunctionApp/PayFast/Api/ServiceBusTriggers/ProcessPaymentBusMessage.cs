@@ -9,7 +9,7 @@ using MediatR;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.ServiceBusQueueFunctions;
+namespace Firepuma.PaymentsService.FunctionApp.PayFast.Api.ServiceBusTriggers;
 
 public class ProcessPaymentBusMessage
 {

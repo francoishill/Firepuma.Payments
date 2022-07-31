@@ -18,7 +18,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.HttpFunctions;
+namespace Firepuma.PaymentsService.FunctionApp.PayFast.Api.HttpFunctions;
 
 public class PreparePayFastOnceOffPayment
 {

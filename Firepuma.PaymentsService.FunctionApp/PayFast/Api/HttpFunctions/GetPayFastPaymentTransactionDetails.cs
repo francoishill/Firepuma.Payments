@@ -14,7 +14,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.HttpFunctions;
+namespace Firepuma.PaymentsService.FunctionApp.PayFast.Api.HttpFunctions;
 
 public class GetPayFastPaymentTransactionDetails
 {

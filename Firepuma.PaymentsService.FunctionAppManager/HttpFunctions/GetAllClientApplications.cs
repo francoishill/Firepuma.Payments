@@ -36,7 +36,7 @@ public class GetAllClientApplications
         [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]
         HttpRequest req,
         ILogger log,
-        [Table("PaymentsConfigPerApplication")] CloudTable clientAppConfigTable,
+        [Table("PayFastApplicationConfigs")] CloudTable clientAppConfigTable,
         CancellationToken cancellationToken)
     {
         log.LogInformation("C# HTTP trigger function processed a request");

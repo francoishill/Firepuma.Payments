@@ -7,7 +7,7 @@ on:
 
 env:
   AZURE_FUNCTIONAPP_NAME: 'Firepuma-PaymentsService'
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'PaymentsService.FunctionApp'
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'Firepuma.PaymentsService.FunctionApp'
   DOTNET_VERSION: '6.0'
 
 jobs:

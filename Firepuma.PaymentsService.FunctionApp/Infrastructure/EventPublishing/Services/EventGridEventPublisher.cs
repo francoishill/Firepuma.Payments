@@ -11,12 +11,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.EventPublishing;
+namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.EventPublishing.Services;
 
-public class EventPublisher
+public class EventGridEventPublisher : IEventPublisher
 {
     private readonly IOptions<EventGridOptions> _eventGridOptions;
-    private readonly ILogger<EventPublisher> _logger;
+    private readonly ILogger<EventGridEventPublisher> _logger;
     private readonly EventGridPublisherClient _eventGridPublisherClient;
 
     private readonly JsonObjectSerializer _jsonObjectSerializer = new(
@@ -25,9 +25,9 @@ public class EventPublisher
             Converters = { new JsonStringEnumConverter() }
         });
 
-    public EventPublisher(
+    public EventGridEventPublisher(
         IOptions<EventGridOptions> eventGridOptions,
-        ILogger<EventPublisher> logger,
+        ILogger<EventGridEventPublisher> logger,
         EventGridPublisherClient eventGridPublisherClient)
     {
         _eventGridOptions = eventGridOptions;
@@ -48,13 +48,21 @@ public class EventPublisher
             var serializedEventData = await _jsonObjectSerializer.SerializeAsync(eventData, cancellationToken: cancellationToken);
             var eventGridEvent = new EventGridEvent(eventGridSubject, eventType, eventVersion, serializedEventData);
 
+            _logger.LogInformation(
+                "Sending event with eventId {EventId}, eventType {Type}, subject {Subject}, version {Version}, topic {Topic}",
+                eventGridEvent.Id, eventType, eventGridSubject, eventVersion, eventGridEvent.Topic);
+
             await _eventGridPublisherClient.SendEventAsync(eventGridEvent, cancellationToken);
+
+            _logger.LogInformation(
+                "Sent event with eventId {EventId}, eventType {Type}, subject {Subject}, version {Version}, topic {Topic}",
+                eventGridEvent.Id, eventType, eventGridSubject, eventVersion, eventGridEvent.Topic);
         }
         catch (Exception exception)
         {
             _logger.LogCritical(
                 exception,
-                "Unable to publish event grid message, error: {ExceptionMessage}, event data: {SerializeObject}, stack trace: {ExceptionStackTrace}",
+                "Unable to publish event, error: {ExceptionMessage}, event data: {SerializeObject}, stack trace: {ExceptionStackTrace}",
                 exception.Message, JsonConvert.SerializeObject(eventData, new Newtonsoft.Json.Converters.StringEnumConverter()), exception.StackTrace);
             throw;
         }

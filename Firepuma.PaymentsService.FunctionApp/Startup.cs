@@ -5,8 +5,9 @@ using Azure.Messaging.EventGrid;
 using Azure.Messaging.ServiceBus;
 using Firepuma.PaymentsService.FunctionApp;
 using Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.EventPublishing;
 using Firepuma.PaymentsService.FunctionApp.Infrastructure.EventPublishing.Config;
+using Firepuma.PaymentsService.FunctionApp.Infrastructure.EventPublishing.Services;
+using Firepuma.PaymentsService.FunctionApp.Infrastructure.MessageBus.Services;
 using Firepuma.PaymentsService.FunctionApp.Infrastructure.PipelineBehaviors;
 using Firepuma.PaymentsService.FunctionApp.PayFast;
 using MediatR;
@@ -30,7 +31,7 @@ public class Startup : FunctionsStartup
         AddAutoMapper(services);
         AddMediator(services);
         AddCloudStorageAccount(services);
-        AddServiceBus(services);
+        AddServiceBusPaymentsMessageSender(services);
         AddEventPublisher(services);
 
         services.AddCommandHandling();
@@ -58,7 +59,7 @@ public class Startup : FunctionsStartup
         services.AddSingleton<CloudStorageAccount>(CloudStorageAccount.Parse(storageConnectionString));
     }
 
-    private static void AddServiceBus(IServiceCollection services)
+    private static void AddServiceBusPaymentsMessageSender(IServiceCollection services)
     {
         var connectionString = GetRequiredEnvironmentVariable("ServiceBus");
         var queueName = GetRequiredEnvironmentVariable("QueueName");
@@ -71,6 +72,8 @@ public class Startup : FunctionsStartup
             var serviceBusClient = s.GetRequiredService<ServiceBusClient>();
             return serviceBusClient.CreateSender(queueName);
         });
+
+        services.AddSingleton<IPaymentsMessageSender, ServiceBusPaymentsMessageSender>();
     }
 
     private static void AddEventPublisher(IServiceCollection services)
@@ -94,7 +97,7 @@ public class Startup : FunctionsStartup
                 new AzureKeyCredential(options.Value.EventGridAccessKey));
         });
 
-        services.AddSingleton<EventPublisher>();
+        services.AddSingleton<IEventPublisher, EventGridEventPublisher>();
     }
 
     private static string GetRequiredEnvironmentVariable(string key)

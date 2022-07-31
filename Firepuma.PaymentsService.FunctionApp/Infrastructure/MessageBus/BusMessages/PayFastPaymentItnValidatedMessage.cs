@@ -1,15 +1,15 @@
 ﻿using PayFast;
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.DTOs.Events;
+namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.MessageBus.BusMessages;
 
-public class PayFastPaymentItnValidatedEvent
+public class PayFastPaymentItnValidatedMessage : IPaymentBusMessage
 {
     public string ApplicationId { get; set; }
     public string PaymentId { get; set; }
     public PayFastNotify PayFastRequest { get; set; }
     public string IncomingRequestUri { get; set; }
 
-    public PayFastPaymentItnValidatedEvent(
+    public PayFastPaymentItnValidatedMessage(
         string applicationId,
         string paymentId,
         PayFastNotify payFastRequest,

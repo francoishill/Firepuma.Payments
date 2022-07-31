@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Firepuma.PaymentsService.Abstractions.Events.EventGridMessages;
 using Firepuma.PaymentsService.Abstractions.ValueObjects;
 using Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.EventPublishing;
+using Firepuma.PaymentsService.FunctionApp.Infrastructure.EventPublishing.Services;
 using Firepuma.PaymentsService.FunctionApp.PayFast.TableModels;
 using Firepuma.PaymentsService.FunctionApp.PayFast.TableProviders;
 using MediatR;
@@ -73,12 +73,12 @@ public static class UpdatePayFastOnceOffPaymentStatus
     {
         private readonly ILogger<Handler> _logger;
         private readonly PayFastOnceOffPaymentsTableProvider _payFastOnceOffPaymentsTableProvider;
-        private readonly EventPublisher _eventPublisher;
+        private readonly IEventPublisher _eventPublisher;
 
         public Handler(
             ILogger<Handler> logger,
             PayFastOnceOffPaymentsTableProvider payFastOnceOffPaymentsTableProvider,
-            EventPublisher eventPublisher)
+            IEventPublisher eventPublisher)
         {
             _logger = logger;
             _payFastOnceOffPaymentsTableProvider = payFastOnceOffPaymentsTableProvider;

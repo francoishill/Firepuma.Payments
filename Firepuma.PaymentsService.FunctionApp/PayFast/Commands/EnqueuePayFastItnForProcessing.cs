@@ -1,14 +1,13 @@
 ﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure.Messaging.ServiceBus;
 using Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling;
+using Firepuma.PaymentsService.FunctionApp.Infrastructure.MessageBus.BusMessages;
+using Firepuma.PaymentsService.FunctionApp.Infrastructure.MessageBus.Services;
 using Firepuma.PaymentsService.FunctionApp.PayFast.Config;
-using Firepuma.PaymentsService.FunctionApp.PayFast.DTOs.Events;
 using Firepuma.PaymentsService.FunctionApp.PayFast.Factories;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using PayFast;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -68,17 +67,17 @@ public static class EnqueuePayFastItnForProcessing
     {
         private readonly ILogger<Handler> _logger;
         private readonly PayFastClientAppConfigProvider _appConfigProvider;
-        private readonly ServiceBusSender _serviceBusSender;
+        private readonly IPaymentsMessageSender _paymentsMessageSender;
 
 
         public Handler(
             ILogger<Handler> logger,
             PayFastClientAppConfigProvider appConfigProvider,
-            ServiceBusSender serviceBusSender)
+            IPaymentsMessageSender paymentsMessageSender)
         {
-            _appConfigProvider = appConfigProvider;
-            _serviceBusSender = serviceBusSender;
             _logger = logger;
+            _appConfigProvider = appConfigProvider;
+            _paymentsMessageSender = paymentsMessageSender;
         }
 
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
@@ -150,18 +149,16 @@ public static class EnqueuePayFastItnForProcessing
                 return Result.Failed(Result.FailureReason.ValidationFailed, $"Invalid PayFast ITN payment status '{payFastRequest.payment_status}'");
             }
 
-            var messageDto = new PayFastPaymentItnValidatedEvent(
+            var messageDto = new PayFastPaymentItnValidatedMessage(
                 applicationId,
                 payFastRequest.m_payment_id,
                 payFastRequest,
                 command.IncomingRequestUri);
 
-            var busMessage = new ServiceBusMessage(JsonConvert.SerializeObject(messageDto, new Newtonsoft.Json.Converters.StringEnumConverter()))
-            {
-                CorrelationId = command.CorrelationId,
-            };
-
-            await _serviceBusSender.SendMessageAsync(busMessage, cancellationToken);
+            await _paymentsMessageSender.SendAsync(
+                messageDto,
+                command.CorrelationId,
+                cancellationToken);
 
             return Result.Success();
         }

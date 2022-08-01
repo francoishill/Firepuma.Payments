@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.PaymentsService.FunctionApp.Infrastructure.Exceptions;
 using Firepuma.PaymentsService.FunctionApp.PayFast.Config;
 using Firepuma.PaymentsService.FunctionApp.PayFast.TableModels;
 using Firepuma.PaymentsService.FunctionApp.PayFast.TableProviders;
@@ -60,6 +61,7 @@ public static class GetPayFastOnceOffPayment
         public enum FailureReason
         {
             OnceOffPaymentDoesNotExist,
+            ApplicationSecretInvalid,
         }
     }
 
@@ -85,10 +87,17 @@ public static class GetPayFastOnceOffPayment
             var applicationId = query.ApplicationId;
             var paymentId = query.PaymentId;
 
-            await _appConfigProvider.ValidateApplicationSecretAsync(
-                applicationId,
-                query.ApplicationSecret,
-                cancellationToken);
+            try
+            {
+                await _appConfigProvider.ValidateApplicationSecretAsync(
+                    applicationId,
+                    query.ApplicationSecret,
+                    cancellationToken);
+            }
+            catch (ApplicationSecretInvalidException)
+            {
+                return Result.Failed(Result.FailureReason.ApplicationSecretInvalid, "Application secret is invalid");
+            }
 
             var onceOffPayment = await LoadOnceOffPayment(applicationId, paymentId, cancellationToken);
             if (onceOffPayment == null)

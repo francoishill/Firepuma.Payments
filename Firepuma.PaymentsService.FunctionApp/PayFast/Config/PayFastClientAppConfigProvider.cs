@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.PaymentsService.FunctionApp.Infrastructure.Exceptions;
 using Firepuma.PaymentsService.FunctionApp.Infrastructure.TableStorage.Helpers;
 using Firepuma.PaymentsService.FunctionApp.PayFast.TableProviders;
 using Firepuma.PaymentsService.FunctionApp.PayFast.Validation;
@@ -51,7 +52,7 @@ public class PayFastClientAppConfigProvider
 
         if (applicationConfig.ApplicationSecret != appSecret)
         {
-            throw new Exception("ApplicationSecret is invalid");
+            throw new ApplicationSecretInvalidException("ApplicationSecret is invalid");
         }
 
         return applicationConfig;
@@ -66,7 +67,7 @@ public class PayFastClientAppConfigProvider
 
         if (applicationConfig.ApplicationSecret != appSecret)
         {
-            throw new Exception("ApplicationSecret is invalid");
+            throw new ApplicationSecretInvalidException("ApplicationSecret is invalid");
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.PaymentsService.Implementations.Config;
+using Firepuma.Payments.Implementations.Config;
 using MediatR;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 // ReSharper disable UnusedType.Global
 // ReSharper disable RedundantNameQualifier
 
-namespace Firepuma.PaymentsService.FunctionAppManager.Commands;
+namespace Firepuma.Payments.FunctionAppManager.Commands;
 
 public static class AddClientAppTableRecord
 {

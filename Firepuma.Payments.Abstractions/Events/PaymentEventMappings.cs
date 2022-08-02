@@ -1,19 +1,19 @@
 using Azure.Messaging.EventGrid;
-using Firepuma.PaymentsService.Abstractions.Events.EventGridMessages;
+using Firepuma.Payments.Abstractions.Events.EventGridMessages;
 using Newtonsoft.Json;
 
-namespace Firepuma.PaymentsService.Abstractions.Events;
+namespace Firepuma.Payments.Abstractions.Events;
 
 public static class PaymentEventMappings
 {
     private static readonly IReadOnlyDictionary<Type, string> _eventTypeNameMap = new Dictionary<Type, string>
     {
-        [typeof(PayFastPaymentUpdatedEvent)] = "Firepuma.PaymentsService.PayFastPaymentUpdated",
+        [typeof(PayFastPaymentUpdatedEvent)] = "Firepuma.Payments.PayFastPaymentUpdated",
     };
 
     private static readonly IReadOnlyDictionary<string, Func<BinaryData, object>> _eventDeserializers = new Dictionary<string, Func<BinaryData, object>>
     {
-        ["Firepuma.PaymentsService.PayFastPaymentUpdated"] = eventBinaryData => JsonConvert.DeserializeObject<PayFastPaymentUpdatedEvent>(eventBinaryData.ToString()),
+        ["Firepuma.Payments.PayFastPaymentUpdated"] = eventBinaryData => JsonConvert.DeserializeObject<PayFastPaymentUpdatedEvent>(eventBinaryData.ToString()),
     };
 
     public static string GetEventTypeName<T>(T eventData) where T : IPaymentEventGridMessage

@@ -1,4 +1,4 @@
-﻿namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.EventPublishing.Config;
+﻿namespace Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Config;
 
 public class EventGridOptions
 {

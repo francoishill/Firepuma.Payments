@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Firepuma.PaymentsService.FunctionAppManager.Queries;
-using Firepuma.PaymentsService.Implementations.Config;
+using Firepuma.Payments.FunctionAppManager.Queries;
+using Firepuma.Payments.Implementations.Config;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ClassNeverInstantiated.Local
 
-namespace Firepuma.PaymentsService.FunctionAppManager.HttpFunctions;
+namespace Firepuma.Payments.FunctionAppManager.HttpFunctions;
 
 public class GetAllClientApplications
 {

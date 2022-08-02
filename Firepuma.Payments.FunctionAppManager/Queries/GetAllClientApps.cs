@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.PaymentsService.Implementations.Config;
+using Firepuma.Payments.Implementations.Config;
 using MediatR;
 using Microsoft.Azure.Cosmos.Table;
 
 // ReSharper disable UnusedType.Global
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace Firepuma.PaymentsService.FunctionAppManager.Queries;
+namespace Firepuma.Payments.FunctionAppManager.Queries;
 
 public static class GetAllClientApps
 {

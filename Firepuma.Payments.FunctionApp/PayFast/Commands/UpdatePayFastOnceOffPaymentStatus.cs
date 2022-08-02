@@ -2,12 +2,12 @@
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.PaymentsService.Abstractions.Events.EventGridMessages;
-using Firepuma.PaymentsService.Abstractions.ValueObjects;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.EventPublishing.Services;
-using Firepuma.PaymentsService.FunctionApp.PayFast.TableModels;
-using Firepuma.PaymentsService.FunctionApp.PayFast.TableProviders;
+using Firepuma.Payments.Abstractions.Events.EventGridMessages;
+using Firepuma.Payments.Abstractions.ValueObjects;
+using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
+using Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Services;
+using Firepuma.Payments.FunctionApp.PayFast.TableModels;
+using Firepuma.Payments.FunctionApp.PayFast.TableProviders;
 using MediatR;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
@@ -19,7 +19,7 @@ using PayFast;
 // ReSharper disable UnusedType.Global
 // ReSharper disable ClassNeverInstantiated.Local
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.Commands;
+namespace Firepuma.Payments.FunctionApp.PayFast.Commands;
 
 public static class UpdatePayFastOnceOffPaymentStatus
 {

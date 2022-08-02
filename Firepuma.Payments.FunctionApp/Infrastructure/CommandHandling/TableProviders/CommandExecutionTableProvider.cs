@@ -1,7 +1,7 @@
-﻿using Firepuma.PaymentsService.FunctionApp.Infrastructure.TableStorage;
+﻿using Firepuma.Payments.FunctionApp.Infrastructure.TableStorage;
 using Microsoft.Azure.Cosmos.Table;
 
-namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling.TableProviders;
+namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableProviders;
 
 public class CommandExecutionTableProvider : BaseTableProvider
 {

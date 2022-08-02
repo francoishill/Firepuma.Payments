@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Azure.Cosmos.Table;
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.TableModels;
+namespace Firepuma.Payments.FunctionApp.PayFast.TableModels;
 
 public class PayFastItnTrace : TableEntity
 {

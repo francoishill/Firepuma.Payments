@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 
-namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling.TableModels.Helpers;
+namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels.Helpers;
 
 public static class CommandTypeNameHelpers
 {

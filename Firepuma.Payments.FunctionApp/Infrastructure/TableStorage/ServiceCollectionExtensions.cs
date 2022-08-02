@@ -2,7 +2,7 @@
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.TableStorage;
+namespace Firepuma.Payments.FunctionApp.Infrastructure.TableStorage;
 
 public static class ServiceCollectionExtensions
 {

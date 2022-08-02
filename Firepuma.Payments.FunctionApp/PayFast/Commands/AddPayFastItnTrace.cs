@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling;
-using Firepuma.PaymentsService.FunctionApp.PayFast.TableModels;
-using Firepuma.PaymentsService.FunctionApp.PayFast.TableProviders;
+using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
+using Firepuma.Payments.FunctionApp.PayFast.TableModels;
+using Firepuma.Payments.FunctionApp.PayFast.TableProviders;
 using MediatR;
 using Microsoft.Azure.Cosmos.Table;
 using Newtonsoft.Json;
@@ -14,7 +14,7 @@ using PayFast;
 // ReSharper disable UnusedType.Global
 // ReSharper disable ClassNeverInstantiated.Local
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.Commands;
+namespace Firepuma.Payments.FunctionApp.PayFast.Commands;
 
 public static class AddPayFastItnTrace
 {

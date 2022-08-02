@@ -1,8 +1,8 @@
 ﻿using System;
-using Firepuma.PaymentsService.Abstractions.ValueObjects;
+using Firepuma.Payments.Abstractions.ValueObjects;
 using Microsoft.Azure.Cosmos.Table;
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.TableModels;
+namespace Firepuma.Payments.FunctionApp.PayFast.TableModels;
 
 public class PayFastOnceOffPayment : TableEntity
 {

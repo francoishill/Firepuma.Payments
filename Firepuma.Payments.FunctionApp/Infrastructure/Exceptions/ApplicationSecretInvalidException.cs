@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.Exceptions;
+namespace Firepuma.Payments.FunctionApp.Infrastructure.Exceptions;
 
 [Serializable]
 public class ApplicationSecretInvalidException : Exception

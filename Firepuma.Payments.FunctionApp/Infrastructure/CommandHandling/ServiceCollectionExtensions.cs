@@ -1,10 +1,10 @@
-﻿using Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling.PipelineBehaviors;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling.TableProviders;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.TableStorage;
+﻿using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.PipelineBehaviors;
+using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableProviders;
+using Firepuma.Payments.FunctionApp.Infrastructure.TableStorage;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling;
+namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
 
 public static class ServiceCollectionExtensions
 {

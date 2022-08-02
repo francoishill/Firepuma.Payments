@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using Azure.Messaging.ServiceBus;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.MessageBus.BusMessages;
+using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.BusMessages;
 using Newtonsoft.Json;
 
 // ReSharper disable InconsistentNaming
 
-namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.MessageBus.Mappings;
+namespace Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Mappings;
 
 public static class PaymentBusMessageMappings
 {
-    public const string BUS_MESSAGE_TYPE_PROPERTY_KEY = "Firepuma.PaymentsService.BusMessageType";
+    public const string BUS_MESSAGE_TYPE_PROPERTY_KEY = "Firepuma.Payments.BusMessageType";
 
     private static class MessageTypeNames
     {

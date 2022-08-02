@@ -5,9 +5,9 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.PaymentsService.FunctionApp.PayFast.Commands;
-using Firepuma.PaymentsService.FunctionApp.PayFast.Factories;
-using Firepuma.PaymentsService.Implementations.Factories;
+using Firepuma.Payments.FunctionApp.PayFast.Commands;
+using Firepuma.Payments.FunctionApp.PayFast.Factories;
+using Firepuma.Payments.Implementations.Factories;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -17,7 +17,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using PayFast;
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.Api.HttpFunctions;
+namespace Firepuma.Payments.FunctionApp.PayFast.Api.HttpFunctions;
 
 public class ValidateAndStorePayFastItn
 {

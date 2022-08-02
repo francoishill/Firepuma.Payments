@@ -3,13 +3,13 @@ using AutoMapper;
 using Azure;
 using Azure.Messaging.EventGrid;
 using Azure.Messaging.ServiceBus;
-using Firepuma.PaymentsService.FunctionApp;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.EventPublishing.Config;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.EventPublishing.Services;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.MessageBus.Services;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.PipelineBehaviors;
-using Firepuma.PaymentsService.FunctionApp.PayFast;
+using Firepuma.Payments.FunctionApp;
+using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
+using Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Config;
+using Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Services;
+using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Services;
+using Firepuma.Payments.FunctionApp.Infrastructure.PipelineBehaviors;
+using Firepuma.Payments.FunctionApp.PayFast;
 using MediatR;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
@@ -20,7 +20,7 @@ using Microsoft.Extensions.Options;
 
 [assembly: FunctionsStartup(typeof(Startup))]
 
-namespace Firepuma.PaymentsService.FunctionApp;
+namespace Firepuma.Payments.FunctionApp;
 
 public class Startup : FunctionsStartup
 {

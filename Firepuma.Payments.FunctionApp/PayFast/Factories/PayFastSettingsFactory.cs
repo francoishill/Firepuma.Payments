@@ -1,8 +1,8 @@
 ﻿using System.Net;
-using Firepuma.PaymentsService.FunctionApp.PayFast.ValueObjects;
-using Firepuma.PaymentsService.Implementations.Config;
+using Firepuma.Payments.FunctionApp.PayFast.ValueObjects;
+using Firepuma.Payments.Implementations.Config;
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.Factories;
+namespace Firepuma.Payments.FunctionApp.PayFast.Factories;
 
 public static class PayFastSettingsFactory
 {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Firepuma.PaymentsService.Abstractions.Infrastructure.Validation;
+namespace Firepuma.Payments.Abstractions.Infrastructure.Validation;
 
 public static class ValidationHelpers
 {

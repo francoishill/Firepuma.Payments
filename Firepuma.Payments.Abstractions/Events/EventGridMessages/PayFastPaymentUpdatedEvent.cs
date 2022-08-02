@@ -1,6 +1,6 @@
-﻿using Firepuma.PaymentsService.Abstractions.ValueObjects;
+﻿using Firepuma.Payments.Abstractions.ValueObjects;
 
-namespace Firepuma.PaymentsService.Abstractions.Events.EventGridMessages;
+namespace Firepuma.Payments.Abstractions.Events.EventGridMessages;
 
 public class PayFastPaymentUpdatedEvent : IPaymentEventGridMessage
 {

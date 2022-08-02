@@ -1,17 +1,17 @@
 ﻿using System;
 using AutoMapper;
-using Firepuma.PaymentsService.FunctionAppManager;
-using Firepuma.PaymentsService.FunctionAppManager.Infrastructure.Config;
-using Firepuma.PaymentsService.FunctionAppManager.Infrastructure.Constants;
-using Firepuma.PaymentsService.FunctionAppManager.Infrastructure.Helpers;
-using Firepuma.PaymentsService.FunctionAppManager.Infrastructure.PipelineBehaviors;
+using Firepuma.Payments.FunctionAppManager;
+using Firepuma.Payments.FunctionAppManager.Infrastructure.Config;
+using Firepuma.Payments.FunctionAppManager.Infrastructure.Constants;
+using Firepuma.Payments.FunctionAppManager.Infrastructure.Helpers;
+using Firepuma.Payments.FunctionAppManager.Infrastructure.PipelineBehaviors;
 using MediatR;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: FunctionsStartup(typeof(Startup))]
 
-namespace Firepuma.PaymentsService.FunctionAppManager;
+namespace Firepuma.Payments.FunctionAppManager;
 
 public class Startup : FunctionsStartup
 {

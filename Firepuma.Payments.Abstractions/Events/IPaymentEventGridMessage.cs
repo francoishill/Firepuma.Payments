@@ -1,4 +1,4 @@
-﻿namespace Firepuma.PaymentsService.Abstractions.Events;
+﻿namespace Firepuma.Payments.Abstractions.Events;
 
 public interface IPaymentEventGridMessage
 {

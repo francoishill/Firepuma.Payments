@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Firepuma.PaymentsService.Implementations.Factories;
+namespace Firepuma.Payments.Implementations.Factories;
 
 public static class HttpResponseFactory
 {

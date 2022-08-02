@@ -4,12 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.PaymentsService.Abstractions.DTOs.Requests;
-using Firepuma.PaymentsService.Abstractions.Infrastructure.Validation;
-using Firepuma.PaymentsService.FunctionAppManager.Commands;
-using Firepuma.PaymentsService.FunctionAppManager.Infrastructure.Helpers;
-using Firepuma.PaymentsService.Implementations.Config;
-using Firepuma.PaymentsService.Implementations.Factories;
+using Firepuma.Payments.Abstractions.DTOs.Requests;
+using Firepuma.Payments.Abstractions.Infrastructure.Validation;
+using Firepuma.Payments.FunctionAppManager.Commands;
+using Firepuma.Payments.FunctionAppManager.Infrastructure.Helpers;
+using Firepuma.Payments.Implementations.Config;
+using Firepuma.Payments.Implementations.Factories;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +21,7 @@ using Newtonsoft.Json;
 
 // ReSharper disable RedundantNameQualifier
 
-namespace Firepuma.PaymentsService.FunctionAppManager.HttpFunctions;
+namespace Firepuma.Payments.FunctionAppManager.HttpFunctions;
 
 public class CreatePayFastClientApplication
 {

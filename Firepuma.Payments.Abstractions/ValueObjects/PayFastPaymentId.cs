@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
 
-namespace Firepuma.PaymentsService.Abstractions.ValueObjects;
+namespace Firepuma.Payments.Abstractions.ValueObjects;
 
 [System.Text.Json.Serialization.JsonConverter(typeof(PayFastPaymentIdSystemJsonConverter))]
 [Newtonsoft.Json.JsonConverter(typeof(PayFastPaymentIdNewtonsoftJsonConverter))]

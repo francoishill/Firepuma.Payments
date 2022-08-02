@@ -2,13 +2,13 @@
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling.TableModels.Attributes;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.Exceptions;
-using Firepuma.PaymentsService.FunctionApp.PayFast.Config;
-using Firepuma.PaymentsService.FunctionApp.PayFast.Factories;
-using Firepuma.PaymentsService.FunctionApp.PayFast.TableModels;
-using Firepuma.PaymentsService.FunctionApp.PayFast.TableProviders;
+using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
+using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels.Attributes;
+using Firepuma.Payments.FunctionApp.Infrastructure.Exceptions;
+using Firepuma.Payments.FunctionApp.PayFast.Config;
+using Firepuma.Payments.FunctionApp.PayFast.Factories;
+using Firepuma.Payments.FunctionApp.PayFast.TableModels;
+using Firepuma.Payments.FunctionApp.PayFast.TableProviders;
 using MediatR;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
@@ -20,7 +20,7 @@ using Microsoft.Extensions.Options;
 // ReSharper disable UnusedType.Global
 // ReSharper disable ClassNeverInstantiated.Local
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.Commands;
+namespace Firepuma.Payments.FunctionApp.PayFast.Commands;
 
 public static class AddPayFastOnceOffPayment
 {

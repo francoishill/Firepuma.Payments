@@ -2,11 +2,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Firepuma.PaymentsService.Abstractions.Constants;
-using Firepuma.PaymentsService.Abstractions.DTOs.Responses;
-using Firepuma.PaymentsService.FunctionApp.PayFast.Queries;
-using Firepuma.PaymentsService.FunctionApp.PayFast.TableModels;
-using Firepuma.PaymentsService.Implementations.Factories;
+using Firepuma.Payments.Abstractions.Constants;
+using Firepuma.Payments.Abstractions.DTOs.Responses;
+using Firepuma.Payments.FunctionApp.PayFast.Queries;
+using Firepuma.Payments.FunctionApp.PayFast.TableModels;
+using Firepuma.Payments.Implementations.Factories;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +14,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.Api.HttpFunctions;
+namespace Firepuma.Payments.FunctionApp.PayFast.Api.HttpFunctions;
 
 public class GetPayFastPaymentTransactionDetails
 {

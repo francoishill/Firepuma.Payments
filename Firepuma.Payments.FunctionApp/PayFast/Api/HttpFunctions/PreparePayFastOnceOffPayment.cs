@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Firepuma.PaymentsService.Abstractions.Constants;
-using Firepuma.PaymentsService.Abstractions.DTOs.Requests;
-using Firepuma.PaymentsService.Abstractions.DTOs.Responses;
-using Firepuma.PaymentsService.Abstractions.Infrastructure.Validation;
-using Firepuma.PaymentsService.FunctionApp.PayFast.Commands;
-using Firepuma.PaymentsService.Implementations.Factories;
+using Firepuma.Payments.Abstractions.Constants;
+using Firepuma.Payments.Abstractions.DTOs.Requests;
+using Firepuma.Payments.Abstractions.DTOs.Responses;
+using Firepuma.Payments.Abstractions.Infrastructure.Validation;
+using Firepuma.Payments.FunctionApp.PayFast.Commands;
+using Firepuma.Payments.Implementations.Factories;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +18,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.Api.HttpFunctions;
+namespace Firepuma.Payments.FunctionApp.PayFast.Api.HttpFunctions;
 
 public class PreparePayFastOnceOffPayment
 {

@@ -1,4 +1,4 @@
-﻿namespace Firepuma.PaymentsService.FunctionApp.PayFast.ValueObjects;
+﻿namespace Firepuma.Payments.FunctionApp.PayFast.ValueObjects;
 
 public class PayFastPaymentSettings
 {

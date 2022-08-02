@@ -1,4 +1,4 @@
-﻿namespace Firepuma.PaymentsService.Abstractions.ValueObjects;
+﻿namespace Firepuma.Payments.Abstractions.ValueObjects;
 
 public enum PayFastSubscriptionStatus
 {

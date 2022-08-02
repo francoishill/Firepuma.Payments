@@ -2,13 +2,13 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.Exceptions;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.TableStorage.Helpers;
-using Firepuma.PaymentsService.FunctionApp.PayFast.TableProviders;
-using Firepuma.PaymentsService.FunctionApp.PayFast.Validation;
-using Firepuma.PaymentsService.Implementations.Config;
+using Firepuma.Payments.FunctionApp.Infrastructure.Exceptions;
+using Firepuma.Payments.FunctionApp.Infrastructure.TableStorage.Helpers;
+using Firepuma.Payments.FunctionApp.PayFast.TableProviders;
+using Firepuma.Payments.FunctionApp.PayFast.Validation;
+using Firepuma.Payments.Implementations.Config;
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.Config;
+namespace Firepuma.Payments.FunctionApp.PayFast.Config;
 
 public class PayFastClientAppConfigProvider
 {

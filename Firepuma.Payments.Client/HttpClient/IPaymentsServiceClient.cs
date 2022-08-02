@@ -1,9 +1,9 @@
-using Firepuma.PaymentsService.Abstractions.DTOs.Requests;
-using Firepuma.PaymentsService.Abstractions.DTOs.Responses;
+using Firepuma.Payments.Abstractions.DTOs.Requests;
+using Firepuma.Payments.Abstractions.DTOs.Responses;
 
 // ReSharper disable UnusedMember.Global
 
-namespace Firepuma.PaymentsService.Client.HttpClient;
+namespace Firepuma.Payments.Client.HttpClient;
 
 public interface IPaymentsServiceClient
 {

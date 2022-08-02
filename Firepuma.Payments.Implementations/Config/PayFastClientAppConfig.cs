@@ -4,7 +4,7 @@ using Microsoft.Azure.Cosmos.Table;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
-namespace Firepuma.PaymentsService.Implementations.Config;
+namespace Firepuma.Payments.Implementations.Config;
 
 public class PayFastClientAppConfig : TableEntity
 {

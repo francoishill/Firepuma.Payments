@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos.Table;
 
-namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.TableStorage.Helpers;
+namespace Firepuma.Payments.FunctionApp.Infrastructure.TableStorage.Helpers;
 
 public static class AzureTableHelper
 {

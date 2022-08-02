@@ -1,6 +1,6 @@
-﻿using Firepuma.PaymentsService.Abstractions.ValueObjects;
+﻿using Firepuma.Payments.Abstractions.ValueObjects;
 
-namespace Firepuma.PaymentsService.Abstractions.DTOs.Responses;
+namespace Firepuma.Payments.Abstractions.DTOs.Responses;
 
 public class PayFastOnceOffPaymentResponse
 {

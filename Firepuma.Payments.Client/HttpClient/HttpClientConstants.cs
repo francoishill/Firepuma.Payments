@@ -1,4 +1,4 @@
-﻿namespace Firepuma.PaymentsService.Client.HttpClient;
+﻿namespace Firepuma.Payments.Client.HttpClient;
 
 internal static class HttpClientConstants
 {

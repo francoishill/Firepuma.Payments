@@ -1,11 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.PipelineBehaviors.Helpers;
+using Firepuma.Payments.FunctionApp.Infrastructure.PipelineBehaviors.Helpers;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.PipelineBehaviors;
+namespace Firepuma.Payments.FunctionApp.Infrastructure.PipelineBehaviors;
 
 public class PerformanceLogBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>

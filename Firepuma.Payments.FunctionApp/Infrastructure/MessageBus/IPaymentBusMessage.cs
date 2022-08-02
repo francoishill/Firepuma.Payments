@@ -1,4 +1,4 @@
-﻿namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.MessageBus;
+﻿namespace Firepuma.Payments.FunctionApp.Infrastructure.MessageBus;
 
 public interface IPaymentBusMessage
 {

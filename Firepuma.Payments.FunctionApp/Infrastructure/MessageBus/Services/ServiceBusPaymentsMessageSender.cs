@@ -2,11 +2,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.MessageBus.Mappings;
+using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Mappings;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.MessageBus.Services;
+namespace Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Services;
 
 public class ServiceBusPaymentsMessageSender : IPaymentsMessageSender
 {

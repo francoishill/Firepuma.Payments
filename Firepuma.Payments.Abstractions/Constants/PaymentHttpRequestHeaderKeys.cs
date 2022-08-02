@@ -1,4 +1,4 @@
-﻿namespace Firepuma.PaymentsService.Abstractions.Constants;
+﻿namespace Firepuma.Payments.Abstractions.Constants;
 
 public static class PaymentHttpRequestHeaderKeys
 {

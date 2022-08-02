@@ -1,4 +1,4 @@
-namespace Firepuma.PaymentsService.Tests;
+namespace Firepuma.Payments.Tests;
 
 public class EmptyTests
 {

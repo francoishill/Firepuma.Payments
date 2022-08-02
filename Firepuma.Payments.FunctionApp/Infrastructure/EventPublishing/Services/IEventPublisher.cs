@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.PaymentsService.Abstractions.Events;
+using Firepuma.Payments.Abstractions.Events;
 
-namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.EventPublishing.Services;
+namespace Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Services;
 
 public interface IEventPublisher
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Firepuma.PaymentsService.FunctionAppManager.Infrastructure.Config;
+namespace Firepuma.Payments.FunctionAppManager.Infrastructure.Config;
 
 public class PaymentsServiceOptions
 {

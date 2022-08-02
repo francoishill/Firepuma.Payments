@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Firepuma.PaymentsService.Abstractions.DTOs.Requests;
-using Firepuma.PaymentsService.Abstractions.DTOs.Responses;
-using Firepuma.PaymentsService.Abstractions.Infrastructure.Validation;
-using Firepuma.PaymentsService.Client.Configuration;
+using Firepuma.Payments.Abstractions.DTOs.Requests;
+using Firepuma.Payments.Abstractions.DTOs.Responses;
+using Firepuma.Payments.Abstractions.Infrastructure.Validation;
+using Firepuma.Payments.Client.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace Firepuma.PaymentsService.Client.HttpClient;
+namespace Firepuma.Payments.Client.HttpClient;
 
 internal class PaymentsServiceClient : IPaymentsServiceClient
 {

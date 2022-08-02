@@ -5,13 +5,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core.Serialization;
 using Azure.Messaging.EventGrid;
-using Firepuma.PaymentsService.Abstractions.Events;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.EventPublishing.Config;
+using Firepuma.Payments.Abstractions.Events;
+using Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Config;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.EventPublishing.Services;
+namespace Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Services;
 
 public class EventGridEventPublisher : IEventPublisher
 {

@@ -2,8 +2,8 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.PaymentsService.FunctionAppManager.Infrastructure.Config;
-using Firepuma.PaymentsService.FunctionAppManager.Infrastructure.Constants;
+using Firepuma.Payments.FunctionAppManager.Infrastructure.Config;
+using Firepuma.Payments.FunctionAppManager.Infrastructure.Constants;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 // ReSharper disable UnusedMember.Local
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace Firepuma.PaymentsService.FunctionAppManager.Commands;
+namespace Firepuma.Payments.FunctionAppManager.Commands;
 
 public static class CreateFunctionHostSecretKey
 {

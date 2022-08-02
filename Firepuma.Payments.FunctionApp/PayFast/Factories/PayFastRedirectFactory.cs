@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using Firepuma.PaymentsService.FunctionApp.PayFast.Commands;
-using Firepuma.PaymentsService.FunctionApp.PayFast.ValueObjects;
+using Firepuma.Payments.FunctionApp.PayFast.Commands;
+using Firepuma.Payments.FunctionApp.PayFast.ValueObjects;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using PayFast;
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.Factories;
+namespace Firepuma.Payments.FunctionApp.PayFast.Factories;
 
 public static class PayFastRedirectFactory
 {

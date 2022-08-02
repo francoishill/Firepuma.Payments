@@ -2,13 +2,13 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling.TableModels.Attributes;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling.TableModels.Helpers;
+using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels.Attributes;
+using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels.Helpers;
 using Microsoft.Azure.Cosmos.Table;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling.TableModels
+namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels
 {
     [DebuggerDisplay("{ToString()}")]
     public class CommandExecutionEvent : TableEntity

@@ -1,4 +1,4 @@
-﻿namespace Firepuma.PaymentsService.Abstractions.DTOs.Responses;
+﻿namespace Firepuma.Payments.Abstractions.DTOs.Responses;
 
 public class PreparePayFastOnceOffPaymentResponse
 {

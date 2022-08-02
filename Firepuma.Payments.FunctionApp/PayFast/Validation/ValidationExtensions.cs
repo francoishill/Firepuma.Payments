@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using Firepuma.PaymentsService.Abstractions.Infrastructure.Validation;
-using Firepuma.PaymentsService.Implementations.Config;
+using Firepuma.Payments.Abstractions.Infrastructure.Validation;
+using Firepuma.Payments.Implementations.Config;
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.Validation;
+namespace Firepuma.Payments.FunctionApp.PayFast.Validation;
 
 public static class ValidationExtensions
 {

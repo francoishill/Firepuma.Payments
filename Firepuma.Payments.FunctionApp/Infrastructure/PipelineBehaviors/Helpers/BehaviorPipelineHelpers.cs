@@ -2,7 +2,7 @@
 
 // ReSharper disable ReplaceSubstringWithRangeIndexer
 
-namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.PipelineBehaviors.Helpers;
+namespace Firepuma.Payments.FunctionApp.Infrastructure.PipelineBehaviors.Helpers;
 
 public static class BehaviorPipelineHelpers
 {

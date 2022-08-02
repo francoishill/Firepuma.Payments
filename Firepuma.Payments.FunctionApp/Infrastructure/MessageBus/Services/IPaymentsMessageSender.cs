@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.MessageBus.Services;
+namespace Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Services;
 
 public interface IPaymentsMessageSender
 {

@@ -1,8 +1,8 @@
-﻿using Firepuma.PaymentsService.Abstractions.ValueObjects;
-using Firepuma.PaymentsService.FunctionApp.PayFast.ValueObjects;
+﻿using Firepuma.Payments.Abstractions.ValueObjects;
+using Firepuma.Payments.FunctionApp.PayFast.ValueObjects;
 using PayFast;
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.Factories;
+namespace Firepuma.Payments.FunctionApp.PayFast.Factories;
 
 public static class PayFastRequestFactory
 {

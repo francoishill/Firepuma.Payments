@@ -2,7 +2,6 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <AzureFunctionsVersion>V4</AzureFunctionsVersion>
-        <RootNamespace>Firepuma.PaymentsService.FunctionAppManager</RootNamespace>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />

@@ -1,6 +1,6 @@
 ﻿using PayFast;
 
-namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.MessageBus.BusMessages;
+namespace Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.BusMessages;
 
 public class PayFastPaymentItnValidatedMessage : IPaymentBusMessage
 {

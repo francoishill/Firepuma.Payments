@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling.TableModels;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling.TableProviders;
+using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels;
+using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableProviders;
 using MediatR;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling.PipelineBehaviors
+namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.PipelineBehaviors
 {
     public class AuditCommandsBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {

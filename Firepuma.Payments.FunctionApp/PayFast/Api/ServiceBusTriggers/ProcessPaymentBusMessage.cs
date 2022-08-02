@@ -2,14 +2,14 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.MessageBus.BusMessages;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.MessageBus.Mappings;
-using Firepuma.PaymentsService.FunctionApp.PayFast.Commands;
+using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.BusMessages;
+using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Mappings;
+using Firepuma.Payments.FunctionApp.PayFast.Commands;
 using MediatR;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.Api.ServiceBusTriggers;
+namespace Firepuma.Payments.FunctionApp.PayFast.Api.ServiceBusTriggers;
 
 public class ProcessPaymentBusMessage
 {

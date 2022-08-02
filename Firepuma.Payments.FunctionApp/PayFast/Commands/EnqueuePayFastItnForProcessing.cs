@@ -1,11 +1,11 @@
 ﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.CommandHandling;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.MessageBus.BusMessages;
-using Firepuma.PaymentsService.FunctionApp.Infrastructure.MessageBus.Services;
-using Firepuma.PaymentsService.FunctionApp.PayFast.Config;
-using Firepuma.PaymentsService.FunctionApp.PayFast.Factories;
+using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
+using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.BusMessages;
+using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Services;
+using Firepuma.Payments.FunctionApp.PayFast.Config;
+using Firepuma.Payments.FunctionApp.PayFast.Factories;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using PayFast;
@@ -16,7 +16,7 @@ using PayFast;
 // ReSharper disable UnusedType.Global
 // ReSharper disable ClassNeverInstantiated.Local
 
-namespace Firepuma.PaymentsService.FunctionApp.PayFast.Commands;
+namespace Firepuma.Payments.FunctionApp.PayFast.Commands;
 
 public static class EnqueuePayFastItnForProcessing
 {

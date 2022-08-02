@@ -11,8 +11,6 @@
     <ItemGroup>
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
         <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.9.0" />
-        <PackageReference Include="Firepuma.PaymentsService.Abstractions" Version="0.0.2" />
-        <PackageReference Include="Firepuma.PaymentsService.Client" Version="0.0.2" />
         <PackageReference Include="Microsoft.Extensions.Azure" Version="1.3.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>

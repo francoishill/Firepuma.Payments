@@ -4,6 +4,7 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>Firepuma.PaymentsService.Client</RootNamespace>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -24,7 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Firepuma.PaymentsService.Abstractions\Firepuma.PaymentsService.Abstractions.csproj" />
+      <ProjectReference Include="..\Firepuma.Payments.Abstractions\Firepuma.Payments.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>

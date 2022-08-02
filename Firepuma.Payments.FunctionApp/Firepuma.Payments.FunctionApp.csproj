@@ -2,18 +2,22 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <AzureFunctionsVersion>V4</AzureFunctionsVersion>
+        <RootNamespace>Firepuma.PaymentsService.FunctionApp</RootNamespace>
     </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
-        <PackageReference Include="Azure.Identity" Version="1.6.0" />
-        <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.8.1" />
+        <PackageReference Include="Azure.Messaging.EventGrid" Version="4.11.0" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
         <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
+        <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.33" />
+        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ServiceBus" Version="5.5.0" />
         <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="4.0.5" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
         <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.0.1" />
+        <PackageReference Include="PayFast.AspNetCore" Version="1.0.5" />
     </ItemGroup>
+
     <ItemGroup>
         <None Update="host.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -23,8 +27,9 @@
             <CopyToPublishDirectory>Never</CopyToPublishDirectory>
         </None>
     </ItemGroup>
+
     <ItemGroup>
-      <ProjectReference Include="..\Firepuma.PaymentsService.Abstractions\Firepuma.PaymentsService.Abstractions.csproj" />
-      <ProjectReference Include="..\Firepuma.PaymentsService.Implementations\Firepuma.PaymentsService.Implementations.csproj" />
+      <ProjectReference Include="..\Firepuma.Payments.Abstractions\Firepuma.Payments.Abstractions.csproj" />
+      <ProjectReference Include="..\Firepuma.Payments.Implementations\Firepuma.Payments.Implementations.csproj" />
     </ItemGroup>
 </Project>

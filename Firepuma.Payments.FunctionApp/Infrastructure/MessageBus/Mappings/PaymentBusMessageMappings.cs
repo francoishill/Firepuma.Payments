@@ -14,7 +14,7 @@ public static class PaymentBusMessageMappings
 
     private static class MessageTypeNames
     {
-        public const string PayFastPaymentItnValidatedMessage = "Firepuma.PaymentsService.FunctionApp.PayFastPaymentItnValidatedMessage";
+        public const string PayFastPaymentItnValidatedMessage = "Firepuma.Payments.FunctionApp.PayFastPaymentItnValidatedMessage";
     }
 
     private static readonly IReadOnlyDictionary<Type, string> _messageTypeNameMap = new Dictionary<Type, string>

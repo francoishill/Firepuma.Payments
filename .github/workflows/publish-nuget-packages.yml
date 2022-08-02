@@ -23,19 +23,19 @@ jobs:
 
       - name: Install dependencies
         run: |
-          dotnet restore Firepuma.PaymentsService.Abstractions
-          dotnet restore Firepuma.PaymentsService.Client
-          dotnet restore Firepuma.PaymentsService.FunctionApp
-          dotnet restore Firepuma.PaymentsService.FunctionAppManager
-          dotnet restore Firepuma.PaymentsService.Tests
+          dotnet restore Firepuma.Payments.Abstractions
+          dotnet restore Firepuma.Payments.Client
+          dotnet restore Firepuma.Payments.FunctionApp
+          dotnet restore Firepuma.Payments.FunctionAppManager
+          dotnet restore Firepuma.Payments.Tests
 
       - name: Test
         run: dotnet test --no-restore
 
       - name: Package
         run: |
-          dotnet pack --configuration Release --output . --version-suffix ${{ env.VERSION_SUFFIX }} Firepuma.PaymentsService.Abstractions/Firepuma.PaymentsService.Abstractions.csproj
-          dotnet pack --configuration Release --output . --version-suffix ${{ env.VERSION_SUFFIX }} Firepuma.PaymentsService.Client/Firepuma.PaymentsService.Client.csproj
+          dotnet pack --configuration Release --output . --version-suffix ${{ env.VERSION_SUFFIX }} Firepuma.Payments.Abstractions/Firepuma.Payments.Abstractions.csproj
+          dotnet pack --configuration Release --output . --version-suffix ${{ env.VERSION_SUFFIX }} Firepuma.Payments.Client/Firepuma.Payments.Client.csproj
 
       - name: Publish
         run: dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json

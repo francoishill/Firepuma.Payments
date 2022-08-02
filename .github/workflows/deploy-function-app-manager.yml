@@ -7,7 +7,7 @@ on:
 
 env:
   AZURE_FUNCTIONAPP_NAME: 'Firepuma-PaymentsService-Manager'
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'Firepuma.PaymentsService.FunctionAppManager'
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'Firepuma.Payments.FunctionAppManager'
   DOTNET_VERSION: '6.0'
 
 jobs:
@@ -24,11 +24,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          dotnet restore Firepuma.PaymentsService.Abstractions
-          dotnet restore Firepuma.PaymentsService.Client
-          dotnet restore Firepuma.PaymentsService.FunctionApp
-          dotnet restore Firepuma.PaymentsService.FunctionAppManager
-          dotnet restore Firepuma.PaymentsService.Tests
+          dotnet restore Firepuma.Payments.Abstractions
+          dotnet restore Firepuma.Payments.Client
+          dotnet restore Firepuma.Payments.FunctionApp
+          dotnet restore Firepuma.Payments.FunctionAppManager
+          dotnet restore Firepuma.Payments.Tests
 
       - name: Build FunctionApp
         run: dotnet build --configuration Release --no-restore --output ./output

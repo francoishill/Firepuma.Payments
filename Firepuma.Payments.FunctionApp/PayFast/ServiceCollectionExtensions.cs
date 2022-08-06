@@ -1,6 +1,7 @@
 ﻿using Firepuma.Payments.FunctionApp.Infrastructure.TableStorage;
 using Firepuma.Payments.FunctionApp.PayFast.Config;
 using Firepuma.Payments.FunctionApp.PayFast.TableProviders;
+using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Firepuma.Payments.FunctionApp.PayFast;
@@ -21,5 +22,7 @@ public static class ServiceCollectionExtensions
         services.AddTableProvider("PayFastItnTraces", table => new PayFastItnTracesTableProvider(table));
 
         services.AddScoped<PayFastClientAppConfigProvider>();
+
+        services.AddScoped<IPaymentGateway, PayFastPaymentGateway>();
     }
 }

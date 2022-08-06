@@ -3,7 +3,6 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
 
         <IsPackable>false</IsPackable>
     </PropertyGroup>
@@ -19,6 +18,10 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Firepuma.Payments.FunctionApp\Firepuma.Payments.FunctionApp.csproj" />
     </ItemGroup>
 
 </Project>

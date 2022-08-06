@@ -87,7 +87,7 @@ public class Startup : FunctionsStartup
         {
             opt.EventGridEndpoint = eventGridEndpoint;
             opt.EventGridAccessKey = eventGridKey;
-            opt.SubjectFactory = applicationId => $"firepuma/payments-service/{applicationId}";
+            opt.SubjectFactory = applicationId => $"firepuma/payments-service/{applicationId.Value}";
         });
 
         services.AddSingleton<EventGridPublisherClient>(s =>

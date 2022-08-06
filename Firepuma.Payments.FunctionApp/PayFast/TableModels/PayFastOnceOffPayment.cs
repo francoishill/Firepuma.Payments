@@ -7,8 +7,7 @@ namespace Firepuma.Payments.FunctionApp.PayFast.TableModels;
 
 public class PayFastOnceOffPayment : TableEntity, IPaymentTableEntity
 {
-    public string ApplicationId => PartitionKey;
-
+    public ClientApplicationId ApplicationId => new(PartitionKey);
     public PaymentId PaymentId => new(RowKey);
 
     public string EmailAddress { get; set; }

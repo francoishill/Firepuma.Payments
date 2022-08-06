@@ -1,6 +1,8 @@
-﻿namespace Firepuma.Payments.Abstractions.Events;
+﻿using Firepuma.Payments.Abstractions.ValueObjects;
+
+namespace Firepuma.Payments.Abstractions.Events;
 
 public interface IPaymentEventGridMessage
 {
-    string ApplicationId { get; }
+    ClientApplicationId ApplicationId { get; }
 }

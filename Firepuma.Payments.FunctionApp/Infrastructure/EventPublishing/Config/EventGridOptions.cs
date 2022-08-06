@@ -1,4 +1,6 @@
-﻿namespace Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Config;
+﻿using Firepuma.Payments.Abstractions.ValueObjects;
+
+namespace Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Config;
 
 public class EventGridOptions
 {
@@ -7,5 +9,5 @@ public class EventGridOptions
 
     public SubjectFactoryDelegate SubjectFactory { get; set; }
 
-    public delegate string SubjectFactoryDelegate(string applicationId);
+    public delegate string SubjectFactoryDelegate(ClientApplicationId applicationId);
 }

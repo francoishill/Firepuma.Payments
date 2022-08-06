@@ -1,14 +1,15 @@
 ﻿using System;
 using Firepuma.Payments.Abstractions.ValueObjects;
+using Firepuma.Payments.FunctionApp.TableModels;
 using Microsoft.Azure.Cosmos.Table;
 
 namespace Firepuma.Payments.FunctionApp.PayFast.TableModels;
 
-public class PayFastOnceOffPayment : TableEntity
+public class PayFastOnceOffPayment : TableEntity, IPaymentTableEntity
 {
     public string ApplicationId => PartitionKey;
 
-    public PayFastPaymentId PaymentId => new(RowKey);
+    public PaymentId PaymentId => new(RowKey);
 
     public string EmailAddress { get; set; }
     public string NameFirst { get; set; }
@@ -29,16 +30,16 @@ public class PayFastOnceOffPayment : TableEntity
     }
 
     public PayFastOnceOffPayment(
-        string applicationId,
-        string paymentId,
+        ClientApplicationId applicationId,
+        PaymentId paymentId,
         string emailAddress,
         string nameFirst,
         double immediateAmountInRands,
         string itemName,
         string itemDescription)
     {
-        PartitionKey = applicationId;
-        RowKey = paymentId;
+        PartitionKey = applicationId.Value;
+        RowKey = paymentId.Value;
 
         EmailAddress = emailAddress;
         NameFirst = nameFirst;

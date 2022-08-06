@@ -35,8 +35,7 @@ public class CreatePayFastClientApplication
 
     [FunctionName("CreatePayFastClientApplication")]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "CreatePayFastClientApplication/{applicationId}")]
-        HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "CreatePayFastClientApplication/{applicationId}")] HttpRequest req,
         ILogger log,
         [Table("PayFastApplicationConfigs")] CloudTable applicationConfigTable,
         string applicationId,
@@ -61,7 +60,6 @@ public class CreatePayFastClientApplication
 
         var applicationSecret = PayFastClientAppConfig.GenerateRandomSecret();
         var newClientAppConfig = new PayFastClientAppConfig(
-            "PayFast",
             applicationId,
             applicationSecret,
             requestDTO.IsSandbox,

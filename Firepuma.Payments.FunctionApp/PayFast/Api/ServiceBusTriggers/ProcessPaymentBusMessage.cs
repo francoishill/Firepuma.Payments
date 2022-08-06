@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
+using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.BusMessages;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Mappings;
 using Firepuma.Payments.FunctionApp.PayFast.Commands;
@@ -64,7 +65,7 @@ public class ProcessPaymentBusMessage
                 {
                     CorrelationId = correlationId,
                     ApplicationId = applicationId,
-                    PaymentId = payFastRequest.m_payment_id,
+                    PaymentId = new PaymentId(payFastRequest.m_payment_id),
                     PaymentStatus = payFastRequest.payment_status,
                     RequestToken = payFastRequest.token,
                 };

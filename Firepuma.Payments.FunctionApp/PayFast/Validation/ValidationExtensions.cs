@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using Firepuma.Payments.Abstractions.Infrastructure.Validation;
+using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.Implementations.Config;
 
 namespace Firepuma.Payments.FunctionApp.PayFast.Validation;
@@ -10,7 +11,7 @@ public static class ValidationExtensions
 {
     public static bool ValidateClientAppConfig(
         this PayFastClientAppConfig clientAppConfig,
-        string applicationId,
+        ClientApplicationId applicationId,
         out HttpStatusCode statusCode,
         out IEnumerable<string> errors)
     {

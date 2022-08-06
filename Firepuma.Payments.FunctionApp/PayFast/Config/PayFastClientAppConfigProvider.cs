@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.Exceptions;
 using Firepuma.Payments.FunctionApp.Infrastructure.TableStorage.Helpers;
 using Firepuma.Payments.FunctionApp.PayFast.TableProviders;
@@ -21,13 +22,13 @@ public class PayFastClientAppConfigProvider
     }
 
     public async Task<PayFastClientAppConfig> GetApplicationConfigAndSkipSecretCheckAsync(
-        string applicationId,
+        ClientApplicationId applicationId,
         CancellationToken cancellationToken)
     {
         var applicationConfig = await AzureTableHelper.GetSingleRecordOrNullAsync<PayFastClientAppConfig>(
             _applicationConfigsTableProvider.Table,
             "PayFast",
-            applicationId,
+            applicationId.Value,
             cancellationToken);
 
         if (applicationConfig == null)
@@ -44,7 +45,7 @@ public class PayFastClientAppConfigProvider
     }
 
     public async Task<PayFastClientAppConfig> GetApplicationConfigAsync(
-        string applicationId,
+        ClientApplicationId applicationId,
         string appSecret,
         CancellationToken cancellationToken)
     {
@@ -59,7 +60,7 @@ public class PayFastClientAppConfigProvider
     }
 
     public async Task ValidateApplicationSecretAsync(
-        string applicationId,
+        ClientApplicationId applicationId,
         string appSecret,
         CancellationToken cancellationToken)
     {

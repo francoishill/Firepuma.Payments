@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.Implementations.Config;
 using MediatR;
 using Microsoft.Azure.Cosmos.Table;
@@ -67,7 +68,7 @@ public static class AddClientAppTableRecord
             {
                 var existingTableRow = await LoadClientAppConfig(
                     table,
-                    newRow.PaymentProviderName,
+                    newRow.GatewayTypeId,
                     newRow.ApplicationId,
                     cancellationToken);
 
@@ -80,18 +81,18 @@ public static class AddClientAppTableRecord
 
         private async Task<PayFastClientAppConfig> LoadClientAppConfig(
             CloudTable table,
-            string paymentProviderName,
-            string applicationId,
+            PaymentGatewayTypeId gatewayTypeId,
+            ClientApplicationId applicationId,
             CancellationToken cancellationToken)
         {
-            var retrieveOperation = PayFastClientAppConfig.GetRetrieveOperation(paymentProviderName, applicationId);
+            var retrieveOperation = PayFastClientAppConfig.GetRetrieveOperation(gatewayTypeId, applicationId);
             var loadResult = await table.ExecuteAsync(retrieveOperation, cancellationToken);
 
             if (loadResult.Result == null)
             {
                 _logger.LogError(
-                    "loadResult.Result was null for paymentProviderName: {ProviderName} and applicationId: {ApplicationId}",
-                    paymentProviderName, applicationId);
+                    "loadResult.Result was null for gatewayTypeId: {GatewayTypeId} and applicationId: {ApplicationId}",
+                    gatewayTypeId, applicationId);
                 return null;
             }
 

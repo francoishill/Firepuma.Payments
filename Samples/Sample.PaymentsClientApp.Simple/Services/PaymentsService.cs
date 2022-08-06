@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Firepuma.Payments.Abstractions.DTOs.Requests;
+using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.Client.HttpClient;
 using Sample.PaymentsClientApp.Simple.Services.Results;
 
@@ -22,7 +23,7 @@ public class PaymentsService
     }
 
     public async Task<PreparePayfastOnceOffPaymentResult> PreparePayfastOnceOffPayment(
-        string newPaymentId,
+        PaymentId newPaymentId,
         string returnUrl,
         string cancelUrl,
         CancellationToken cancellationToken)

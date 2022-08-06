@@ -10,5 +10,9 @@
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.0" />
         <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="4.0.5" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\Firepuma.Payments.Abstractions\Firepuma.Payments.Abstractions.csproj" />
+    </ItemGroup>
 
 </Project>

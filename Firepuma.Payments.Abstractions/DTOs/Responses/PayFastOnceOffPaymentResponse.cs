@@ -4,7 +4,7 @@ namespace Firepuma.Payments.Abstractions.DTOs.Responses;
 
 public class PayFastOnceOffPaymentResponse
 {
-    public PayFastPaymentId PaymentId { get; set; }
+    public PaymentId PaymentId { get; set; }
     public string EmailAddress { get; set; }
     public string NameFirst { get; set; }
     public double ImmediateAmountInRands { get; set; }

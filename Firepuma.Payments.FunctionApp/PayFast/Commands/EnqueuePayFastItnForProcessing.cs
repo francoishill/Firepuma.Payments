@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.BusMessages;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Services;
@@ -23,7 +24,7 @@ public static class EnqueuePayFastItnForProcessing
     public class Command : BaseCommand, IRequest<Result>
     {
         public string CorrelationId { get; set; }
-        public string ApplicationId { get; set; }
+        public ClientApplicationId ApplicationId { get; set; }
         public PayFastNotify PayFastRequest { get; set; }
         public string RemoteIp { get; set; }
         public string IncomingRequestUri { get; set; }
@@ -151,7 +152,7 @@ public static class EnqueuePayFastItnForProcessing
 
             var messageDto = new PayFastPaymentItnValidatedMessage(
                 applicationId,
-                payFastRequest.m_payment_id,
+                new PaymentId(payFastRequest.m_payment_id),
                 payFastRequest,
                 command.IncomingRequestUri);
 

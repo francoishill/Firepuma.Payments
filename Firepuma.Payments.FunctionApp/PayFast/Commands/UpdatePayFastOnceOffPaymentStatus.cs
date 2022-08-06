@@ -26,8 +26,8 @@ public static class UpdatePayFastOnceOffPaymentStatus
     public class Command : BaseCommand, IRequest<Result>
     {
         public string CorrelationId { get; set; }
-        public string ApplicationId { get; set; }
-        public string PaymentId { get; set; }
+        public ClientApplicationId ApplicationId { get; set; }
+        public PaymentId PaymentId { get; set; }
         public string PaymentStatus { get; set; }
         public string RequestToken { get; set; }
     }
@@ -153,11 +153,11 @@ public static class UpdatePayFastOnceOffPaymentStatus
         }
 
         private async Task<PayFastOnceOffPayment> LoadOnceOffPayment(
-            string applicationId,
-            string paymentId,
+            ClientApplicationId applicationId,
+            PaymentId paymentId,
             CancellationToken cancellationToken)
         {
-            var retrieveOperation = TableOperation.Retrieve<PayFastOnceOffPayment>(applicationId, paymentId);
+            var retrieveOperation = TableOperation.Retrieve<PayFastOnceOffPayment>(applicationId.Value, paymentId.Value);
             var loadResult = await _payFastOnceOffPaymentsTableProvider.Table.ExecuteAsync(retrieveOperation, cancellationToken);
 
             if (loadResult.Result == null)

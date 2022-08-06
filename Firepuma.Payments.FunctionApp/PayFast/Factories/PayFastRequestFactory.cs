@@ -8,7 +8,7 @@ public static class PayFastRequestFactory
 {
     public static PayFastRequest CreateOnceOffPaymentRequest(
         PayFastPaymentSettings payFastSettings,
-        PayFastPaymentId paymentId,
+        PaymentId paymentId,
         string buyerEmailAddress,
         string buyerFirstName,
         double immediateAmount,

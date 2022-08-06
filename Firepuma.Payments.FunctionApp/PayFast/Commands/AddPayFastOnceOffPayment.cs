@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels.Attributes;
 using Firepuma.Payments.FunctionApp.Infrastructure.Exceptions;
@@ -29,8 +30,8 @@ public static class AddPayFastOnceOffPayment
         [IgnoreCommandAudit]
         public string ApplicationSecret { get; set; }
 
-        public string ApplicationId { get; set; }
-        public string PaymentId { get; set; }
+        public ClientApplicationId ApplicationId { get; set; }
+        public PaymentId PaymentId { get; set; }
         public string BuyerEmailAddress { get; set; }
         public string BuyerFirstName { get; set; }
         public double ImmediateAmountInRands { get; set; }
@@ -166,7 +167,7 @@ public static class AddPayFastOnceOffPayment
             }
         }
 
-        private static string AddApplicationIdToItnBaseUrl(string validateAndStoreItnBaseUrl, string applicationId)
+        private static string AddApplicationIdToItnBaseUrl(string validateAndStoreItnBaseUrl, ClientApplicationId applicationId)
         {
             var questionMarkIndex = validateAndStoreItnBaseUrl.IndexOf("?", StringComparison.Ordinal);
 

@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.Exceptions;
 using Firepuma.Payments.FunctionApp.PayFast.Config;
 using Firepuma.Payments.FunctionApp.PayFast.TableModels;
@@ -20,9 +21,9 @@ public static class GetPayFastOnceOffPayment
 {
     public class Query : IRequest<Result>
     {
-        public string ApplicationId { get; set; }
+        public ClientApplicationId ApplicationId { get; set; }
         public string ApplicationSecret { get; set; }
-        public string PaymentId { get; set; }
+        public PaymentId PaymentId { get; set; }
     }
 
     public class Result
@@ -110,11 +111,11 @@ public static class GetPayFastOnceOffPayment
         }
 
         private async Task<PayFastOnceOffPayment> LoadOnceOffPayment(
-            string applicationId,
-            string paymentId,
+            ClientApplicationId applicationId,
+            PaymentId paymentId,
             CancellationToken cancellationToken)
         {
-            var retrieveOperation = TableOperation.Retrieve<PayFastOnceOffPayment>(applicationId, paymentId);
+            var retrieveOperation = TableOperation.Retrieve<PayFastOnceOffPayment>(applicationId.Value, paymentId.Value);
             var loadResult = await _payFastOnceOffPaymentsTableProvider.Table.ExecuteAsync(retrieveOperation, cancellationToken);
 
             if (loadResult.Result == null)

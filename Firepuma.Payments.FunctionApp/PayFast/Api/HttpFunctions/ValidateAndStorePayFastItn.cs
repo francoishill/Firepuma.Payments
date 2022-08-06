@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.PayFast.Commands;
 using Firepuma.Payments.FunctionApp.PayFast.Factories;
 using Firepuma.Payments.Implementations.Factories;
@@ -70,7 +71,7 @@ public class ValidateAndStorePayFastItn
         var command = new EnqueuePayFastItnForProcessing.Command
         {
             CorrelationId = req.HttpContext.TraceIdentifier,
-            ApplicationId = applicationId,
+            ApplicationId = new ClientApplicationId(applicationId),
             PayFastRequest = payFastRequest,
             RemoteIp = remoteIp.ToString(),
             IncomingRequestUri = req.GetDisplayUrl(),

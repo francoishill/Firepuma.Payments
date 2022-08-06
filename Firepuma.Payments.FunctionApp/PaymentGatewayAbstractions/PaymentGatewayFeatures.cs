@@ -2,5 +2,5 @@
 
 public class PaymentGatewayFeatures
 {
-    public bool PreparePaymentRedirectUrl { get; init; }
+    public bool PreparePayment { get; init; }
 }

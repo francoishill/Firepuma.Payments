@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Firepuma.Payments.Abstractions.ValueObjects;
 
 namespace Firepuma.Payments.Abstractions.DTOs.Requests;
 
 public class PreparePayFastOnceOffPaymentRequest
 {
     [Required]
-    public string PaymentId { get; set; }
+    public PaymentId PaymentId { get; set; }
 
     [Required]
     public string BuyerEmailAddress { get; set; }

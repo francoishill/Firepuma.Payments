@@ -1,5 +1,6 @@
 using System.Net;
 using AutoMapper;
+using Firepuma.Payments.Abstractions.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Sample.PaymentsClientApp.Simple.Controllers.Responses;
@@ -48,7 +49,7 @@ public class SamplePaymentsController : ControllerBase
         }
 
         var result = await _paymentsService.PreparePayfastOnceOffPayment(
-            newPaymentId,
+            new PaymentId(newPaymentId),
             returnUrl,
             cancelUrl,
             cancellationToken);

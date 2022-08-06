@@ -1,15 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
+using Firepuma.Payments.Abstractions.ValueObjects;
 using Microsoft.Azure.Cosmos.Table;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
 namespace Firepuma.Payments.Implementations.Config;
 
-public class PayFastClientAppConfig : TableEntity
+public class PayFastClientAppConfig : TableEntity, IPaymentApplicationConfig
 {
-    public string PaymentProviderName => PartitionKey;
-    public string ApplicationId => RowKey;
+    public PaymentGatewayTypeId GatewayTypeId => new(PartitionKey);
+    public ClientApplicationId ApplicationId => new(RowKey);
 
     [Required]
     public string ApplicationSecret { get; set; }
@@ -27,19 +28,18 @@ public class PayFastClientAppConfig : TableEntity
     // ReSharper disable once UnusedMember.Global
     public PayFastClientAppConfig()
     {
-        // used by input bindings of functions
+        PartitionKey = "PayFast";
     }
 
     public PayFastClientAppConfig(
-        string paymentProviderName,
         string applicationId,
         string applicationSecret,
         bool isSandbox,
         string merchantId,
         string merchantKey,
         string passPhrase)
+        : this()
     {
-        PartitionKey = paymentProviderName;
         RowKey = applicationId;
 
         ApplicationSecret = applicationSecret;
@@ -49,9 +49,9 @@ public class PayFastClientAppConfig : TableEntity
         PassPhrase = passPhrase;
     }
 
-    public static TableOperation GetRetrieveOperation(string paymentProviderName, string applicationId)
+    public static TableOperation GetRetrieveOperation(PaymentGatewayTypeId gatewayTypeId, ClientApplicationId applicationId)
     {
-        return TableOperation.Retrieve<PayFastClientAppConfig>(paymentProviderName, applicationId);
+        return TableOperation.Retrieve<PayFastClientAppConfig>(gatewayTypeId.Value, applicationId.Value);
     }
 
     public static string GenerateRandomSecret()

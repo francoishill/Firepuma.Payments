@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Firepuma.Payments.Abstractions.Constants;
 using Firepuma.Payments.Abstractions.DTOs.Responses;
+using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.PayFast.Queries;
 using Firepuma.Payments.FunctionApp.PayFast.TableModels;
 using Firepuma.Payments.Implementations.Factories;
@@ -33,8 +34,8 @@ public class GetPayFastPaymentTransactionDetails
     public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetPayFastPaymentTransactionDetails/{applicationId}/{paymentId}")] HttpRequest req,
         ILogger log,
-        string applicationId,
-        string paymentId,
+        ClientApplicationId applicationId,
+        PaymentId paymentId,
         CancellationToken cancellationToken)
     {
         log.LogInformation("C# HTTP trigger function processed a request");

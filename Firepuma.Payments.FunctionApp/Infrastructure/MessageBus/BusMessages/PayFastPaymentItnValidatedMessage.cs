@@ -1,17 +1,18 @@
-﻿using PayFast;
+﻿using Firepuma.Payments.Abstractions.ValueObjects;
+using PayFast;
 
 namespace Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.BusMessages;
 
 public class PayFastPaymentItnValidatedMessage : IPaymentBusMessage
 {
-    public string ApplicationId { get; set; }
-    public string PaymentId { get; set; }
+    public ClientApplicationId ApplicationId { get; set; }
+    public PaymentId PaymentId { get; set; }
     public PayFastNotify PayFastRequest { get; set; }
     public string IncomingRequestUri { get; set; }
 
     public PayFastPaymentItnValidatedMessage(
-        string applicationId,
-        string paymentId,
+        ClientApplicationId applicationId,
+        PaymentId paymentId,
         PayFastNotify payFastRequest,
         string incomingRequestUri)
     {

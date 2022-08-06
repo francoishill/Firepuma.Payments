@@ -8,6 +8,7 @@ using Firepuma.Payments.Abstractions.Constants;
 using Firepuma.Payments.Abstractions.DTOs.Requests;
 using Firepuma.Payments.Abstractions.DTOs.Responses;
 using Firepuma.Payments.Abstractions.Infrastructure.Validation;
+using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.PayFast.Commands;
 using Firepuma.Payments.Implementations.Factories;
 using MediatR;
@@ -76,7 +77,7 @@ public class PreparePayFastOnceOffPayment
         var addCommand = new AddPayFastOnceOffPayment.Command
         {
             ApplicationSecret = requestAppSecret,
-            ApplicationId = applicationId,
+            ApplicationId = new ClientApplicationId(applicationId),
             PaymentId = paymentId,
             BuyerEmailAddress = requestDTO.BuyerEmailAddress,
             BuyerFirstName = requestDTO.BuyerFirstName,

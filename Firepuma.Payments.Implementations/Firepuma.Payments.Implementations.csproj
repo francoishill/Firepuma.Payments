@@ -6,9 +6,9 @@
     </PropertyGroup>
     
     <ItemGroup>
+        <PackageReference Include="Azure.Data.Tables" Version="12.6.1" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.0" />
-        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="4.0.5" />
     </ItemGroup>
     
     <ItemGroup>

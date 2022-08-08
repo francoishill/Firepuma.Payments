@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels.Attributes;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
-using Firepuma.Payments.FunctionApp.TableProviders;
+using Firepuma.Payments.Implementations.TableProviders;
 using MediatR;
-using Microsoft.Azure.Cosmos.Table;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Local
@@ -124,9 +124,9 @@ public static class AddPayment
 
             try
             {
-                await _paymentsTableProvider.Table.ExecuteAsync(TableOperation.Insert(paymentEntity), cancellationToken);
+                await _paymentsTableProvider.Table.AddEntityAsync(paymentEntity, cancellationToken);
             }
-            catch (StorageException storageException) when (storageException.RequestInformation.HttpStatusCode == (int)HttpStatusCode.Conflict)
+            catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.Conflict)
             {
                 return Result.Failed(Result.FailureReason.PaymentAlreadyExists, $"The payment (id '{paymentId}' and application id '{applicationId}') is already added and cannot be added again");
             }

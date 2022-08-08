@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels.Attributes;
@@ -11,7 +12,6 @@ using Firepuma.Payments.FunctionApp.PayFast.Factories;
 using Firepuma.Payments.FunctionApp.PayFast.TableModels;
 using Firepuma.Payments.FunctionApp.PayFast.TableProviders;
 using MediatR;
-using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -152,10 +152,11 @@ public static class AddPayFastOnceOffPayment
 
                 try
                 {
-                    await _onceOffPaymentsTableProvider.Table.ExecuteAsync(TableOperation.Insert(payment), cancellationToken);
+                    await _onceOffPaymentsTableProvider.Table.AddEntityAsync(payment, cancellationToken);
                 }
-                catch (StorageException storageException) when (storageException.RequestInformation.HttpStatusCode == (int)HttpStatusCode.Conflict)
+                catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.Conflict)
                 {
+                    _logger.LogCritical(requestFailedException, "The payment (id '{CommandPaymentId}' and application id '{CommandApplicationId}') is already added and cannot be added again", command.PaymentId, command.ApplicationId);
                     return Result.Failed(Result.FailureReason.PaymentAlreadyExists, $"The payment (id '{command.PaymentId}' and application id '{command.ApplicationId}') is already added and cannot be added again");
                 }
 

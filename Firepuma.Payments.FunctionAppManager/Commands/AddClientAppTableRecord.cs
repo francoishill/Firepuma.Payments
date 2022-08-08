@@ -1,10 +1,12 @@
 ﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure;
+using Azure.Data.Tables;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.Implementations.Config;
+using Firepuma.Payments.Implementations.TableProviders;
 using MediatR;
-using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -17,14 +19,11 @@ public static class AddClientAppTableRecord
 {
     public class Command : IRequest<Result>
     {
-        public CloudTable CloudTable { get; set; }
         public PayFastClientAppConfig TableRow { get; set; }
 
         public Command(
-            CloudTable cloudTable,
             PayFastClientAppConfig tableRow)
         {
-            CloudTable = cloudTable;
             TableRow = tableRow;
         }
     }
@@ -40,16 +39,19 @@ public static class AddClientAppTableRecord
     public class Handler : IRequestHandler<Command, Result>
     {
         private readonly ILogger<Handler> _logger;
+        private readonly ApplicationConfigsTableProvider _applicationConfigsTableProvider;
 
         public Handler(
-            ILogger<Handler> logger)
+            ILogger<Handler> logger,
+            ApplicationConfigsTableProvider applicationConfigsTableProvider)
         {
             _logger = logger;
+            _applicationConfigsTableProvider = applicationConfigsTableProvider;
         }
 
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
         {
-            var table = command.CloudTable;
+            var table = _applicationConfigsTableProvider.Table;
             var newRow = command.TableRow;
 
             var result = new Result
@@ -59,12 +61,12 @@ public static class AddClientAppTableRecord
 
             try
             {
-                await table.ExecuteAsync(TableOperation.Insert(newRow), cancellationToken);
+                await table.AddEntityAsync(newRow, cancellationToken);
 
                 result.IsNew = true;
                 result.TableRow = newRow;
             }
-            catch (Microsoft.Azure.Cosmos.Table.StorageException storageException) when (storageException.RequestInformation.HttpStatusCode == (int)HttpStatusCode.Conflict)
+            catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.Conflict)
             {
                 var existingTableRow = await LoadClientAppConfig(
                     table,
@@ -80,23 +82,23 @@ public static class AddClientAppTableRecord
         }
 
         private async Task<PayFastClientAppConfig> LoadClientAppConfig(
-            CloudTable table,
+            TableClient table,
             PaymentGatewayTypeId gatewayTypeId,
             ClientApplicationId applicationId,
             CancellationToken cancellationToken)
         {
-            var retrieveOperation = PayFastClientAppConfig.GetRetrieveOperation(gatewayTypeId, applicationId);
-            var loadResult = await table.ExecuteAsync(retrieveOperation, cancellationToken);
-
-            if (loadResult.Result == null)
+            try
+            {
+                return await table.GetEntityAsync<PayFastClientAppConfig>(gatewayTypeId.Value, applicationId.Value, cancellationToken: cancellationToken);
+            }
+            catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.NotFound)
             {
                 _logger.LogError(
-                    "loadResult.Result was null for gatewayTypeId: {GatewayTypeId} and applicationId: {ApplicationId}",
+                    requestFailedException,
+                    "ClientAppConfig does not exist for gatewayTypeId: {GatewayTypeId} and applicationId: {ApplicationId}",
                     gatewayTypeId, applicationId);
                 return null;
             }
-
-            return loadResult.Result as PayFastClientAppConfig;
         }
     }
 }

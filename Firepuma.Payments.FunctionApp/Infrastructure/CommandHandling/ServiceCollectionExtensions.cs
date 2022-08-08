@@ -1,6 +1,6 @@
 ﻿using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.PipelineBehaviors;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableProviders;
-using Firepuma.Payments.FunctionApp.Infrastructure.TableStorage;
+using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 

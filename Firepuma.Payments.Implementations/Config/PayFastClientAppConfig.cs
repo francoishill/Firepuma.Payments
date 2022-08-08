@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using Firepuma.Payments.Abstractions.ValueObjects;
-using Microsoft.Azure.Cosmos.Table;
+using Firepuma.Payments.Implementations.TableStorage;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
 namespace Firepuma.Payments.Implementations.Config;
 
-public class PayFastClientAppConfig : TableEntity, IPaymentApplicationConfig
+public class PayFastClientAppConfig : BaseAzureTable, IPaymentApplicationConfig
 {
     public PaymentGatewayTypeId GatewayTypeId => new(PartitionKey);
     public ClientApplicationId ApplicationId => new(RowKey);
@@ -47,11 +47,6 @@ public class PayFastClientAppConfig : TableEntity, IPaymentApplicationConfig
         MerchantId = merchantId;
         MerchantKey = merchantKey;
         PassPhrase = passPhrase;
-    }
-
-    public static TableOperation GetRetrieveOperation(PaymentGatewayTypeId gatewayTypeId, ClientApplicationId applicationId)
-    {
-        return TableOperation.Retrieve<PayFastClientAppConfig>(gatewayTypeId.Value, applicationId.Value);
     }
 
     public static string GenerateRandomSecret()

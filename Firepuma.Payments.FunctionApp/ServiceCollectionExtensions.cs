@@ -1,5 +1,5 @@
-﻿using Firepuma.Payments.FunctionApp.Infrastructure.TableStorage;
-using Firepuma.Payments.FunctionApp.TableProviders;
+﻿using Firepuma.Payments.Implementations.TableProviders;
+using Firepuma.Payments.Implementations.TableStorage;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Firepuma.Payments.FunctionApp;

@@ -2,6 +2,8 @@
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure;
+using Azure.Data.Tables;
 using Firepuma.Payments.Abstractions.Events.EventGridMessages;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
@@ -9,7 +11,6 @@ using Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Services;
 using Firepuma.Payments.FunctionApp.PayFast.TableModels;
 using Firepuma.Payments.FunctionApp.PayFast.TableProviders;
 using MediatR;
-using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using PayFast;
 
@@ -119,13 +120,18 @@ public static class UpdatePayFastOnceOffPaymentStatus
 
             try
             {
-                var replaceOperation = TableOperation.Replace(onceOffPayment);
-                await _payFastOnceOffPaymentsTableProvider.Table.ExecuteAsync(replaceOperation, cancellationToken);
+                await _payFastOnceOffPaymentsTableProvider.Table.UpdateEntityAsync(onceOffPayment, ETag.All, TableUpdateMode.Replace, cancellationToken);
             }
-            catch (StorageException storageException) when (storageException.RequestInformation.HttpStatusCode == (int)HttpStatusCode.PreconditionFailed)
+            catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.Conflict)
             {
-                _logger.LogCritical(storageException, "Unable to update PayFast OnceOff table for applicationId: {ApplicationId}, paymentId: {PaymentId}, due to ETag mismatch, exception message is: {Exception}", applicationId, paymentId, storageException.Message);
-                return Result.Failed(Result.FailureReason.PreconditionFailed, $"Unable to update PayFast OnceOff table for applicationId: {applicationId}, paymentId: {paymentId}, due to ETag mismatch, exception message is: {storageException.Message}");
+                _logger.LogCritical(
+                    requestFailedException,
+                    "Unable to update PayFast OnceOff table for applicationId: {ApplicationId}, paymentId: {PaymentId}, due to ETag mismatch, exception message is: {Exception}",
+                    applicationId, paymentId, requestFailedException.Message);
+
+                return Result.Failed(
+                    Result.FailureReason.PreconditionFailed,
+                    $"Unable to update PayFast OnceOff table for applicationId: {applicationId}, paymentId: {paymentId}, due to ETag mismatch, exception message is: {requestFailedException.Message}");
             }
 
             await PublishEvent(command, onceOffPayment, cancellationToken);
@@ -157,16 +163,18 @@ public static class UpdatePayFastOnceOffPaymentStatus
             PaymentId paymentId,
             CancellationToken cancellationToken)
         {
-            var retrieveOperation = TableOperation.Retrieve<PayFastOnceOffPayment>(applicationId.Value, paymentId.Value);
-            var loadResult = await _payFastOnceOffPaymentsTableProvider.Table.ExecuteAsync(retrieveOperation, cancellationToken);
-
-            if (loadResult.Result == null)
+            try
             {
-                _logger.LogError("loadResult.Result was null for applicationId: {AppId} and paymentId: {PaymentId}", applicationId, paymentId);
+                return await _payFastOnceOffPaymentsTableProvider.Table.GetEntityAsync<PayFastOnceOffPayment>(applicationId.Value, paymentId.Value, cancellationToken: cancellationToken);
+            }
+            catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.NotFound)
+            {
+                _logger.LogError(
+                    requestFailedException,
+                    "PayFastOnceOffPayment does not exist for applicationId: {AppId} and paymentId: {PaymentId}",
+                    applicationId, paymentId);
                 return null;
             }
-
-            return loadResult.Result as PayFastOnceOffPayment;
         }
     }
 }

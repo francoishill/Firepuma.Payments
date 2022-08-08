@@ -1,11 +1,11 @@
-using Firepuma.Payments.FunctionApp.Infrastructure.TableStorage;
-using Microsoft.Azure.Cosmos.Table;
+using Azure.Data.Tables;
+using Firepuma.Payments.Implementations.TableStorage;
 
 namespace Firepuma.Payments.FunctionApp.PayFast.TableProviders;
 
 public class PayFastApplicationConfigsTableProvider : BaseTableProvider
 {
-    public PayFastApplicationConfigsTableProvider(CloudTable table)
+    public PayFastApplicationConfigsTableProvider(TableClient table)
         : base(table)
     {
     }

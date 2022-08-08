@@ -8,7 +8,6 @@ using Firepuma.Payments.Implementations.Config;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
@@ -36,12 +35,11 @@ public class GetAllClientApplications
         [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]
         HttpRequest req,
         ILogger log,
-        [Table("PayFastApplicationConfigs")] CloudTable clientAppConfigTable,
         CancellationToken cancellationToken)
     {
         log.LogInformation("C# HTTP trigger function processed a request");
 
-        var query = new GetAllClientApps.Query(clientAppConfigTable);
+        var query = new GetAllClientApps.Query();
 
         var result = await _mediator.Send(query, cancellationToken);
         var mappedResults = _mapper.Map<IEnumerable<ClientAppResponseDto>>(result);

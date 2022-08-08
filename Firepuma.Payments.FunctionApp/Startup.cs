@@ -1,6 +1,7 @@
 ﻿using System;
 using AutoMapper;
 using Azure;
+using Azure.Data.Tables;
 using Azure.Messaging.EventGrid;
 using Azure.Messaging.ServiceBus;
 using Firepuma.Payments.FunctionApp;
@@ -11,7 +12,6 @@ using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Services;
 using Firepuma.Payments.FunctionApp.Infrastructure.PipelineBehaviors;
 using Firepuma.Payments.FunctionApp.PayFast;
 using MediatR;
-using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -58,7 +58,7 @@ public class Startup : FunctionsStartup
     private static void AddCloudStorageAccount(IServiceCollection services)
     {
         var storageConnectionString = GetRequiredEnvironmentVariable("AzureWebJobsStorage");
-        services.AddSingleton<CloudStorageAccount>(CloudStorageAccount.Parse(storageConnectionString));
+        services.AddSingleton(_ => new TableServiceClient(storageConnectionString));
     }
 
     private static void AddServiceBusPaymentsMessageSender(IServiceCollection services)

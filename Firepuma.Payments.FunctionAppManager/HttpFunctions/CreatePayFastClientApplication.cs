@@ -13,7 +13,6 @@ using Firepuma.Payments.Implementations.Factories;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
@@ -37,7 +36,6 @@ public class CreatePayFastClientApplication
     public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = "CreatePayFastClientApplication/{applicationId}")] HttpRequest req,
         ILogger log,
-        [Table("PayFastApplicationConfigs")] CloudTable applicationConfigTable,
         string applicationId,
         CancellationToken cancellationToken)
     {
@@ -70,7 +68,7 @@ public class CreatePayFastClientApplication
         var commands = new IBaseRequest[]
         {
             new CreateFunctionHostSecretKey.Command(functionHostKeyName),
-            new AddClientAppTableRecord.Command(applicationConfigTable, newClientAppConfig),
+            new AddClientAppTableRecord.Command(newClientAppConfig),
         };
 
         var responseObjects = new List<KeyValuePair<string, object>>();

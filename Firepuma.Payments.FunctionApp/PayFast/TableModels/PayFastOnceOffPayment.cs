@@ -1,12 +1,17 @@
 ﻿using System;
+using Azure;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.TableModels;
-using Microsoft.Azure.Cosmos.Table;
 
 namespace Firepuma.Payments.FunctionApp.PayFast.TableModels;
 
-public class PayFastOnceOffPayment : TableEntity, IPaymentTableEntity
+public class PayFastOnceOffPayment : IPaymentTableEntity
 {
+    public string PartitionKey { get; set; }
+    public string RowKey { get; set; }
+    public DateTimeOffset? Timestamp { get; set; }
+    public ETag ETag { get; set; }
+
     public string ApplicationId => new(PartitionKey);
     public string PaymentId => RowKey;
 
@@ -27,7 +32,7 @@ public class PayFastOnceOffPayment : TableEntity, IPaymentTableEntity
     // ReSharper disable once UnusedMember.Local
     public PayFastOnceOffPayment()
     {
-        // used by TableOperation.Retrieve code
+        // used by table.GetEntityAsync code
     }
 
     public PayFastOnceOffPayment(

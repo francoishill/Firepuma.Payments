@@ -2,8 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.Payments.Implementations.Config;
+using Firepuma.Payments.Implementations.TableProviders;
 using MediatR;
-using Microsoft.Azure.Cosmos.Table;
 
 // ReSharper disable UnusedType.Global
 // ReSharper disable MemberCanBePrivate.Global
@@ -14,33 +14,31 @@ public static class GetAllClientApps
 {
     public class Query : IRequest<IEnumerable<PayFastClientAppConfig>>
     {
-        public CloudTable CloudTable { get; set; }
-
-        public Query(CloudTable cloudTable)
-        {
-            CloudTable = cloudTable;
-        }
     }
 
     public class Handler : IRequestHandler<Query, IEnumerable<PayFastClientAppConfig>>
     {
+        private readonly ApplicationConfigsTableProvider _applicationConfigsTableProvider;
+
+        public Handler(
+            ApplicationConfigsTableProvider applicationConfigsTableProvider)
+        {
+            _applicationConfigsTableProvider = applicationConfigsTableProvider;
+        }
+
         public async Task<IEnumerable<PayFastClientAppConfig>> Handle(
             Query query,
             CancellationToken cancellationToken)
         {
-            var table = query.CloudTable;
+            var table = _applicationConfigsTableProvider.Table;
+
+            var tableQuery = table.QueryAsync<PayFastClientAppConfig>(c => true);
 
             var rows = new List<PayFastClientAppConfig>();
-            TableContinuationToken token = null;
-            var tableFilter = new TableQuery<PayFastClientAppConfig>();
-
-            do
+            await foreach (var row in tableQuery)
             {
-                var queryResult = await table.ExecuteQuerySegmentedAsync(tableFilter, token, cancellationToken);
-                rows.AddRange(queryResult.Results);
-
-                token = queryResult.ContinuationToken;
-            } while (token != null);
+                rows.Add(row);
+            }
 
             return rows;
         }

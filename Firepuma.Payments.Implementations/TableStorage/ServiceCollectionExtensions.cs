@@ -1,24 +1,21 @@
-﻿using System;
-using Microsoft.Azure.Cosmos.Table;
+﻿using Azure.Data.Tables;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Firepuma.Payments.FunctionApp.Infrastructure.TableStorage;
+namespace Firepuma.Payments.Implementations.TableStorage;
 
 public static class ServiceCollectionExtensions
 {
     public static void AddTableProvider<TProvider>(
         this IServiceCollection services,
         string tableName,
-        Func<CloudTable, TProvider> factory)
+        Func<TableClient, TProvider> factory)
         where TProvider : class, ITableProvider
     {
         services.AddScoped(s =>
         {
-            var storageAccount = s.GetRequiredService<CloudStorageAccount>();
-            var tableClient = storageAccount.CreateCloudTableClient(new TableClientConfiguration());
-            var table = tableClient.GetTableReference(tableName);
-
-            return factory(table);
+            var tableServiceClient = s.GetRequiredService<TableServiceClient>();
+            var tableClient = tableServiceClient.GetTableClient(tableName);
+            return factory(tableClient);
         });
 
         //TODO: Find a better way

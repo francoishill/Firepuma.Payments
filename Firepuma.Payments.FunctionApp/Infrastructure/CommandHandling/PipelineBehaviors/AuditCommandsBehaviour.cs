@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure;
+using Azure.Data.Tables;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableProviders;
 using MediatR;
-using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -43,8 +44,7 @@ namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.PipelineB
             CancellationToken cancellationToken)
         {
             var executionEvent = new CommandExecutionEvent(baseCommand);
-            var insertOperation = TableOperation.Insert(executionEvent);
-            await _commandExecutionTableProvider.Table.ExecuteAsync(insertOperation, cancellationToken);
+            await _commandExecutionTableProvider.Table.AddEntityAsync(executionEvent, cancellationToken);
 
             var startTime = DateTime.UtcNow;
 
@@ -75,8 +75,7 @@ namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.PipelineB
             executionEvent.ExecutionTimeInSeconds = (finishedTime - startTime).TotalSeconds;
             executionEvent.TotalTimeInSeconds = (finishedTime - baseCommand.CreatedOn).TotalSeconds;
 
-            var replaceOperation = TableOperation.Replace(executionEvent);
-            await _commandExecutionTableProvider.Table.ExecuteAsync(replaceOperation, cancellationToken);
+            await _commandExecutionTableProvider.Table.UpdateEntityAsync(executionEvent, ETag.All, TableUpdateMode.Replace, cancellationToken);
 
             if (error != null)
             {

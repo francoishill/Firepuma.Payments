@@ -1,11 +1,17 @@
 ﻿using System;
+using Azure;
+using Azure.Data.Tables;
 using Firepuma.Payments.Abstractions.ValueObjects;
-using Microsoft.Azure.Cosmos.Table;
 
 namespace Firepuma.Payments.FunctionApp.PayFast.TableModels;
 
-public class PayFastItnTrace : TableEntity
+public class PayFastItnTrace : ITableEntity
 {
+    public string PartitionKey { get; set; }
+    public string RowKey { get; set; }
+    public DateTimeOffset? Timestamp { get; set; }
+    public ETag ETag { get; set; }
+
     public string PayfastNotificationJson { get; set; }
     public string IncomingRequestUri { get; set; }
     public string PaymentId { get; set; }

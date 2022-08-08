@@ -1,7 +1,7 @@
-﻿using Firepuma.Payments.FunctionApp.Infrastructure.TableStorage;
-using Firepuma.Payments.FunctionApp.PayFast.Config;
+﻿using Firepuma.Payments.FunctionApp.PayFast.Config;
 using Firepuma.Payments.FunctionApp.PayFast.TableProviders;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
+using Firepuma.Payments.Implementations.TableStorage;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Firepuma.Payments.FunctionApp.PayFast;

@@ -1,12 +1,13 @@
-﻿using System.Threading;
+﻿using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
+using Azure;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.Exceptions;
 using Firepuma.Payments.FunctionApp.PayFast.Config;
 using Firepuma.Payments.FunctionApp.PayFast.TableModels;
 using Firepuma.Payments.FunctionApp.PayFast.TableProviders;
 using MediatR;
-using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -115,16 +116,18 @@ public static class GetPayFastOnceOffPayment
             PaymentId paymentId,
             CancellationToken cancellationToken)
         {
-            var retrieveOperation = TableOperation.Retrieve<PayFastOnceOffPayment>(applicationId.Value, paymentId.Value);
-            var loadResult = await _payFastOnceOffPaymentsTableProvider.Table.ExecuteAsync(retrieveOperation, cancellationToken);
-
-            if (loadResult.Result == null)
+            try
             {
-                _logger.LogError("loadResult.Result was null for applicationId: {AppId} and paymentId: {PaymentId}", applicationId, paymentId);
+                return await _payFastOnceOffPaymentsTableProvider.Table.GetEntityAsync<PayFastOnceOffPayment>(applicationId.Value, paymentId.Value, cancellationToken: cancellationToken);
+            }
+            catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.NotFound)
+            {
+                _logger.LogError(
+                    requestFailedException,
+                    "PayFastOnceOffPayment does not exist for applicationId: {AppId} and paymentId: {PaymentId}",
+                    applicationId, paymentId);
                 return null;
             }
-
-            return loadResult.Result as PayFastOnceOffPayment;
         }
     }
 }

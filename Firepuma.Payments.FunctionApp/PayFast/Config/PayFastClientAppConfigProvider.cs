@@ -4,10 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.Exceptions;
-using Firepuma.Payments.FunctionApp.Infrastructure.TableStorage.Helpers;
 using Firepuma.Payments.FunctionApp.PayFast.TableProviders;
 using Firepuma.Payments.FunctionApp.PayFast.Validation;
 using Firepuma.Payments.Implementations.Config;
+using Firepuma.Payments.Implementations.TableStorage.Helpers;
 
 namespace Firepuma.Payments.FunctionApp.PayFast.Config;
 

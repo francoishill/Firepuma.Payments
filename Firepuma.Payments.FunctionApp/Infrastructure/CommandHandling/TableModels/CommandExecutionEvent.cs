@@ -2,17 +2,23 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using Azure;
+using Azure.Data.Tables;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels.Attributes;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels.Helpers;
-using Microsoft.Azure.Cosmos.Table;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels
 {
     [DebuggerDisplay("{ToString()}")]
-    public class CommandExecutionEvent : TableEntity
+    public class CommandExecutionEvent : ITableEntity
     {
+        public string PartitionKey { get; set; }
+        public string RowKey { get; set; }
+        public DateTimeOffset? Timestamp { get; set; }
+        public ETag ETag { get; set; }
+
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string CommandId { get; set; }
         public string TypeName { get; set; }

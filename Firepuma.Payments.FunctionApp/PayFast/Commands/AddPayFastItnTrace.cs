@@ -5,7 +5,6 @@ using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
 using Firepuma.Payments.FunctionApp.PayFast.TableModels;
 using Firepuma.Payments.FunctionApp.PayFast.TableProviders;
 using MediatR;
-using Microsoft.Azure.Cosmos.Table;
 using Newtonsoft.Json;
 using PayFast;
 
@@ -82,8 +81,7 @@ public static class AddPayFastItnTrace
                 payfastNotificationJson,
                 command.IncomingRequestUri);
 
-            var insertOperation = TableOperation.Insert(traceRecord);
-            await _payFastItnTracesTableProvider.Table.ExecuteAsync(insertOperation, cancellationToken);
+            await _payFastItnTracesTableProvider.Table.AddEntityAsync(traceRecord, cancellationToken);
 
             return Result.Success();
         }

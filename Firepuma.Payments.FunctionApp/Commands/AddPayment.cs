@@ -120,6 +120,8 @@ public static class AddPayment
                 command.RequestDto,
                 cancellationToken);
 
+            paymentEntity.GatewayTypeId = gateway.TypeId.Value;
+
             try
             {
                 await _paymentsTableProvider.Table.ExecuteAsync(TableOperation.Insert(paymentEntity), cancellationToken);

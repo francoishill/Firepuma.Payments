@@ -131,13 +131,13 @@ public static class AddPayFastOnceOffPayment
                 var payFastSettings = PayFastSettingsFactory.CreatePayFastSettings(
                     applicationConfig,
                     validateAndStoreItnUrlWithAppName,
-                    payment.PaymentId.Value,
+                    payment.PaymentId,
                     command.ReturnUrl,
                     command.CancelUrl);
 
                 var payfastRequest = PayFastRequestFactory.CreateOnceOffPaymentRequest(
                     payFastSettings,
-                    payment.PaymentId,
+                    new PaymentId(payment.PaymentId),
                     command.BuyerEmailAddress,
                     command.BuyerFirstName,
                     command.ImmediateAmountInRands,

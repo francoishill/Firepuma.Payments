@@ -143,8 +143,8 @@ public static class UpdatePayFastOnceOffPaymentStatus
             var eventData = new PayFastPaymentUpdatedEvent
             {
                 CorrelationId = command.CorrelationId,
-                ApplicationId = onceOffPayment.ApplicationId,
-                PaymentId = onceOffPayment.PaymentId,
+                ApplicationId = new ClientApplicationId(onceOffPayment.ApplicationId),
+                PaymentId = new PaymentId(onceOffPayment.PaymentId),
                 Status = status,
                 StatusChangedOn = onceOffPayment.StatusChangedOn,
             };

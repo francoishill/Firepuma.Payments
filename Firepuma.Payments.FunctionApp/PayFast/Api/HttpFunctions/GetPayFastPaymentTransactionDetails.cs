@@ -34,8 +34,8 @@ public class GetPayFastPaymentTransactionDetails
     public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetPayFastPaymentTransactionDetails/{applicationId}/{paymentId}")] HttpRequest req,
         ILogger log,
-        ClientApplicationId applicationId,
-        PaymentId paymentId,
+        string applicationId,
+        string paymentId,
         CancellationToken cancellationToken)
     {
         log.LogInformation("C# HTTP trigger function processed a request");
@@ -48,9 +48,9 @@ public class GetPayFastPaymentTransactionDetails
 
         var query = new GetPayFastOnceOffPayment.Query
         {
-            ApplicationId = applicationId,
+            ApplicationId = new ClientApplicationId(applicationId),
             ApplicationSecret = requestAppSecret,
-            PaymentId = paymentId,
+            PaymentId = new PaymentId(paymentId),
         };
 
         var result = await _mediator.Send(query, cancellationToken);

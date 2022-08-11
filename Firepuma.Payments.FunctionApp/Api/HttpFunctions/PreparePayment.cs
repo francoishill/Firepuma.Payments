@@ -38,7 +38,7 @@ public class PreparePayment
         ILogger log,
         CancellationToken cancellationToken)
     {
-        log.LogInformation("C# HTTP trigger function processed a request");
+        log.LogInformation("C# HTTP trigger function processed a request with gatewayTypeId '{GatewayTypeId}' and applicationId '{ApplicationId}'", gatewayTypeId, applicationId);
 
         var gateway = _gateways.GetFromTypeIdOrNull(new PaymentGatewayTypeId(gatewayTypeId));
 

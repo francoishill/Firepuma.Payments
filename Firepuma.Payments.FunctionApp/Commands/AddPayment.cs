@@ -8,6 +8,7 @@ using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels.Attributes;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
+using Firepuma.Payments.Implementations.Config;
 using Firepuma.Payments.Implementations.TableProviders;
 using MediatR;
 
@@ -28,7 +29,7 @@ public static class AddPayment
         public ClientApplicationId ApplicationId { get; init; }
 
         [IgnoreCommandAudit]
-        public string ApplicationSecret { get; init; }
+        public IPaymentApplicationConfig ApplicationConfig { get; init; }
 
         public PaymentId PaymentId { get; init; }
         public object RequestDto { get; set; }
@@ -70,7 +71,6 @@ public static class AddPayment
         public enum FailureReason
         {
             UnknownGatewayTypeId,
-            ApplicationSecretInvalid,
             PaymentAlreadyExists,
         }
     }
@@ -78,22 +78,20 @@ public static class AddPayment
     public class Handler : IRequestHandler<Command, Result>
     {
         private readonly IEnumerable<IPaymentGateway> _gateways;
-        private readonly ApplicationConfigsTableProvider _applicationConfigsTableProvider;
         private readonly PaymentsTableProvider _paymentsTableProvider;
 
         public Handler(
             IEnumerable<IPaymentGateway> gateways,
-            ApplicationConfigsTableProvider applicationConfigsTableProvider,
             PaymentsTableProvider paymentsTableProvider)
         {
             _gateways = gateways;
-            _applicationConfigsTableProvider = applicationConfigsTableProvider;
             _paymentsTableProvider = paymentsTableProvider;
         }
 
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
         {
             var applicationId = command.ApplicationId;
+            var applicationConfig = command.ApplicationConfig;
             var paymentId = command.PaymentId;
 
             var gateway = _gateways.GetFromTypeIdOrNull(command.GatewayTypeId);
@@ -101,16 +99,6 @@ public static class AddPayment
             if (gateway == null)
             {
                 return Result.Failed(Result.FailureReason.UnknownGatewayTypeId, $"The payment gateway type '{command.GatewayTypeId}' is not supported");
-            }
-
-            var applicationConfig = await gateway.GetApplicationConfigAsync(
-                _applicationConfigsTableProvider,
-                applicationId,
-                cancellationToken);
-
-            if (applicationConfig.ApplicationSecret != command.ApplicationSecret)
-            {
-                return Result.Failed(Result.FailureReason.ApplicationSecretInvalid, $"The application secret is invalid");
             }
 
             var paymentEntity = await gateway.CreatePaymentTableEntity(

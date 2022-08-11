@@ -8,6 +8,7 @@ using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Commands;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
 using Firepuma.Payments.Implementations.Factories;
+using Firepuma.Payments.Implementations.TableProviders;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -19,13 +20,19 @@ namespace Firepuma.Payments.FunctionApp.Api.HttpFunctions;
 
 public class PreparePayment
 {
+    private readonly ILogger<PreparePayment> _logger;
+    private readonly ApplicationConfigsTableProvider _applicationConfigsTableProvider;
     private readonly IMediator _mediator;
     private readonly IEnumerable<IPaymentGateway> _gateways;
 
     public PreparePayment(
+        ILogger<PreparePayment> logger,
+        ApplicationConfigsTableProvider applicationConfigsTableProvider,
         IMediator mediator,
         IEnumerable<IPaymentGateway> gateways)
     {
+        _logger = logger;
+        _applicationConfigsTableProvider = applicationConfigsTableProvider;
         _mediator = mediator;
         _gateways = gateways;
     }
@@ -44,23 +51,38 @@ public class PreparePayment
 
         if (gateway == null)
         {
+            _logger.LogError("The payment gateway type \'{GatewayTypeId}\' is not supported", gatewayTypeId);
             return HttpResponseFactory.CreateBadRequestResponse($"The payment gateway type '{gatewayTypeId}' is not supported");
         }
 
         if (!gateway.Features.PreparePayment)
         {
+            _logger.LogError("Payment gateway \'{GatewayTypeId}\' does not support feature PreparePayment", gatewayTypeId);
             return HttpResponseFactory.CreateBadRequestResponse($"Payment gateway '{gatewayTypeId}' does not support feature PreparePayment");
         }
 
         var requestAppSecret = req.Headers[PaymentHttpRequestHeaderKeys.APP_SECRET].FirstOrDefault();
         if (string.IsNullOrWhiteSpace(requestAppSecret))
         {
+            _logger.LogError($"A value is required for header {PaymentHttpRequestHeaderKeys.APP_SECRET}");
             return HttpResponseFactory.CreateBadRequestResponse($"A value is required for header {PaymentHttpRequestHeaderKeys.APP_SECRET}");
+        }
+
+        var applicationConfig = await gateway.GetApplicationConfigAsync(
+            _applicationConfigsTableProvider,
+            new ClientApplicationId(applicationId),
+            cancellationToken);
+
+        if (applicationConfig.ApplicationSecret != requestAppSecret)
+        {
+            _logger.LogError($"The application secret is invalid");
+            return HttpResponseFactory.CreateBadRequestResponse($"The application secret is invalid");
         }
 
         var prepareRequest = await gateway.DeserializePrepareRequestAsync(req, cancellationToken);
         if (!prepareRequest.IsSuccessful)
         {
+            _logger.LogError("{Reason}, {Errors}", prepareRequest.FailedReason.ToString(), string.Join(", ", prepareRequest.FailedErrors));
             return HttpResponseFactory.CreateBadRequestResponse($"{prepareRequest.FailedReason.ToString()}, {string.Join(", ", prepareRequest.FailedErrors)}");
         }
 
@@ -70,7 +92,7 @@ public class PreparePayment
         {
             GatewayTypeId = new PaymentGatewayTypeId(gatewayTypeId),
             ApplicationId = new ClientApplicationId(applicationId),
-            ApplicationSecret = requestAppSecret,
+            ApplicationConfig = applicationConfig,
             PaymentId = paymentId,
             RequestDto = prepareRequest.Result.RequestDto,
         };
@@ -79,6 +101,7 @@ public class PreparePayment
 
         if (!result.IsSuccessful)
         {
+            _logger.LogError("{Reason}, {Errors}", result.FailedReason.ToString(), string.Join(", ", result.FailedErrors));
             return HttpResponseFactory.CreateBadRequestResponse($"{result.FailedReason.ToString()}, {string.Join(", ", result.FailedErrors)}");
         }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Azure.Data.Tables;
 using Firepuma.Payments.Abstractions.DTOs.Requests;
 using Firepuma.Payments.Abstractions.Infrastructure.Validation;
 using Firepuma.Payments.Abstractions.ValueObjects;
@@ -123,6 +124,16 @@ public class PayFastPaymentGateway : IPaymentGateway
 
         await Task.CompletedTask;
         return payment;
+    }
+
+    public async Task<IPaymentTableEntity> GetPaymentDetailsOrNullAsync(
+        TableClient tableClient,
+        IPaymentApplicationConfig applicationConfig,
+        string partitionKey,
+        string rowKey,
+        CancellationToken cancellationToken)
+    {
+        return await AzureTableHelper.GetSingleRecordOrNullAsync<PayFastOnceOffPayment>(tableClient, partitionKey, rowKey, cancellationToken);
     }
 
     public async Task<Uri> CreateRedirectUri(

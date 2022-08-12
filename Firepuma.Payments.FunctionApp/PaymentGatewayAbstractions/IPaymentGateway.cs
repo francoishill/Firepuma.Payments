@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure.Data.Tables;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions.Results;
 using Firepuma.Payments.FunctionApp.TableModels;
@@ -38,6 +39,13 @@ public interface IPaymentGateway
         ClientApplicationId applicationId,
         PaymentId paymentId,
         object genericRequestDto,
+        CancellationToken cancellationToken);
+
+    Task<IPaymentTableEntity> GetPaymentDetailsOrNullAsync(
+        TableClient tableClient,
+        IPaymentApplicationConfig applicationConfig,
+        string partitionKey,
+        string rowKey,
         CancellationToken cancellationToken);
 
     Task<Uri> CreateRedirectUri(

@@ -2,11 +2,9 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using Firepuma.Payments.Abstractions.Constants;
 using Firepuma.Payments.Abstractions.DTOs.Responses;
 using Firepuma.Payments.Abstractions.ValueObjects;
-using Firepuma.Payments.FunctionApp.PayFast.TableModels;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
 using Firepuma.Payments.FunctionApp.Queries;
 using Firepuma.Payments.Implementations.Factories;
@@ -27,20 +25,17 @@ public class GetPayment
     private readonly ILogger<GetPayment> _logger;
     private readonly ApplicationConfigsTableProvider _applicationConfigsTableProvider;
     private readonly IMediator _mediator;
-    private readonly IMapper _mapper;
     private readonly IEnumerable<IPaymentGateway> _gateways;
 
     public GetPayment(
         ILogger<GetPayment> logger,
         ApplicationConfigsTableProvider applicationConfigsTableProvider,
         IMediator mediator,
-        IMapper mapper,
         IEnumerable<IPaymentGateway> gateways)
     {
         _logger = logger;
         _applicationConfigsTableProvider = applicationConfigsTableProvider;
         _mediator = mediator;
-        _mapper = mapper;
         _gateways = gateways;
     }
 

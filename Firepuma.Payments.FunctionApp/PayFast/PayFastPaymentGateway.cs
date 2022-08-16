@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -9,7 +11,6 @@ using Firepuma.Payments.Abstractions.DTOs.Requests;
 using Firepuma.Payments.Abstractions.Infrastructure.Validation;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.PayFast.Commands;
-using Firepuma.Payments.FunctionApp.PayFast.Config;
 using Firepuma.Payments.FunctionApp.PayFast.Factories;
 using Firepuma.Payments.FunctionApp.PayFast.TableModels;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
@@ -20,8 +21,8 @@ using Firepuma.Payments.Implementations.TableProviders;
 using Firepuma.Payments.Implementations.TableStorage.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using PayFast;
 
 namespace Firepuma.Payments.FunctionApp.PayFast;
 
@@ -35,16 +36,13 @@ public class PayFastPaymentGateway : IPaymentGateway
         PreparePayment = true,
     };
 
-    private readonly IOptions<PayFastOptions> _payFastOptions;
     private readonly ILogger<PayFastPaymentGateway> _logger;
     private readonly IMapper _mapper;
 
     public PayFastPaymentGateway(
-        IOptions<PayFastOptions> payFastOptions,
         ILogger<PayFastPaymentGateway> logger,
         IMapper mapper)
     {
-        _payFastOptions = payFastOptions;
         _logger = logger;
         _mapper = mapper;
     }
@@ -141,6 +139,7 @@ public class PayFastPaymentGateway : IPaymentGateway
         ClientApplicationId applicationId,
         PaymentId paymentId,
         object genericRequestDto,
+        string backendNotifyUrl,
         CancellationToken cancellationToken)
     {
         if (genericRequestDto is not PreparePayFastOnceOffPaymentRequest requestDTO)
@@ -153,14 +152,9 @@ public class PayFastPaymentGateway : IPaymentGateway
             throw new NotSupportedException($"ApplicationConfig is incorrect type in CreateRedirectUri, it should be PayFastClientAppConfig but it is '{genericApplicationConfig.GetType().FullName}'");
         }
 
-        var validateAndStoreItnUrlWithAppName = AddApplicationIdToItnBaseUrl(
-            _payFastOptions.Value.ValidateAndStoreItnBaseUrl,
-            applicationId);
-
         var payFastSettings = PayFastSettingsFactory.CreatePayFastSettings(
             applicationConfig,
-            validateAndStoreItnUrlWithAppName,
-            paymentId.Value,
+            backendNotifyUrl,
             requestDTO.ReturnUrl,
             requestDTO.CancelUrl);
 
@@ -185,12 +179,157 @@ public class PayFastPaymentGateway : IPaymentGateway
         return redirectUrl;
     }
 
-    private static string AddApplicationIdToItnBaseUrl(string validateAndStoreItnBaseUrl, ClientApplicationId applicationId)
+    public async Task<ResultContainer<PaymentNotificationRequestResult, PaymentNotificationRequestFailureReason>> DeserializePaymentNotificationRequestAsync(
+        HttpRequest req,
+        CancellationToken cancellationToken)
     {
-        var questionMarkIndex = validateAndStoreItnBaseUrl.IndexOf("?", StringComparison.Ordinal);
+        var transactionIdQueryParam = req.Query[PayFastSettingsFactory.TRANSACTION_ID_QUERY_PARAM_NAME];
+        if (!string.IsNullOrWhiteSpace(transactionIdQueryParam))
+        {
+            _logger.LogInformation("Found the {ParamName} query param from URL with value {TransactionId}", PayFastSettingsFactory.TRANSACTION_ID_QUERY_PARAM_NAME, transactionIdQueryParam);
+        }
 
-        return questionMarkIndex >= 0
-            ? validateAndStoreItnBaseUrl.Substring(0, questionMarkIndex).TrimEnd('/') + $"/{applicationId}?{validateAndStoreItnBaseUrl.Substring(questionMarkIndex + 1)}"
-            : validateAndStoreItnBaseUrl + $"/{applicationId}";
+        if (!req.HasFormContentType)
+        {
+            var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            _logger.LogCritical("Request body is not form but contained content: {Body}", requestBody);
+
+            return ResultContainer<PaymentNotificationRequestResult, PaymentNotificationRequestFailureReason>.Failed(
+                PaymentNotificationRequestFailureReason.InvalidContentType,
+                "Invalid content type, expected form data");
+        }
+
+        var payFastRequest = ExtractPayFastNotifyOrNull(req.Form);
+
+        if (payFastRequest == null)
+        {
+            _logger.LogCritical("The body is null or empty, aborting processing of it");
+            return ResultContainer<PaymentNotificationRequestResult, PaymentNotificationRequestFailureReason>.Failed(
+                PaymentNotificationRequestFailureReason.RequestBodyIsNullOrEmpty,
+                "The body is null or empty");
+        }
+
+        var successfulValue = new PaymentNotificationRequestResult
+        {
+            PaymentNotificationPayload = payFastRequest,
+        };
+
+        return ResultContainer<PaymentNotificationRequestResult, PaymentNotificationRequestFailureReason>.Success(successfulValue);
+    }
+
+    public async Task<ResultContainer<ValidatePaymentNotificationResult, ValidatePaymentNotificationFailureReason>> ValidatePaymentNotificationAsync(
+        IPaymentApplicationConfig genericApplicationConfig,
+        ClientApplicationId applicationId,
+        object genericPaymentNotificationPayload,
+        IPAddress remoteIp)
+    {
+        if (genericPaymentNotificationPayload is not PayFastNotify payFastRequest)
+        {
+            throw new NotSupportedException($"PaymentNotificationPayload is incorrect type in ValidatePaymentNotificationAsync, it should be PayFastNotify but it is '{genericPaymentNotificationPayload.GetType().FullName}'");
+        }
+
+        if (genericApplicationConfig is not PayFastClientAppConfig applicationConfig)
+        {
+            throw new NotSupportedException($"ApplicationConfig is incorrect type in CreateRedirectUri, it should be PayFastClientAppConfig but it is '{genericApplicationConfig.GetType().FullName}'");
+        }
+
+        payFastRequest.SetPassPhrase(applicationConfig.PassPhrase);
+
+        var calculatedSignature = payFastRequest.GetCalculatedSignature();
+        var signatureIsValid = payFastRequest.signature == calculatedSignature;
+
+        _logger.LogInformation("PayFast ITN signature valid: {IsValid}", signatureIsValid);
+        if (!signatureIsValid)
+        {
+            _logger.LogCritical("PayFast ITN signature validation failed");
+            return ResultContainer<ValidatePaymentNotificationResult, ValidatePaymentNotificationFailureReason>.Failed(
+                ValidatePaymentNotificationFailureReason.ValidationFailed,
+                "PayFast ITN signature validation failed");
+        }
+
+        var subsetOfPayFastSettings = new PayFastSettings
+        {
+            MerchantId = applicationConfig.MerchantId,
+            MerchantKey = applicationConfig.MerchantKey,
+            PassPhrase = applicationConfig.PassPhrase,
+            ValidateUrl = PayFastSettingsFactory.GetValidateUrl(applicationConfig.IsSandbox),
+        };
+        var payfastValidator = new PayFastValidator(subsetOfPayFastSettings, payFastRequest, remoteIp);
+
+        var merchantIdValidationResult = payfastValidator.ValidateMerchantId();
+        _logger.LogInformation(
+            "Merchant Id valid result: {MerchantIdValidationResult}, merchant id is {RequestMerchantId}",
+            merchantIdValidationResult, payFastRequest.merchant_id);
+
+        if (!merchantIdValidationResult)
+        {
+            _logger.LogCritical("PayFast ITN merchant id validation failed, merchant id is {MerchantId}", payFastRequest.merchant_id);
+            return ResultContainer<ValidatePaymentNotificationResult, ValidatePaymentNotificationFailureReason>.Failed(
+                ValidatePaymentNotificationFailureReason.ValidationFailed,
+                $"PayFast ITN merchant id validation failed, merchant id is {payFastRequest.merchant_id}");
+        }
+
+        var ipAddressValidationResult = await payfastValidator.ValidateSourceIp();
+        _logger.LogInformation("Ip Address valid: {IpAddressValidationResult}, remote IP is {RemoteIp}", ipAddressValidationResult, remoteIp);
+        if (!ipAddressValidationResult)
+        {
+            _logger.LogCritical("PayFast ITN IPAddress validation failed, ip is {RemoteIp}", remoteIp);
+            return ResultContainer<ValidatePaymentNotificationResult, ValidatePaymentNotificationFailureReason>.Failed(
+                ValidatePaymentNotificationFailureReason.ValidationFailed,
+                $"PayFast ITN IPAddress validation failed, ip is {remoteIp}");
+        }
+
+        // TODO: Currently seems that the data validation only works for success
+        if (payFastRequest.payment_status == PayFastStatics.CompletePaymentConfirmation)
+        {
+            var dataValidationResult = await payfastValidator.ValidateData();
+            _logger.LogInformation("Data Validation Result: {DataValidationResult}", dataValidationResult);
+            if (!dataValidationResult)
+            {
+                _logger.LogCritical("PayFast ITN data validation failed");
+                return ResultContainer<ValidatePaymentNotificationResult, ValidatePaymentNotificationFailureReason>.Failed(
+                    ValidatePaymentNotificationFailureReason.ValidationFailed,
+                    "PayFast ITN data validation failed");
+            }
+        }
+
+        if (payFastRequest.payment_status != PayFastStatics.CompletePaymentConfirmation
+            && payFastRequest.payment_status != PayFastStatics.CancelledPaymentConfirmation)
+        {
+            _logger.LogCritical("Invalid PayFast ITN payment status '{Status}'", payFastRequest.payment_status);
+            return ResultContainer<ValidatePaymentNotificationResult, ValidatePaymentNotificationFailureReason>.Failed(
+                ValidatePaymentNotificationFailureReason.ValidationFailed,
+                $"Invalid PayFast ITN payment status '{payFastRequest.payment_status}'");
+        }
+
+        var successfulValue = new ValidatePaymentNotificationResult
+        {
+            PaymentId = new PaymentId(payFastRequest.m_payment_id),
+        };
+
+        return ResultContainer<ValidatePaymentNotificationResult, ValidatePaymentNotificationFailureReason>.Success(successfulValue);
+    }
+
+    private static PayFastNotify ExtractPayFastNotifyOrNull(IFormCollection formCollection)
+    {
+        // https://github.com/louislewis2/payfast/blob/master/src/PayFast.AspNetCore/PayFastNotifyModelBinder.cs
+        if (formCollection == null || formCollection.Count < 1)
+        {
+            return null;
+        }
+
+        var properties = new Dictionary<string, string>();
+
+        foreach (var key in formCollection.Keys)
+        {
+            formCollection.TryGetValue(key, value: out var value);
+
+            properties.Add(key, value);
+        }
+
+        var model = new PayFastNotify();
+        model.FromFormCollection(properties);
+
+        return model;
     }
 }

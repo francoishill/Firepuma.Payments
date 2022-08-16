@@ -5,12 +5,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure;
 using Firepuma.Payments.Abstractions.ValueObjects;
+using Firepuma.Payments.FunctionApp.Config;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels.Attributes;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
 using Firepuma.Payments.Implementations.Config;
 using Firepuma.Payments.Implementations.TableProviders;
 using MediatR;
+using Microsoft.Extensions.Options;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Local
@@ -77,24 +79,28 @@ public static class AddPayment
 
     public class Handler : IRequestHandler<Command, Result>
     {
+        private readonly IOptions<PaymentGeneralOptions> _paymentOptions;
         private readonly IEnumerable<IPaymentGateway> _gateways;
         private readonly PaymentsTableProvider _paymentsTableProvider;
 
         public Handler(
+            IOptions<PaymentGeneralOptions> paymentOptions,
             IEnumerable<IPaymentGateway> gateways,
             PaymentsTableProvider paymentsTableProvider)
         {
+            _paymentOptions = paymentOptions;
             _gateways = gateways;
             _paymentsTableProvider = paymentsTableProvider;
         }
 
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
         {
+            var gatewayTypeId = command.GatewayTypeId;
             var applicationId = command.ApplicationId;
             var applicationConfig = command.ApplicationConfig;
             var paymentId = command.PaymentId;
 
-            var gateway = _gateways.GetFromTypeIdOrNull(command.GatewayTypeId);
+            var gateway = _gateways.GetFromTypeIdOrNull(gatewayTypeId);
 
             if (gateway == null)
             {
@@ -119,14 +125,38 @@ public static class AddPayment
                 return Result.Failed(Result.FailureReason.PaymentAlreadyExists, $"The payment (id '{paymentId}' and application id '{applicationId}') is already added and cannot be added again");
             }
 
+            var validateAndStorePaymentNotificationBaseUrlWithAppName = AddApplicationIdToItnBaseUrl(
+                _paymentOptions.Value.ValidateAndStorePaymentNotificationBaseUrl,
+                gatewayTypeId,
+                applicationId);
+
+            const string transactionIdQueryParamName = "tx";
+            var backendNotifyUrl =
+                validateAndStorePaymentNotificationBaseUrlWithAppName
+                + (validateAndStorePaymentNotificationBaseUrlWithAppName.Contains('?') ? "&" : "?")
+                + $"{transactionIdQueryParamName}={WebUtility.UrlEncode(paymentId.Value)}";
+
             var redirectUrl = await gateway.CreateRedirectUriAsync(
                 applicationConfig,
                 applicationId,
                 paymentId,
                 command.RequestDto,
+                backendNotifyUrl,
                 cancellationToken);
 
             return Result.Success(redirectUrl);
+        }
+
+        private static string AddApplicationIdToItnBaseUrl(
+            string validateAndStorePaymentNotificationBaseUrl,
+            PaymentGatewayTypeId gatewayTypeId,
+            ClientApplicationId applicationId)
+        {
+            var questionMarkIndex = validateAndStorePaymentNotificationBaseUrl.IndexOf("?", StringComparison.Ordinal);
+
+            return questionMarkIndex >= 0
+                ? validateAndStorePaymentNotificationBaseUrl.Substring(0, questionMarkIndex).TrimEnd('/') + $"/{gatewayTypeId}/{applicationId}?{validateAndStorePaymentNotificationBaseUrl.Substring(questionMarkIndex + 1)}"
+                : validateAndStorePaymentNotificationBaseUrl + $"/{gatewayTypeId}/{applicationId}";
         }
     }
 }

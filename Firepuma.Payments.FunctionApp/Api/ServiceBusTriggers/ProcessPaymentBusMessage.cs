@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
@@ -6,20 +7,25 @@ using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.BusMessages;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Mappings;
 using Firepuma.Payments.FunctionApp.PayFast.Commands;
+using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
 using MediatR;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
-namespace Firepuma.Payments.FunctionApp.PayFast.Api.ServiceBusTriggers;
+namespace Firepuma.Payments.FunctionApp.Api.ServiceBusTriggers;
 
 public class ProcessPaymentBusMessage
 {
     private readonly IMediator _mediator;
+    private readonly IEnumerable<IPaymentGateway> _gateways;
 
     public ProcessPaymentBusMessage(
-        IMediator mediator)
+        IMediator mediator,
+        IEnumerable<IPaymentGateway> gateways)
     {
         _mediator = mediator;
+        _gateways = gateways;
     }
 
     [FunctionName("ProcessPaymentBusMessage")]
@@ -33,7 +39,24 @@ public class ProcessPaymentBusMessage
 
         if (PaymentBusMessageMappings.TryGetPaymentMessage(busReceivedMessage, out var paymentEvent))
         {
-            if (paymentEvent is PayFastPaymentItnValidatedMessage itnValidatedMessage)
+            if (paymentEvent is PaymentNotificationValidatedMessage paymentNotificationValidatedMessage)
+            {
+                var gatewayTypeId = paymentNotificationValidatedMessage.GatewayTypeId;
+
+                var gateway = _gateways.GetFromTypeIdOrNull(gatewayTypeId);
+
+                if (gateway == null)
+                {
+                    log.LogError("The payment gateway type \'{GatewayTypeId}\' is not supported", gatewayTypeId);
+                    throw new InvalidOperationException($"The payment gateway type '{gatewayTypeId}' is not supported");
+                }
+
+                //FIX: Implement
+                var TODO = "";
+
+                log.LogError("TODO, must process paymentNotificationValidatedMessage {Message}", JsonConvert.SerializeObject(paymentNotificationValidatedMessage));
+            }
+            else if (paymentEvent is PayFastPaymentItnValidatedMessage itnValidatedMessage)
             {
                 var applicationId = itnValidatedMessage.ApplicationId;
                 var payFastRequest = itnValidatedMessage.PayFastRequest;

@@ -39,7 +39,8 @@ public class Startup : FunctionsStartup
         var validateAndStoreItnBaseUrl = GetRequiredEnvironmentVariable("FirepumaValidateAndStorePayFastItnBaseUrl");
         services.AddPayFastFeature(validateAndStoreItnBaseUrl);
 
-        services.AddPaymentsFeature();
+        var validateAndStorePaymentNotificationBaseUrl = GetRequiredEnvironmentVariable("FirepumaValidateAndStorePaymentNotificationBaseUrl");
+        services.AddPaymentsFeature(validateAndStorePaymentNotificationBaseUrl);
     }
 
     private static void AddMediator(IServiceCollection services)

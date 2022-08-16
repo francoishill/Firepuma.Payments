@@ -19,6 +19,7 @@ The plan of building this repo contained in these steps, not necessarily in this
     * [x] Fill in correct values in sample project `appsettings.json`
     * [x] Add user secrets for `PaymentsMicroservice->AuthorizationCode` and `PaymentsMicroservice->ServiceBusConnectionString`
 * [x] Deploy a client library to Nuget
+* [ ] Fix all the `//FIX` TODO comments
 * [ ] Unit tests
 * [ ] Create a template and add a "Launch in Azure" button
 * [ ] Add ability to extend it with other payment gateways
@@ -33,13 +34,14 @@ The plan of building this repo contained in these steps, not necessarily in this
 
 To run the `Firepuma.Payments.FunctionApp` locally, you will need to add the following Values to your `local.settings.json` file:
 
-| Name                                      | Description                                                                                                                                                                                                   |
-|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ServiceBus                                | A connection string to the service bus that will be used internally for the payments service (to drop notifications of payment systems unto it for better robustness)                                         |
-| QueueName                                 | The queue name to use in the service bus                                                                                                                                                                      |
-| FirepumaValidateAndStorePayFastItnBaseUrl | Used for the callback/notification of 3rd party services; if you use [`ngrok http 7071`](https://ngrok.com/), it will be something like https://123c-123-123-22-33.sa.ngrok.io/api/ValidateAndStorePayFastItn |
-| EventGridEndpoint                         | The Azure Event Grid custom topic endpoint, ie. https://YOUR-GRID-TOPIC.eastus2-1.eventgrid.azure.net/api/events                                                                                              |
-| EventGridAccessKey                        | Access key to your event grid                                                                                                                                                                                 |
+| Name                                               | Description                                                                                                                                                                                                            |
+|----------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ServiceBus                                         | A connection string to the service bus that will be used internally for the payments service (to drop notifications of payment systems unto it for better robustness)                                                  |
+| QueueName                                          | The queue name to use in the service bus                                                                                                                                                                               |
+| FirepumaValidateAndStorePayFastItnBaseUrl          | Used for the callback/notification of 3rd party services; if you use [`ngrok http 7071`](https://ngrok.com/), it will be something like https://123c-123-123-22-33.sa.ngrok.io/api/ValidateAndStorePayFastItn          |
+| FirepumaValidateAndStorePaymentNotificationBaseUrl | Used for the callback/notification of 3rd party services; if you use [`ngrok http 7071`](https://ngrok.com/), it will be something like https://123c-123-123-22-33.sa.ngrok.io/api/ValidateAndStorePaymentNotification |
+| EventGridEndpoint                                  | The Azure Event Grid custom topic endpoint, ie. https://YOUR-GRID-TOPIC.eastus2-1.eventgrid.azure.net/api/events                                                                                                       |
+| EventGridAccessKey                                 | Access key to your event grid                                                                                                                                                                                          |
 
 ### Firepuma.Payments.FunctionAppManager
 

@@ -11,6 +11,25 @@ public static class PayFastSettingsFactory
     public static PayFastPaymentSettings CreatePayFastSettings(
         PayFastClientAppConfig clientAppConfig,
         string backendNotifyUrl,
+        string returnUrl,
+        string cancelUrl)
+    {
+        return new PayFastPaymentSettings
+        {
+            MerchantId = clientAppConfig.MerchantId,
+            MerchantKey = clientAppConfig.MerchantKey,
+            PassPhrase = clientAppConfig.PassPhrase,
+            ReturnUrl = returnUrl,
+            CancelUrl = cancelUrl,
+            NotifyUrl = backendNotifyUrl,
+            ProcessUrl = clientAppConfig.IsSandbox ? "https://sandbox.payfast.co.za/eng/process" : "https://www.payfast.co.za/eng/process",
+            ValidateUrl = GetValidateUrl(clientAppConfig.IsSandbox),
+        };
+    }
+
+    public static PayFastPaymentSettings CreatePayFastSettingsOld(
+        PayFastClientAppConfig clientAppConfig,
+        string backendNotifyUrl,
         string transactionId,
         string returnUrl,
         string cancelUrl)

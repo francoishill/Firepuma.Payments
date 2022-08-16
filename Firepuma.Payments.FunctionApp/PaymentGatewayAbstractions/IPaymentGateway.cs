@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Data.Tables;
@@ -53,5 +54,16 @@ public interface IPaymentGateway
         ClientApplicationId applicationId,
         PaymentId paymentId,
         object genericRequestDto,
+        string backendNotifyUrl,
         CancellationToken cancellationToken);
+
+    Task<ResultContainer<PaymentNotificationRequestResult, PaymentNotificationRequestFailureReason>> DeserializePaymentNotificationRequestAsync(
+        HttpRequest req,
+        CancellationToken cancellationToken);
+
+    Task<ResultContainer<ValidatePaymentNotificationResult, ValidatePaymentNotificationFailureReason>> ValidatePaymentNotificationAsync(
+        IPaymentApplicationConfig genericApplicationConfig,
+        ClientApplicationId applicationId,
+        object genericPaymentNotificationPayload,
+        IPAddress remoteIp);
 }

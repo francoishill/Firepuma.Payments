@@ -128,7 +128,7 @@ public static class AddPayFastOnceOffPayment
                     command.ItemName,
                     command.ItemDescription);
 
-                var payFastSettings = PayFastSettingsFactory.CreatePayFastSettings(
+                var payFastSettings = PayFastSettingsFactory.CreatePayFastSettingsOld(
                     applicationConfig,
                     validateAndStoreItnUrlWithAppName,
                     payment.PaymentId,

@@ -34,7 +34,7 @@ public interface IPaymentGateway
         HttpRequest req,
         CancellationToken cancellationToken);
 
-    Task<IPaymentTableEntity> CreatePaymentTableEntity(
+    Task<IPaymentTableEntity> CreatePaymentTableEntityAsync(
         IPaymentApplicationConfig applicationConfig,
         ClientApplicationId applicationId,
         PaymentId paymentId,
@@ -48,7 +48,7 @@ public interface IPaymentGateway
         string rowKey,
         CancellationToken cancellationToken);
 
-    Task<Uri> CreateRedirectUri(
+    Task<Uri> CreateRedirectUriAsync(
         IPaymentApplicationConfig genericApplicationConfig,
         ClientApplicationId applicationId,
         PaymentId paymentId,

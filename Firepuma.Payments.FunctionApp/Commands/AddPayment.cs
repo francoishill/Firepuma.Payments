@@ -101,7 +101,7 @@ public static class AddPayment
                 return Result.Failed(Result.FailureReason.UnknownGatewayTypeId, $"The payment gateway type '{command.GatewayTypeId}' is not supported");
             }
 
-            var paymentEntity = await gateway.CreatePaymentTableEntity(
+            var paymentEntity = await gateway.CreatePaymentTableEntityAsync(
                 applicationConfig,
                 applicationId,
                 paymentId,
@@ -119,7 +119,7 @@ public static class AddPayment
                 return Result.Failed(Result.FailureReason.PaymentAlreadyExists, $"The payment (id '{paymentId}' and application id '{applicationId}') is already added and cannot be added again");
             }
 
-            var redirectUrl = await gateway.CreateRedirectUri(
+            var redirectUrl = await gateway.CreateRedirectUriAsync(
                 applicationConfig,
                 applicationId,
                 paymentId,

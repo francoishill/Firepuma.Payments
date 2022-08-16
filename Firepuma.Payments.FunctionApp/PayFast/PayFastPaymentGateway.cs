@@ -101,7 +101,7 @@ public class PayFastPaymentGateway : IPaymentGateway
         return ResultContainer<PrepareRequestResult, PrepareRequestFailureReason>.Success(successfulValue);
     }
 
-    public async Task<IPaymentTableEntity> CreatePaymentTableEntity(
+    public async Task<IPaymentTableEntity> CreatePaymentTableEntityAsync(
         IPaymentApplicationConfig applicationConfig,
         ClientApplicationId applicationId,
         PaymentId paymentId,
@@ -136,7 +136,7 @@ public class PayFastPaymentGateway : IPaymentGateway
         return await AzureTableHelper.GetSingleRecordOrNullAsync<PayFastOnceOffPayment>(tableClient, partitionKey, rowKey, cancellationToken);
     }
 
-    public async Task<Uri> CreateRedirectUri(
+    public async Task<Uri> CreateRedirectUriAsync(
         IPaymentApplicationConfig genericApplicationConfig,
         ClientApplicationId applicationId,
         PaymentId paymentId,

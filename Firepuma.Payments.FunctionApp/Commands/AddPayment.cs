@@ -34,7 +34,7 @@ public static class AddPayment
         public IPaymentApplicationConfig ApplicationConfig { get; init; }
 
         public PaymentId PaymentId { get; init; }
-        public object RequestDto { get; set; }
+        public object RequestDto { get; init; }
     }
 
     public class Result

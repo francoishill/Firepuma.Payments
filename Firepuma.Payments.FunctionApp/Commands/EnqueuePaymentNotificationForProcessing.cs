@@ -25,20 +25,20 @@ public static class EnqueuePaymentNotificationForProcessing
 {
     public class Command : BaseCommand, IRequest<Result>
     {
-        public string CorrelationId { get; set; }
+        public string CorrelationId { get; init; }
 
         public PaymentGatewayTypeId GatewayTypeId { get; init; }
 
-        public ClientApplicationId ApplicationId { get; set; }
+        public ClientApplicationId ApplicationId { get; init; }
 
         [IgnoreCommandAudit]
         public IPaymentApplicationConfig ApplicationConfig { get; init; }
 
         [IgnoreCommandAudit] //FIX: this means we won't have history of this PaymentNotificationPayload data, rather add another attribute to write the data to BlobStorage 
-        public object PaymentNotificationPayload { get; set; }
+        public object PaymentNotificationPayload { get; init; }
 
-        public string RemoteIp { get; set; }
-        public string IncomingRequestUri { get; set; }
+        public string RemoteIp { get; init; }
+        public string IncomingRequestUri { get; init; }
     }
 
     public class Result

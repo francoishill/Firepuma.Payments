@@ -17,6 +17,7 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddTableProvider("Payments", table => new PaymentsTableProvider(table));
+        services.AddTableProvider("PaymentTraces", table => new PaymentTracesTableProvider(table));
         services.AddTableProvider("PaymentApplicationConfigs", table => new ApplicationConfigsTableProvider(table));
     }
 }

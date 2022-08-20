@@ -66,4 +66,8 @@ public interface IPaymentGateway
         ClientApplicationId applicationId,
         object genericPaymentNotificationPayload,
         IPAddress remoteIp);
+
+    void SetPaymentPropertiesFromNotification(
+        IPaymentTableEntity genericPayment,
+        BasePaymentNotificationPayload genericPaymentNotificationPayload);
 }

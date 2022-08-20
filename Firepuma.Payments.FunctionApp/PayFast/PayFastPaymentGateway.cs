@@ -13,6 +13,7 @@ using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.PayFast.Commands;
 using Firepuma.Payments.FunctionApp.PayFast.Factories;
 using Firepuma.Payments.FunctionApp.PayFast.TableModels;
+using Firepuma.Payments.FunctionApp.PayFast.ValueObjects;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions.Results;
 using Firepuma.Payments.FunctionApp.TableModels;
@@ -223,9 +224,9 @@ public class PayFastPaymentGateway : IPaymentGateway
         object genericPaymentNotificationPayload,
         IPAddress remoteIp)
     {
-        if (genericPaymentNotificationPayload is not PayFastNotify payFastRequest)
+        if (genericPaymentNotificationPayload is not PayFastNotificationPayload payFastNotificationPayload)
         {
-            throw new NotSupportedException($"PaymentNotificationPayload is incorrect type in ValidatePaymentNotificationAsync, it should be PayFastNotify but it is '{genericPaymentNotificationPayload.GetType().FullName}'");
+            throw new NotSupportedException($"PaymentNotificationPayload is incorrect type in ValidatePaymentNotificationAsync, it should be PayFastNotificationPayload but it is '{genericPaymentNotificationPayload.GetType().FullName}'");
         }
 
         if (genericApplicationConfig is not PayFastClientAppConfig applicationConfig)
@@ -233,6 +234,7 @@ public class PayFastPaymentGateway : IPaymentGateway
             throw new NotSupportedException($"ApplicationConfig is incorrect type in CreateRedirectUri, it should be PayFastClientAppConfig but it is '{genericApplicationConfig.GetType().FullName}'");
         }
 
+        var payFastRequest = payFastNotificationPayload.PayFastNotify;
         payFastRequest.SetPassPhrase(applicationConfig.PassPhrase);
 
         var calculatedSignature = payFastRequest.GetCalculatedSignature();
@@ -302,15 +304,58 @@ public class PayFastPaymentGateway : IPaymentGateway
                 $"Invalid PayFast ITN payment status '{payFastRequest.payment_status}'");
         }
 
-        var successfulValue = new ValidatePaymentNotificationResult
+        var paymentStatus = ConvertPayFastStatusToPaymentStatusOrNull(payFastRequest.payment_status);
+        if (paymentStatus == null)
         {
-            PaymentId = new PaymentId(payFastRequest.m_payment_id),
-        };
+            _logger.LogCritical("PayFast status is invalid and cannot convert PayFast status string \'{PaymentStatus}\' to PaymentStatus enum", payFastRequest.payment_status);
+            return ResultContainer<ValidatePaymentNotificationResult, ValidatePaymentNotificationFailureReason>.Failed(
+                ValidatePaymentNotificationFailureReason.InvalidStatus,
+                $"PayFast status is invalid and cannot convert PayFast status string '{payFastRequest.payment_status}' to PaymentStatus enum");
+        }
+
+        var successfulValue = new ValidatePaymentNotificationResult(
+            new PaymentId(payFastRequest.m_payment_id),
+            payFastRequest.pf_payment_id,
+            paymentStatus.Value);
 
         return ResultContainer<ValidatePaymentNotificationResult, ValidatePaymentNotificationFailureReason>.Success(successfulValue);
     }
 
-    private static PayFastNotify ExtractPayFastNotifyOrNull(IFormCollection formCollection)
+    public void SetPaymentPropertiesFromNotification(IPaymentTableEntity genericPayment, BasePaymentNotificationPayload genericPaymentNotificationPayload)
+    {
+        if (genericPayment is not PayFastOnceOffPayment payFastPayment)
+        {
+            throw new NotSupportedException($"Payment is incorrect type in SetPaymentPropertiesFromNotification, it should be PayFastOnceOffPayment but it is '{genericPayment.GetType().FullName}'");
+        }
+
+        if (genericPaymentNotificationPayload is not PayFastNotificationPayload payFastNotificationPayload)
+        {
+            throw new NotSupportedException($"PaymentNotificationPayload is incorrect type in ValidatePaymentNotificationAsync, it should be PayFastNotify but it is '{genericPaymentNotificationPayload.GetType().FullName}'");
+        }
+
+        var payFastRequest = payFastNotificationPayload.PayFastNotify;
+        if (payFastRequest.payment_status == PayFastStatics.CompletePaymentConfirmation)
+        {
+            if (string.IsNullOrWhiteSpace(payFastRequest.token))
+            {
+                _logger.LogWarning("PayFast ITN for paymentId '{PaymentId}' does not have a payfastToken", genericPayment.PaymentId);
+            }
+
+            payFastPayment.PayfastPaymentToken = payFastRequest.token;
+        }
+    }
+
+    private static PaymentStatus? ConvertPayFastStatusToPaymentStatusOrNull(string payFastStatus)
+    {
+        return payFastStatus switch
+        {
+            PayFastStatics.CompletePaymentConfirmation => PaymentStatus.Succeeded,
+            PayFastStatics.CancelledPaymentConfirmation => PaymentStatus.Cancelled,
+            _ => null,
+        };
+    }
+
+    private static PayFastNotificationPayload ExtractPayFastNotifyOrNull(IFormCollection formCollection)
     {
         // https://github.com/louislewis2/payfast/blob/master/src/PayFast.AspNetCore/PayFastNotifyModelBinder.cs
         if (formCollection == null || formCollection.Count < 1)
@@ -330,6 +375,9 @@ public class PayFastPaymentGateway : IPaymentGateway
         var model = new PayFastNotify();
         model.FromFormCollection(properties);
 
-        return model;
+        return new PayFastNotificationPayload
+        {
+            PayFastNotify = model,
+        };
     }
 }

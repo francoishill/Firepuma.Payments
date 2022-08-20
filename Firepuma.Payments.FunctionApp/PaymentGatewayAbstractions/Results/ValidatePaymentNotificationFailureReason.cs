@@ -3,4 +3,5 @@
 public enum ValidatePaymentNotificationFailureReason
 {
     ValidationFailed,
+    InvalidStatus,
 }

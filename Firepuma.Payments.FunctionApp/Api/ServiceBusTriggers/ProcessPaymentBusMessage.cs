@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Firepuma.Payments.Abstractions.ValueObjects;
+using Firepuma.Payments.FunctionApp.Commands;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.BusMessages;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Mappings;
 using Firepuma.Payments.FunctionApp.PayFast.Commands;
@@ -11,7 +12,6 @@ using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
 using MediatR;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Firepuma.Payments.FunctionApp.Api.ServiceBusTriggers;
 
@@ -51,10 +51,25 @@ public class ProcessPaymentBusMessage
                     throw new InvalidOperationException($"The payment gateway type '{gatewayTypeId}' is not supported");
                 }
 
-                //FIX: Implement
-                var TODO = "";
+                var updateCommand = new UpdatePayment.Command
+                {
+                    CorrelationId = correlationId,
+                    GatewayTypeId = gatewayTypeId,
+                    ApplicationId = paymentNotificationValidatedMessage.ApplicationId,
+                    PaymentId = paymentNotificationValidatedMessage.PaymentId,
+                    PaymentStatus = paymentNotificationValidatedMessage.PaymentStatus,
+                    GatewayInternalTransactionId = paymentNotificationValidatedMessage.GatewayInternalTransactionId,
+                    PaymentNotificationPayload = paymentNotificationValidatedMessage.PaymentNotificationPayload,
+                    IncomingRequestUri = paymentNotificationValidatedMessage.IncomingRequestUri,
+                };
 
-                log.LogError("TODO, must process paymentNotificationValidatedMessage {Message}", JsonConvert.SerializeObject(paymentNotificationValidatedMessage));
+                var updateResult = await _mediator.Send(updateCommand, cancellationToken);
+                if (!updateResult.IsSuccessful)
+                {
+                    log.LogCritical("UpdatePayFastOnceOffPaymentStatus command execution was unsuccessful, reason {Reason}, errors {Errors}", updateResult.FailedReason.ToString(), string.Join(", ", updateResult.FailedErrors));
+
+                    throw new Exception($"{updateResult.FailedReason.ToString()}, {string.Join(", ", updateResult.FailedErrors)}");
+                }
             }
             else if (paymentEvent is PayFastPaymentItnValidatedMessage itnValidatedMessage)
             {

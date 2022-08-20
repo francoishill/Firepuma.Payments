@@ -35,7 +35,7 @@ public static class EnqueuePaymentNotificationForProcessing
         public IPaymentApplicationConfig ApplicationConfig { get; init; }
 
         [IgnoreCommandAudit] //FIX: this means we won't have history of this PaymentNotificationPayload data, rather add another attribute to write the data to BlobStorage 
-        public object PaymentNotificationPayload { get; init; }
+        public BasePaymentNotificationPayload PaymentNotificationPayload { get; init; }
 
         public string RemoteIp { get; init; }
         public string IncomingRequestUri { get; init; }
@@ -116,12 +116,16 @@ public static class EnqueuePaymentNotificationForProcessing
             }
 
             var paymentId = validationResult.Result.PaymentId;
+            var paymentStatus = validationResult.Result.PaymentStatus;
+            var gatewayInternalTransactionId = validationResult.Result.GatewayInternalTransactionId;
 
             var messageDto = new PaymentNotificationValidatedMessage
             {
                 GatewayTypeId = gatewayTypeId,
                 ApplicationId = applicationId,
                 PaymentId = paymentId,
+                GatewayInternalTransactionId = gatewayInternalTransactionId,
+                PaymentStatus = paymentStatus,
                 PaymentNotificationPayload = paymentNotificationPayload,
                 IncomingRequestUri = command.IncomingRequestUri,
             };

@@ -14,7 +14,7 @@ using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
 using Firepuma.Payments.FunctionApp.Queries;
 using Firepuma.Payments.FunctionApp.TableModels;
 using Firepuma.Payments.FunctionApp.TableModels.Extensions;
-using Firepuma.Payments.Implementations.TableProviders;
+using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -87,16 +87,16 @@ public static class UpdatePayment
     {
         private readonly ILogger<Handler> _logger;
         private readonly IEnumerable<IPaymentGateway> _gateways;
-        private readonly PaymentTracesTableProvider _paymentTracesTableProvider;
-        private readonly PaymentsTableProvider _paymentsTableProvider;
+        private readonly ITableProvider<PaymentTrace> _paymentTracesTableProvider;
+        private readonly ITableProvider<IPaymentTableEntity> _paymentsTableProvider;
         private readonly IMediator _mediator;
         private readonly IEventPublisher _eventPublisher;
 
         public Handler(
             ILogger<Handler> logger,
             IEnumerable<IPaymentGateway> gateways,
-            PaymentTracesTableProvider paymentTracesTableProvider,
-            PaymentsTableProvider paymentsTableProvider,
+            ITableProvider<PaymentTrace> paymentTracesTableProvider,
+            ITableProvider<IPaymentTableEntity> paymentsTableProvider,
             IMediator mediator,
             IEventPublisher eventPublisher)
         {

@@ -7,8 +7,9 @@ using Firepuma.Payments.Abstractions.DTOs.Responses;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
 using Firepuma.Payments.FunctionApp.Queries;
+using Firepuma.Payments.Implementations.Config;
 using Firepuma.Payments.Implementations.Factories;
-using Firepuma.Payments.Implementations.TableProviders;
+using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,13 +24,13 @@ namespace Firepuma.Payments.FunctionApp.Api.HttpFunctions;
 public class GetPayment
 {
     private readonly ILogger<GetPayment> _logger;
-    private readonly ApplicationConfigsTableProvider _applicationConfigsTableProvider;
+    private readonly ITableProvider<IPaymentApplicationConfig> _applicationConfigsTableProvider;
     private readonly IMediator _mediator;
     private readonly IEnumerable<IPaymentGateway> _gateways;
 
     public GetPayment(
         ILogger<GetPayment> logger,
-        ApplicationConfigsTableProvider applicationConfigsTableProvider,
+        ITableProvider<IPaymentApplicationConfig> applicationConfigsTableProvider,
         IMediator mediator,
         IEnumerable<IPaymentGateway> gateways)
     {

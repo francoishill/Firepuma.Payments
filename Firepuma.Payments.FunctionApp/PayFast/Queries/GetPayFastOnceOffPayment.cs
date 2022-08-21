@@ -6,7 +6,8 @@ using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.Exceptions;
 using Firepuma.Payments.FunctionApp.PayFast.Config;
 using Firepuma.Payments.FunctionApp.PayFast.TableModels;
-using Firepuma.Payments.FunctionApp.PayFast.TableProviders;
+using Firepuma.Payments.FunctionApp.TableModels;
+using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -72,12 +73,12 @@ public static class GetPayFastOnceOffPayment
     {
         private readonly ILogger<Handler> _logger;
         private readonly PayFastClientAppConfigProvider _appConfigProvider;
-        private readonly PayFastOnceOffPaymentsTableProvider _payFastOnceOffPaymentsTableProvider;
+        private readonly ITableProvider<IPaymentTableEntity> _payFastOnceOffPaymentsTableProvider;
 
         public Handler(
             ILogger<Handler> logger,
             PayFastClientAppConfigProvider appConfigProvider,
-            PayFastOnceOffPaymentsTableProvider payFastOnceOffPaymentsTableProvider)
+            ITableProvider<IPaymentTableEntity> payFastOnceOffPaymentsTableProvider)
         {
             _logger = logger;
             _appConfigProvider = appConfigProvider;

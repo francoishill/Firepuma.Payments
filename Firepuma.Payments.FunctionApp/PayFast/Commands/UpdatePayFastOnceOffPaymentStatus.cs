@@ -9,7 +9,8 @@ using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
 using Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Services;
 using Firepuma.Payments.FunctionApp.PayFast.TableModels;
-using Firepuma.Payments.FunctionApp.PayFast.TableProviders;
+using Firepuma.Payments.FunctionApp.TableModels;
+using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using PayFast;
@@ -73,12 +74,12 @@ public static class UpdatePayFastOnceOffPaymentStatus
     public class Handler : IRequestHandler<Command, Result>
     {
         private readonly ILogger<Handler> _logger;
-        private readonly PayFastOnceOffPaymentsTableProvider _payFastOnceOffPaymentsTableProvider;
+        private readonly ITableProvider<IPaymentTableEntity> _payFastOnceOffPaymentsTableProvider;
         private readonly IEventPublisher _eventPublisher;
 
         public Handler(
             ILogger<Handler> logger,
-            PayFastOnceOffPaymentsTableProvider payFastOnceOffPaymentsTableProvider,
+            ITableProvider<IPaymentTableEntity> payFastOnceOffPaymentsTableProvider,
             IEventPublisher eventPublisher)
         {
             _logger = logger;

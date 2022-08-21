@@ -7,8 +7,9 @@ using Firepuma.Payments.Abstractions.DTOs.Responses;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Commands;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
+using Firepuma.Payments.Implementations.Config;
 using Firepuma.Payments.Implementations.Factories;
-using Firepuma.Payments.Implementations.TableProviders;
+using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -21,13 +22,13 @@ namespace Firepuma.Payments.FunctionApp.Api.HttpFunctions;
 public class PreparePayment
 {
     private readonly ILogger<PreparePayment> _logger;
-    private readonly ApplicationConfigsTableProvider _applicationConfigsTableProvider;
+    private readonly ITableProvider<IPaymentApplicationConfig> _applicationConfigsTableProvider;
     private readonly IMediator _mediator;
     private readonly IEnumerable<IPaymentGateway> _gateways;
 
     public PreparePayment(
         ILogger<PreparePayment> logger,
-        ApplicationConfigsTableProvider applicationConfigsTableProvider,
+        ITableProvider<IPaymentApplicationConfig> applicationConfigsTableProvider,
         IMediator mediator,
         IEnumerable<IPaymentGateway> gateways)
     {

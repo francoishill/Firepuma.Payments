@@ -5,20 +5,11 @@ namespace Firepuma.Payments.Implementations.TableStorage;
 
 public static class ServiceCollectionExtensions
 {
-    public static void AddTableProvider<TProvider>(
+    public static void AddTableProvider<TEntity>(
         this IServiceCollection services,
-        string tableName,
-        Func<TableClient, TProvider> factory)
-        where TProvider : class, ITableProvider
+        string tableName)
+        where TEntity : class, ITableEntity
     {
-        services.AddScoped(s =>
-        {
-            var tableServiceClient = s.GetRequiredService<TableServiceClient>();
-            var tableClient = tableServiceClient.GetTableClient(tableName);
-            return factory(tableClient);
-        });
-
-        //TODO: Find a better way
-        services.BuildServiceProvider().GetRequiredService<TProvider>().Table.CreateIfNotExists();
+        services.AddSingleton<ITableProvider<TEntity>>(provider => new TableProvider<TEntity>(provider.GetRequiredService<TableServiceClient>().GetTableClient(tableName)));
     }
 }

@@ -5,7 +5,7 @@ using Azure;
 using Azure.Data.Tables;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.Implementations.Config;
-using Firepuma.Payments.Implementations.TableProviders;
+using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -39,11 +39,11 @@ public static class AddClientAppTableRecord
     public class Handler : IRequestHandler<Command, Result>
     {
         private readonly ILogger<Handler> _logger;
-        private readonly ApplicationConfigsTableProvider _applicationConfigsTableProvider;
+        private readonly ITableProvider<IPaymentApplicationConfig> _applicationConfigsTableProvider;
 
         public Handler(
             ILogger<Handler> logger,
-            ApplicationConfigsTableProvider applicationConfigsTableProvider)
+            ITableProvider<IPaymentApplicationConfig> applicationConfigsTableProvider)
         {
             _logger = logger;
             _applicationConfigsTableProvider = applicationConfigsTableProvider;

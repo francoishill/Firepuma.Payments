@@ -3,7 +3,8 @@ using System.Threading.Tasks;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
 using Firepuma.Payments.FunctionApp.PayFast.TableModels;
-using Firepuma.Payments.FunctionApp.PayFast.TableProviders;
+using Firepuma.Payments.FunctionApp.TableModels;
+using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
 using Newtonsoft.Json;
 using PayFast;
@@ -60,10 +61,10 @@ public static class AddPayFastItnTrace
 
     public class Handler : IRequestHandler<Command, Result>
     {
-        private readonly PayFastItnTracesTableProvider _payFastItnTracesTableProvider;
+        private readonly ITableProvider<PaymentTrace> _payFastItnTracesTableProvider;
 
         public Handler(
-            PayFastItnTracesTableProvider payFastItnTracesTableProvider)
+            ITableProvider<PaymentTrace> payFastItnTracesTableProvider)
         {
             _payFastItnTracesTableProvider = payFastItnTracesTableProvider;
         }

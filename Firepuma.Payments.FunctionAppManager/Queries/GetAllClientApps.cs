@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.Payments.Implementations.Config;
-using Firepuma.Payments.Implementations.TableProviders;
+using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
 
 // ReSharper disable UnusedType.Global
@@ -18,10 +18,10 @@ public static class GetAllClientApps
 
     public class Handler : IRequestHandler<Query, IEnumerable<PayFastClientAppConfig>>
     {
-        private readonly ApplicationConfigsTableProvider _applicationConfigsTableProvider;
+        private readonly ITableProvider<IPaymentApplicationConfig> _applicationConfigsTableProvider;
 
         public Handler(
-            ApplicationConfigsTableProvider applicationConfigsTableProvider)
+            ITableProvider<IPaymentApplicationConfig> applicationConfigsTableProvider)
         {
             _applicationConfigsTableProvider = applicationConfigsTableProvider;
         }

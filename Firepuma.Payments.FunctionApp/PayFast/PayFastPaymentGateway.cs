@@ -18,7 +18,7 @@ using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions.Results;
 using Firepuma.Payments.FunctionApp.TableModels;
 using Firepuma.Payments.Implementations.Config;
-using Firepuma.Payments.Implementations.TableProviders;
+using Firepuma.Payments.Implementations.TableStorage;
 using Firepuma.Payments.Implementations.TableStorage.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -55,7 +55,7 @@ public class PayFastPaymentGateway : IPaymentGateway
     }
 
     public async Task<IPaymentApplicationConfig> GetApplicationConfigAsync(
-        ApplicationConfigsTableProvider applicationConfigsTableProvider,
+        ITableProvider<IPaymentApplicationConfig> applicationConfigsTableProvider,
         ClientApplicationId applicationId,
         CancellationToken cancellationToken)
     {

@@ -4,19 +4,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.Exceptions;
-using Firepuma.Payments.FunctionApp.PayFast.TableProviders;
 using Firepuma.Payments.FunctionApp.PayFast.Validation;
 using Firepuma.Payments.Implementations.Config;
+using Firepuma.Payments.Implementations.TableStorage;
 using Firepuma.Payments.Implementations.TableStorage.Helpers;
 
 namespace Firepuma.Payments.FunctionApp.PayFast.Config;
 
 public class PayFastClientAppConfigProvider
 {
-    private readonly PayFastApplicationConfigsTableProvider _applicationConfigsTableProvider;
+    private readonly ITableProvider<IPaymentApplicationConfig> _applicationConfigsTableProvider;
 
     public PayFastClientAppConfigProvider(
-        PayFastApplicationConfigsTableProvider applicationConfigsTableProvider)
+        ITableProvider<IPaymentApplicationConfig> applicationConfigsTableProvider)
     {
         _applicationConfigsTableProvider = applicationConfigsTableProvider;
     }

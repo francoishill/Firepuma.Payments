@@ -6,7 +6,7 @@ using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels.A
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
 using Firepuma.Payments.FunctionApp.TableModels;
 using Firepuma.Payments.Implementations.Config;
-using Firepuma.Payments.Implementations.TableProviders;
+using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -77,12 +77,12 @@ public static class GetPaymentDetails
     {
         private readonly ILogger<Handler> _logger;
         private readonly IEnumerable<IPaymentGateway> _gateways;
-        private readonly PaymentsTableProvider _paymentsTableProvider;
+        private readonly ITableProvider<IPaymentTableEntity> _paymentsTableProvider;
 
         public Handler(
             ILogger<Handler> logger,
             IEnumerable<IPaymentGateway> gateways,
-            PaymentsTableProvider paymentsTableProvider)
+            ITableProvider<IPaymentTableEntity> paymentsTableProvider)
         {
             _logger = logger;
             _gateways = gateways;

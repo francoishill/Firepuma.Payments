@@ -1,5 +1,6 @@
 ﻿using Firepuma.Payments.FunctionApp.Config;
-using Firepuma.Payments.Implementations.TableProviders;
+using Firepuma.Payments.FunctionApp.TableModels;
+using Firepuma.Payments.Implementations.Config;
 using Firepuma.Payments.Implementations.TableStorage;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,8 +17,8 @@ public static class ServiceCollectionExtensions
             opt.ValidateAndStorePaymentNotificationBaseUrl = validateAndStorePaymentNotificationBaseUrl;
         });
 
-        services.AddTableProvider("Payments", table => new PaymentsTableProvider(table));
-        services.AddTableProvider("PaymentTraces", table => new PaymentTracesTableProvider(table));
-        services.AddTableProvider("PaymentApplicationConfigs", table => new ApplicationConfigsTableProvider(table));
+        services.AddTableProvider<IPaymentTableEntity>("Payments");
+        services.AddTableProvider<PaymentTrace>("PaymentTraces");
+        services.AddTableProvider<IPaymentApplicationConfig>("PaymentApplicationConfigs");
     }
 }

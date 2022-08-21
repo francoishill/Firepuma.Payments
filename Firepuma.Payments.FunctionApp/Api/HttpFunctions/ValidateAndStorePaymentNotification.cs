@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Commands;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
+using Firepuma.Payments.Implementations.Config;
 using Firepuma.Payments.Implementations.Factories;
-using Firepuma.Payments.Implementations.TableProviders;
+using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -23,13 +24,13 @@ namespace Firepuma.Payments.FunctionApp.Api.HttpFunctions;
 public class ValidateAndStorePaymentNotification
 {
     private readonly ILogger<ValidateAndStorePaymentNotification> _logger;
-    private readonly ApplicationConfigsTableProvider _applicationConfigsTableProvider;
+    private readonly ITableProvider<IPaymentApplicationConfig> _applicationConfigsTableProvider;
     private readonly IMediator _mediator;
     private readonly IEnumerable<IPaymentGateway> _gateways;
 
     public ValidateAndStorePaymentNotification(
         ILogger<ValidateAndStorePaymentNotification> logger,
-        ApplicationConfigsTableProvider applicationConfigsTableProvider,
+        ITableProvider<IPaymentApplicationConfig> applicationConfigsTableProvider,
         IMediator mediator,
         IEnumerable<IPaymentGateway> gateways)
     {

@@ -1,6 +1,7 @@
 ﻿using Firepuma.Payments.FunctionApp.PayFast.Config;
-using Firepuma.Payments.FunctionApp.PayFast.TableProviders;
+using Firepuma.Payments.FunctionApp.PayFast.TableModels;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
+using Firepuma.Payments.Implementations.Config;
 using Firepuma.Payments.Implementations.TableStorage;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,9 +18,9 @@ public static class ServiceCollectionExtensions
             opt.ValidateAndStoreItnBaseUrl = validateAndStoreItnBaseUrl;
         });
 
-        services.AddTableProvider("PayFastApplicationConfigs", table => new PayFastApplicationConfigsTableProvider(table));
-        services.AddTableProvider("PayFastOnceOffPayments", table => new PayFastOnceOffPaymentsTableProvider(table));
-        services.AddTableProvider("PayFastItnTraces", table => new PayFastItnTracesTableProvider(table));
+        services.AddTableProvider<PayFastClientAppConfig>("PayFastApplicationConfigs");
+        services.AddTableProvider<PayFastOnceOffPayment>("PayFastOnceOffPayments");
+        services.AddTableProvider<PayFastItnTrace>("PayFastItnTraces");
 
         services.AddScoped<PayFastClientAppConfigProvider>();
 

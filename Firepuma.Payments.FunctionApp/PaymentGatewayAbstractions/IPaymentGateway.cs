@@ -7,7 +7,7 @@ using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions.Results;
 using Firepuma.Payments.FunctionApp.TableModels;
 using Firepuma.Payments.Implementations.Config;
-using Firepuma.Payments.Implementations.TableProviders;
+using Firepuma.Payments.Implementations.TableStorage;
 using Microsoft.AspNetCore.Http;
 
 namespace Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
@@ -27,7 +27,7 @@ public interface IPaymentGateway
     PaymentGatewayFeatures Features { get; }
 
     Task<IPaymentApplicationConfig> GetApplicationConfigAsync(
-        ApplicationConfigsTableProvider applicationConfigsTableProvider,
+        ITableProvider<IPaymentApplicationConfig> applicationConfigsTableProvider,
         ClientApplicationId applicationId,
         CancellationToken cancellationToken);
 

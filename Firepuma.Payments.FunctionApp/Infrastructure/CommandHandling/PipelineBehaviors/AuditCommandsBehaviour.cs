@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Data.Tables;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels;
-using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableProviders;
+using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -14,11 +14,11 @@ namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.PipelineB
     public class AuditCommandsBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {
         private readonly ILogger<AuditCommandsBehaviour<TRequest, TResponse>> _logger;
-        private readonly CommandExecutionTableProvider _commandExecutionTableProvider;
+        private readonly ITableProvider<CommandExecutionEvent> _commandExecutionTableProvider;
 
         public AuditCommandsBehaviour(
             ILogger<AuditCommandsBehaviour<TRequest, TResponse>> logger,
-            CommandExecutionTableProvider commandExecutionTableProvider)
+            ITableProvider<CommandExecutionEvent> commandExecutionTableProvider)
         {
             _logger = logger;
             _commandExecutionTableProvider = commandExecutionTableProvider;

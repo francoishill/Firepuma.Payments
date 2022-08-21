@@ -9,8 +9,9 @@ using Firepuma.Payments.FunctionApp.Config;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels.Attributes;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
+using Firepuma.Payments.FunctionApp.TableModels;
 using Firepuma.Payments.Implementations.Config;
-using Firepuma.Payments.Implementations.TableProviders;
+using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
 using Microsoft.Extensions.Options;
 
@@ -81,12 +82,12 @@ public static class AddPayment
     {
         private readonly IOptions<PaymentGeneralOptions> _paymentOptions;
         private readonly IEnumerable<IPaymentGateway> _gateways;
-        private readonly PaymentsTableProvider _paymentsTableProvider;
+        private readonly ITableProvider<IPaymentTableEntity> _paymentsTableProvider;
 
         public Handler(
             IOptions<PaymentGeneralOptions> paymentOptions,
             IEnumerable<IPaymentGateway> gateways,
-            PaymentsTableProvider paymentsTableProvider)
+            ITableProvider<IPaymentTableEntity> paymentsTableProvider)
         {
             _paymentOptions = paymentOptions;
             _gateways = gateways;

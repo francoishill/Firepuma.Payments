@@ -1,5 +1,5 @@
 ﻿using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.PipelineBehaviors;
-using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableProviders;
+using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels;
 using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +12,6 @@ public static class ServiceCollectionExtensions
     {
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuditCommandsBehaviour<,>));
 
-        services.AddTableProvider("PaymentsServiceCommandExecutions", table => new CommandExecutionTableProvider(table));
+        services.AddTableProvider<CommandExecutionEvent>("PaymentsServiceCommandExecutions");
     }
 }

@@ -40,6 +40,12 @@ public class PayFastPaymentGateway : IPaymentGateway
     private readonly ILogger<PayFastPaymentGateway> _logger;
     private readonly IMapper _mapper;
 
+    // ReSharper disable once UnusedMember.Global
+    public PayFastPaymentGateway()
+    {
+        // used in unit tests (like PaymentGatewaysTests)
+    }
+
     public PayFastPaymentGateway(
         ILogger<PayFastPaymentGateway> logger,
         IMapper mapper)

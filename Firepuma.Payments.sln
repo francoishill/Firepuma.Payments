@@ -19,6 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\deploy-function-app.yml = .github\workflows\deploy-function-app.yml
 		.github\workflows\deploy-function-app-manager.yml = .github\workflows\deploy-function-app-manager.yml
 		.github\workflows\publish-nuget-packages.yml = .github\workflows\publish-nuget-packages.yml
+		.github\workflows\unit-tests-only.yml = .github\workflows\unit-tests-only.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{947CDF29-1B1A-4013-98BB-9F32BA8DE4DC}"

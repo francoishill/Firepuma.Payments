@@ -36,8 +36,7 @@ public class Startup : FunctionsStartup
 
         services.AddCommandHandling();
 
-        var validateAndStoreItnBaseUrl = GetRequiredEnvironmentVariable("FirepumaValidateAndStorePayFastItnBaseUrl");
-        services.AddPayFastFeature(validateAndStoreItnBaseUrl);
+        services.AddPayFastFeature();
 
         var validateAndStorePaymentNotificationBaseUrl = GetRequiredEnvironmentVariable("FirepumaValidateAndStorePaymentNotificationBaseUrl");
         services.AddPaymentsFeature(validateAndStorePaymentNotificationBaseUrl);

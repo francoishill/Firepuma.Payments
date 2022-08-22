@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Commands;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.BusMessages;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Mappings;
-using Firepuma.Payments.FunctionApp.PayFast.Commands;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
 using MediatR;
 using Microsoft.Azure.WebJobs;
@@ -69,52 +67,6 @@ public class ProcessPaymentBusMessage
                     log.LogCritical("UpdatePayFastOnceOffPaymentStatus command execution was unsuccessful, reason {Reason}, errors {Errors}", updateResult.FailedReason.ToString(), string.Join(", ", updateResult.FailedErrors));
 
                     throw new Exception($"{updateResult.FailedReason.ToString()}, {string.Join(", ", updateResult.FailedErrors)}");
-                }
-            }
-            else if (paymentEvent is PayFastPaymentItnValidatedMessage itnValidatedMessage)
-            {
-                var applicationId = itnValidatedMessage.ApplicationId;
-                var payFastRequest = itnValidatedMessage.PayFastRequest;
-
-                try
-                {
-                    var addTraceCommand = new AddPayFastItnTrace.Command
-                    {
-                        ApplicationId = applicationId,
-                        PayFastRequest = payFastRequest,
-                        IncomingRequestUri = itnValidatedMessage.IncomingRequestUri,
-                    };
-
-                    var addTraceResult = await _mediator.Send(addTraceCommand, cancellationToken);
-
-                    if (!addTraceResult.IsSuccessful)
-                    {
-                        log.LogError("AddPayFastItnTrace command execution was unsuccessful, reason {Reason}, errors {Errors}", addTraceResult.FailedReason.ToString(), string.Join(", ", addTraceResult.FailedErrors));
-                    }
-                }
-                catch (Exception exception)
-                {
-                    log.LogError(exception, "Unable to record PayfastItnTrace, exception was: {Message}, stack trace: {Stack}", exception.Message, exception.StackTrace);
-                }
-
-                log.LogInformation("Payment status is {Status}", payFastRequest.payment_status);
-
-                var command = new UpdatePayFastOnceOffPaymentStatus.Command
-                {
-                    CorrelationId = correlationId,
-                    ApplicationId = applicationId,
-                    PaymentId = new PaymentId(payFastRequest.m_payment_id),
-                    PaymentStatus = payFastRequest.payment_status,
-                    RequestToken = payFastRequest.token,
-                };
-
-                var result = await _mediator.Send(command, cancellationToken);
-
-                if (!result.IsSuccessful)
-                {
-                    log.LogCritical("UpdatePayFastOnceOffPaymentStatus command execution was unsuccessful, reason {Reason}, errors {Errors}", result.FailedReason.ToString(), string.Join(", ", result.FailedErrors));
-
-                    throw new Exception($"{result.FailedReason.ToString()}, {string.Join(", ", result.FailedErrors)}");
                 }
             }
             else

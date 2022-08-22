@@ -9,7 +9,6 @@ using AutoMapper;
 using Firepuma.Payments.Abstractions.DTOs.Requests;
 using Firepuma.Payments.Abstractions.Infrastructure.Validation;
 using Firepuma.Payments.Abstractions.ValueObjects;
-using Firepuma.Payments.FunctionApp.PayFast.Commands;
 using Firepuma.Payments.FunctionApp.PayFast.Factories;
 using Firepuma.Payments.FunctionApp.PayFast.TableModels;
 using Firepuma.Payments.FunctionApp.PayFast.ValueObjects;
@@ -128,7 +127,7 @@ public class PayFastPaymentGateway : IPaymentGateway
         return payment;
     }
 
-    public async Task<IPaymentTableEntity> GetPaymentDetailsOrNullAsync(
+    public async Task<IPaymentTableEntity> GetPaymentDetailsAsync(
         ITableProvider<IPaymentTableEntity> tableProvider,
         IPaymentApplicationConfig applicationConfig,
         string partitionKey,
@@ -171,7 +170,7 @@ public class PayFastPaymentGateway : IPaymentGateway
             requestDTO.ItemName,
             requestDTO.ItemDescription);
 
-        var mappedCommandSplitPaymentConfig = _mapper.Map<AddPayFastOnceOffPayment.Command.SplitPaymentConfig>(requestDTO.SplitPayment);
+        var mappedCommandSplitPaymentConfig = _mapper.Map<PayFastRedirectFactory.SplitPaymentConfig>(requestDTO.SplitPayment);
 
         var redirectUrl = PayFastRedirectFactory.CreateRedirectUrl(
             _logger,

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using Firepuma.Payments.FunctionApp.PayFast.Commands;
+using AutoMapper;
+using Firepuma.Payments.Abstractions.DTOs.Requests;
 using Firepuma.Payments.FunctionApp.PayFast.ValueObjects;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -15,7 +16,7 @@ public static class PayFastRedirectFactory
         ILogger logger,
         PayFastPaymentSettings payFastSettings,
         PayFastRequest payfastRequest,
-        AddPayFastOnceOffPayment.Command.SplitPaymentConfig splitPaymentConfig)
+        SplitPaymentConfig splitPaymentConfig)
     {
         var fullQuery = payfastRequest.ToString();
 
@@ -38,7 +39,7 @@ public static class PayFastRedirectFactory
 
     private static string GetSplitPaymentSetupJsonString(
         ILogger logger,
-        AddPayFastOnceOffPayment.Command.SplitPaymentConfig splitPaymentConfig)
+        SplitPaymentConfig splitPaymentConfig)
     {
         try
         {
@@ -66,6 +67,24 @@ public static class PayFastRedirectFactory
         {
             logger.LogError(exception, "Unable to serialize split_payment data for Payfast payment, error: {Error}", exception.Message);
             throw new Exception($"Unable to serialize split_payment data for Payfast payment, error: {exception.Message}");
+        }
+    }
+
+    public class SplitPaymentConfig
+    {
+        public int MerchantId { get; set; }
+        public int AmountInCents { get; set; }
+        public int Percentage { get; set; }
+        public int MinCents { get; set; }
+        public int MaxCents { get; set; }
+
+        // ReSharper disable once UnusedType.Local
+        private class SplitPaymentMappingProfile : Profile
+        {
+            public SplitPaymentMappingProfile()
+            {
+                CreateMap<PreparePayFastOnceOffPaymentRequest.SplitPaymentConfig, SplitPaymentConfig>();
+            }
         }
     }
 }

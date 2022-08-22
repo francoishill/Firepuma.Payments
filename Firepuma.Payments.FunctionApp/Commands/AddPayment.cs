@@ -82,16 +82,16 @@ public static class AddPayment
     {
         private readonly IOptions<PaymentGeneralOptions> _paymentOptions;
         private readonly IEnumerable<IPaymentGateway> _gateways;
-        private readonly ITableProvider<IPaymentTableEntity> _paymentsTableProvider;
+        private readonly ITableService<IPaymentTableEntity> _paymentsTableService;
 
         public Handler(
             IOptions<PaymentGeneralOptions> paymentOptions,
             IEnumerable<IPaymentGateway> gateways,
-            ITableProvider<IPaymentTableEntity> paymentsTableProvider)
+            ITableService<IPaymentTableEntity> paymentsTableService)
         {
             _paymentOptions = paymentOptions;
             _gateways = gateways;
-            _paymentsTableProvider = paymentsTableProvider;
+            _paymentsTableService = paymentsTableService;
         }
 
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
@@ -119,7 +119,7 @@ public static class AddPayment
 
             try
             {
-                await _paymentsTableProvider.AddEntityAsync(paymentEntity, cancellationToken);
+                await _paymentsTableService.AddEntityAsync(paymentEntity, cancellationToken);
             }
             catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.Conflict)
             {

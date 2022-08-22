@@ -26,7 +26,7 @@ public interface IPaymentGateway
     PaymentGatewayFeatures Features { get; }
 
     Task<IPaymentApplicationConfig> GetApplicationConfigAsync(
-        ITableProvider<IPaymentApplicationConfig> applicationConfigsTableProvider,
+        ITableService<IPaymentApplicationConfig> applicationConfigsTableService,
         ClientApplicationId applicationId,
         CancellationToken cancellationToken);
 
@@ -42,7 +42,7 @@ public interface IPaymentGateway
         CancellationToken cancellationToken);
 
     Task<IPaymentTableEntity> GetPaymentDetailsAsync(
-        ITableProvider<IPaymentTableEntity> tableProvider,
+        ITableService<IPaymentTableEntity> tableService,
         IPaymentApplicationConfig applicationConfig,
         string partitionKey,
         string rowKey,

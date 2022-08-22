@@ -4,7 +4,7 @@ using Azure.Data.Tables;
 
 namespace Firepuma.Payments.Implementations.TableStorage;
 
-public interface ITableProvider<in TEntity> where TEntity : ITableEntity
+public interface ITableService<in TEntity> where TEntity : ITableEntity
 {
     string TableName { get; }
 

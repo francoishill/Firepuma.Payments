@@ -10,9 +10,9 @@ public static class ServiceCollectionExtensions
         string tableName)
         where TEntity : class, ITableEntity
     {
-        services.AddSingleton<ITableProvider<TEntity>>(provider => new TableProvider<TEntity>(provider.GetRequiredService<TableServiceClient>().GetTableClient(tableName)));
+        services.AddSingleton<ITableService<TEntity>>(provider => new TableService<TEntity>(provider.GetRequiredService<TableServiceClient>().GetTableClient(tableName)));
 
         //TODO: Find a better way
-        services.BuildServiceProvider().GetRequiredService<ITableProvider<TEntity>>().CreateTableIfNotExists();
+        services.BuildServiceProvider().GetRequiredService<ITableService<TEntity>>().CreateTableIfNotExists();
     }
 }

@@ -52,11 +52,11 @@ public class PayFastPaymentGateway : IPaymentGateway
     }
 
     public async Task<IPaymentApplicationConfig> GetApplicationConfigAsync(
-        ITableProvider<IPaymentApplicationConfig> applicationConfigsTableProvider,
+        ITableService<IPaymentApplicationConfig> applicationConfigsTableService,
         ClientApplicationId applicationId,
         CancellationToken cancellationToken)
     {
-        var applicationConfig = await applicationConfigsTableProvider.GetEntityAsync<PayFastClientAppConfig>(
+        var applicationConfig = await applicationConfigsTableService.GetEntityAsync<PayFastClientAppConfig>(
             "PayFast",
             applicationId.Value,
             cancellationToken: cancellationToken);
@@ -128,13 +128,13 @@ public class PayFastPaymentGateway : IPaymentGateway
     }
 
     public async Task<IPaymentTableEntity> GetPaymentDetailsAsync(
-        ITableProvider<IPaymentTableEntity> tableProvider,
+        ITableService<IPaymentTableEntity> tableService,
         IPaymentApplicationConfig applicationConfig,
         string partitionKey,
         string rowKey,
         CancellationToken cancellationToken)
     {
-        return await tableProvider.GetEntityAsync<PayFastOnceOffPayment>(partitionKey, rowKey, cancellationToken: cancellationToken);
+        return await tableService.GetEntityAsync<PayFastOnceOffPayment>(partitionKey, rowKey, cancellationToken: cancellationToken);
     }
 
     public async Task<Uri> CreateRedirectUriAsync(

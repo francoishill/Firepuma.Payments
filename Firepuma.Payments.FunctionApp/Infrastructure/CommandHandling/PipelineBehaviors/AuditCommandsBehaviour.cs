@@ -14,14 +14,14 @@ namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.PipelineB
     public class AuditCommandsBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {
         private readonly ILogger<AuditCommandsBehaviour<TRequest, TResponse>> _logger;
-        private readonly ITableProvider<CommandExecutionEvent> _commandExecutionTableProvider;
+        private readonly ITableService<CommandExecutionEvent> _commandExecutionTableService;
 
         public AuditCommandsBehaviour(
             ILogger<AuditCommandsBehaviour<TRequest, TResponse>> logger,
-            ITableProvider<CommandExecutionEvent> commandExecutionTableProvider)
+            ITableService<CommandExecutionEvent> commandExecutionTableService)
         {
             _logger = logger;
-            _commandExecutionTableProvider = commandExecutionTableProvider;
+            _commandExecutionTableService = commandExecutionTableService;
         }
 
         public async Task<TResponse> Handle(
@@ -45,7 +45,7 @@ namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.PipelineB
         {
             var rowKey = $"{DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks:D19}-{Guid.NewGuid().ToString()}";
             var executionEvent = new CommandExecutionEvent(baseCommand, rowKey);
-            await _commandExecutionTableProvider.AddEntityAsync(executionEvent, cancellationToken);
+            await _commandExecutionTableService.AddEntityAsync(executionEvent, cancellationToken);
 
             var startTime = DateTime.UtcNow;
 
@@ -76,7 +76,7 @@ namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.PipelineB
             executionEvent.ExecutionTimeInSeconds = (finishedTime - startTime).TotalSeconds;
             executionEvent.TotalTimeInSeconds = (finishedTime - baseCommand.CreatedOn).TotalSeconds;
 
-            await _commandExecutionTableProvider.UpdateEntityAsync(executionEvent, ETag.All, TableUpdateMode.Replace, cancellationToken);
+            await _commandExecutionTableService.UpdateEntityAsync(executionEvent, ETag.All, TableUpdateMode.Replace, cancellationToken);
 
             if (error != null)
             {

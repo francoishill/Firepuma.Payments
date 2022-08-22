@@ -38,14 +38,14 @@ public static class AddClientAppTableRecord
     public class Handler : IRequestHandler<Command, Result>
     {
         private readonly ILogger<Handler> _logger;
-        private readonly ITableProvider<IPaymentApplicationConfig> _applicationConfigsTableProvider;
+        private readonly ITableService<IPaymentApplicationConfig> _applicationConfigsTableService;
 
         public Handler(
             ILogger<Handler> logger,
-            ITableProvider<IPaymentApplicationConfig> applicationConfigsTableProvider)
+            ITableService<IPaymentApplicationConfig> applicationConfigsTableService)
         {
             _logger = logger;
-            _applicationConfigsTableProvider = applicationConfigsTableProvider;
+            _applicationConfigsTableService = applicationConfigsTableService;
         }
 
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
@@ -54,12 +54,12 @@ public static class AddClientAppTableRecord
 
             var result = new Result
             {
-                TableName = _applicationConfigsTableProvider.TableName,
+                TableName = _applicationConfigsTableService.TableName,
             };
 
             try
             {
-                await _applicationConfigsTableProvider.AddEntityAsync(newRow, cancellationToken);
+                await _applicationConfigsTableService.AddEntityAsync(newRow, cancellationToken);
 
                 result.IsNew = true;
                 result.TableRow = newRow;
@@ -85,7 +85,7 @@ public static class AddClientAppTableRecord
         {
             try
             {
-                return await _applicationConfigsTableProvider.GetEntityAsync<PayFastClientAppConfig>(gatewayTypeId.Value, applicationId.Value, cancellationToken: cancellationToken);
+                return await _applicationConfigsTableService.GetEntityAsync<PayFastClientAppConfig>(gatewayTypeId.Value, applicationId.Value, cancellationToken: cancellationToken);
             }
             catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.NotFound)
             {

@@ -4,13 +4,13 @@ using Azure.Data.Tables;
 
 namespace Firepuma.Payments.Implementations.TableStorage;
 
-public sealed class TableProvider<TEntity> : ITableProvider<TEntity> where TEntity : class, ITableEntity
+public sealed class TableService<TEntity> : ITableService<TEntity> where TEntity : class, ITableEntity
 {
     private readonly TableClient _tableClient;
 
     public string TableName => _tableClient.Name;
 
-    public TableProvider(TableClient tableClient) => _tableClient = tableClient;
+    public TableService(TableClient tableClient) => _tableClient = tableClient;
 
     public void CreateTableIfNotExists()
     {

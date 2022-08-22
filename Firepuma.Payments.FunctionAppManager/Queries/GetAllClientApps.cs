@@ -18,19 +18,19 @@ public static class GetAllClientApps
 
     public class Handler : IRequestHandler<Query, IEnumerable<PayFastClientAppConfig>>
     {
-        private readonly ITableProvider<IPaymentApplicationConfig> _applicationConfigsTableProvider;
+        private readonly ITableService<IPaymentApplicationConfig> _applicationConfigsTableService;
 
         public Handler(
-            ITableProvider<IPaymentApplicationConfig> applicationConfigsTableProvider)
+            ITableService<IPaymentApplicationConfig> applicationConfigsTableService)
         {
-            _applicationConfigsTableProvider = applicationConfigsTableProvider;
+            _applicationConfigsTableService = applicationConfigsTableService;
         }
 
         public async Task<IEnumerable<PayFastClientAppConfig>> Handle(
             Query query,
             CancellationToken cancellationToken)
         {
-            var tableQuery = _applicationConfigsTableProvider.QueryAsync<PayFastClientAppConfig>(c => true);
+            var tableQuery = _applicationConfigsTableService.QueryAsync<PayFastClientAppConfig>(c => true);
 
             var rows = new List<PayFastClientAppConfig>();
             await foreach (var row in tableQuery)

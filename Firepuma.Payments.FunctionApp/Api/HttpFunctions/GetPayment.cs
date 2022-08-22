@@ -24,18 +24,18 @@ namespace Firepuma.Payments.FunctionApp.Api.HttpFunctions;
 public class GetPayment
 {
     private readonly ILogger<GetPayment> _logger;
-    private readonly ITableProvider<IPaymentApplicationConfig> _applicationConfigsTableProvider;
+    private readonly ITableService<IPaymentApplicationConfig> _applicationConfigsTableService;
     private readonly IMediator _mediator;
     private readonly IEnumerable<IPaymentGateway> _gateways;
 
     public GetPayment(
         ILogger<GetPayment> logger,
-        ITableProvider<IPaymentApplicationConfig> applicationConfigsTableProvider,
+        ITableService<IPaymentApplicationConfig> applicationConfigsTableService,
         IMediator mediator,
         IEnumerable<IPaymentGateway> gateways)
     {
         _logger = logger;
-        _applicationConfigsTableProvider = applicationConfigsTableProvider;
+        _applicationConfigsTableService = applicationConfigsTableService;
         _mediator = mediator;
         _gateways = gateways;
     }
@@ -66,7 +66,7 @@ public class GetPayment
         }
 
         var applicationConfig = await gateway.GetApplicationConfigAsync(
-            _applicationConfigsTableProvider,
+            _applicationConfigsTableService,
             new ClientApplicationId(applicationId),
             cancellationToken);
 

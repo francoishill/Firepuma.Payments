@@ -87,23 +87,23 @@ public static class UpdatePayment
     {
         private readonly ILogger<Handler> _logger;
         private readonly IEnumerable<IPaymentGateway> _gateways;
-        private readonly ITableProvider<PaymentNotificationTrace> _paymentTracesTableProvider;
-        private readonly ITableProvider<IPaymentTableEntity> _paymentsTableProvider;
+        private readonly ITableService<PaymentNotificationTrace> _paymentTracesTableService;
+        private readonly ITableService<IPaymentTableEntity> _paymentsTableService;
         private readonly IMediator _mediator;
         private readonly IEventPublisher _eventPublisher;
 
         public Handler(
             ILogger<Handler> logger,
             IEnumerable<IPaymentGateway> gateways,
-            ITableProvider<PaymentNotificationTrace> paymentTracesTableProvider,
-            ITableProvider<IPaymentTableEntity> paymentsTableProvider,
+            ITableService<PaymentNotificationTrace> paymentTracesTableService,
+            ITableService<IPaymentTableEntity> paymentsTableService,
             IMediator mediator,
             IEventPublisher eventPublisher)
         {
             _logger = logger;
             _gateways = gateways;
-            _paymentTracesTableProvider = paymentTracesTableProvider;
-            _paymentsTableProvider = paymentsTableProvider;
+            _paymentTracesTableService = paymentTracesTableService;
+            _paymentsTableService = paymentsTableService;
             _mediator = mediator;
             _eventPublisher = eventPublisher;
         }
@@ -139,7 +139,7 @@ public static class UpdatePayment
                     paymentNotificationJson,
                     command.IncomingRequestUri);
 
-                await _paymentTracesTableProvider.AddEntityAsync(traceRecord, cancellationToken);
+                await _paymentTracesTableService.AddEntityAsync(traceRecord, cancellationToken);
             }
             catch (Exception exception)
             {
@@ -167,7 +167,7 @@ public static class UpdatePayment
 
             try
             {
-                await _paymentsTableProvider.UpdateEntityAsync(payment, payment.ETag, TableUpdateMode.Replace, cancellationToken);
+                await _paymentsTableService.UpdateEntityAsync(payment, payment.ETag, TableUpdateMode.Replace, cancellationToken);
             }
             catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.Conflict)
             {

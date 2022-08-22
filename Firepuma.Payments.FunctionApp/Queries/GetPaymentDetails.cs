@@ -79,16 +79,16 @@ public static class GetPaymentDetails
     {
         private readonly ILogger<Handler> _logger;
         private readonly IEnumerable<IPaymentGateway> _gateways;
-        private readonly ITableProvider<IPaymentTableEntity> _paymentsTableProvider;
+        private readonly ITableService<IPaymentTableEntity> _paymentsTableService;
 
         public Handler(
             ILogger<Handler> logger,
             IEnumerable<IPaymentGateway> gateways,
-            ITableProvider<IPaymentTableEntity> paymentsTableProvider)
+            ITableService<IPaymentTableEntity> paymentsTableService)
         {
             _logger = logger;
             _gateways = gateways;
-            _paymentsTableProvider = paymentsTableProvider;
+            _paymentsTableService = paymentsTableService;
         }
 
         public async Task<Result> Handle(Query query, CancellationToken cancellationToken)
@@ -109,7 +109,7 @@ public static class GetPaymentDetails
             try
             {
                 var paymentEntity = await gateway.GetPaymentDetailsAsync(
-                    _paymentsTableProvider,
+                    _paymentsTableService,
                     applicationConfig,
                     applicationId.Value,
                     paymentId.Value,

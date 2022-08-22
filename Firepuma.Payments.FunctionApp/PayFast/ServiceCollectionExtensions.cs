@@ -20,7 +20,6 @@ public static class ServiceCollectionExtensions
 
         services.AddTableProvider<PayFastClientAppConfig>("PayFastApplicationConfigs");
         services.AddTableProvider<PayFastOnceOffPayment>("PayFastOnceOffPayments");
-        services.AddTableProvider<PayFastItnTrace>("PayFastItnTraces");
 
         services.AddScoped<PayFastClientAppConfigProvider>();
 

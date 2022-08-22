@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels.Attributes;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
@@ -104,14 +106,18 @@ public static class GetPaymentDetails
             }
 
             //TODO: Is there a better way? The Gateway should decide which specific entity type to load but this Query should decide which Azure Table and handle the loading.
-            var paymentEntity = await gateway.GetPaymentDetailsOrNullAsync(
-                _paymentsTableProvider,
-                applicationConfig,
-                applicationId.Value,
-                paymentId.Value,
-                cancellationToken);
+            try
+            {
+                var paymentEntity = await gateway.GetPaymentDetailsAsync(
+                    _paymentsTableProvider,
+                    applicationConfig,
+                    applicationId.Value,
+                    paymentId.Value,
+                    cancellationToken);
 
-            if (paymentEntity == null)
+                return Result.Success(paymentEntity);
+            }
+            catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.NotFound)
             {
                 _logger.LogCritical(
                     "Unable to load payment for gatewayTypeId: {GatewayTypeId}, applicationId: {AppId} and paymentId: {PaymentId}, it was null",
@@ -121,8 +127,6 @@ public static class GetPaymentDetails
                     Result.FailureReason.PaymentDoesNotExist,
                     $"Unable to load payment for gatewayTypeId: {gatewayTypeId}, applicationId: {applicationId} and paymentId: {paymentId}, it was null");
             }
-
-            return Result.Success(paymentEntity);
         }
     }
 }

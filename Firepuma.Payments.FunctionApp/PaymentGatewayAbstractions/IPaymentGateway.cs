@@ -41,7 +41,7 @@ public interface IPaymentGateway
         object genericRequestDto,
         CancellationToken cancellationToken);
 
-    Task<IPaymentTableEntity> GetPaymentDetailsOrNullAsync(
+    Task<IPaymentTableEntity> GetPaymentDetailsAsync(
         ITableProvider<IPaymentTableEntity> tableProvider,
         IPaymentApplicationConfig applicationConfig,
         string partitionKey,

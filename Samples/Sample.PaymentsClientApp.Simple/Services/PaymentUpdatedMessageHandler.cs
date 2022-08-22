@@ -15,7 +15,7 @@ public class PaymentUpdatedMessageHandler
         _logger = logger;
     }
 
-    public async Task HandlePaymentUpdated(PayFastPaymentUpdatedEvent dto, CancellationToken cancellationToken)
+    public async Task HandlePaymentUpdated(PaymentUpdatedEvent dto, CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
 
@@ -25,21 +25,21 @@ public class PaymentUpdatedMessageHandler
 
         switch (dto.Status)
         {
-            case PayFastSubscriptionStatus.New:
+            case PaymentStatus.New:
                 _logger.LogWarning(
                     "Did not expected payment status New event, but just ignoring it since nothing needs to change: payment id '{Id}', changed on {Time}",
                     dto.PaymentId, dto.StatusChangedOn);
                 break;
 
-            case PayFastSubscriptionStatus.UpToDate:
+            case PaymentStatus.Succeeded:
                 //TODO: add logic to mark payment succeeded
-                _logger.LogInformation(
+                _logger.LogWarning(
                     "TODO: add logic to mark payment succeeded, for payment id '{Id}' and correlation id '{CorrelationId}'", dto.PaymentId, dto.CorrelationId);
                 break;
 
-            case PayFastSubscriptionStatus.Cancelled:
+            case PaymentStatus.Cancelled:
                 //TODO: add logic to mark payment cancelled/aborted
-                _logger.LogInformation(
+                _logger.LogWarning(
                     "TODO: add logic to mark payment cancelled/aborted, for payment id '{Id}' and correlation id '{CorrelationId}'", dto.PaymentId, dto.CorrelationId);
                 break;
 

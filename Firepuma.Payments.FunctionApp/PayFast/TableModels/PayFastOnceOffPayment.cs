@@ -54,10 +54,4 @@ public class PayFastOnceOffPayment : IPaymentTableEntity
         ItemDescription = itemDescription;
         Status = PayFastSubscriptionStatus.New.ToString();
     }
-
-    public void SetStatus(PayFastSubscriptionStatus status)
-    {
-        Status = status.ToString();
-        StatusChangedOn = DateTime.UtcNow;
-    }
 }

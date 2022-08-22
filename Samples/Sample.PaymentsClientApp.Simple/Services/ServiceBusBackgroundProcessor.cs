@@ -80,7 +80,7 @@ internal class ServiceBusBackgroundProcessor : BackgroundService
             {
                 if (PaymentEventMappings.TryGetPaymentEventData(eventGridEvent, out var paymentEvent))
                 {
-                    if (paymentEvent is PayFastPaymentUpdatedEvent payFastPaymentUpdatedEvent)
+                    if (paymentEvent is PaymentUpdatedEvent payFastPaymentUpdatedEvent)
                     {
                         await _paymentUpdatedMessageHandler.HandlePaymentUpdated(payFastPaymentUpdatedEvent, cancellationToken);
                     }

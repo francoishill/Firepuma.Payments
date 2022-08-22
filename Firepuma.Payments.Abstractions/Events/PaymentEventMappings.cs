@@ -9,13 +9,11 @@ public static class PaymentEventMappings
     private static readonly IReadOnlyDictionary<Type, string> _eventTypeNameMap = new Dictionary<Type, string>
     {
         [typeof(PaymentUpdatedEvent)] = "Firepuma.Payments.PaymentUpdatedEvent",
-        [typeof(PayFastPaymentUpdatedEvent)] = "Firepuma.Payments.PayFastPaymentUpdated",
     };
 
     private static readonly IReadOnlyDictionary<string, Func<BinaryData, object>> _eventDeserializers = new Dictionary<string, Func<BinaryData, object>>
     {
         ["Firepuma.Payments.PaymentUpdatedEvent"] = eventBinaryData => JsonConvert.DeserializeObject<PaymentUpdatedEvent>(eventBinaryData.ToString()),
-        ["Firepuma.Payments.PayFastPaymentUpdated"] = eventBinaryData => JsonConvert.DeserializeObject<PayFastPaymentUpdatedEvent>(eventBinaryData.ToString()),
     };
 
     public static string GetEventTypeName<T>(T eventData) where T : IPaymentEventGridMessage

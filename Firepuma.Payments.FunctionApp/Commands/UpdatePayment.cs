@@ -87,7 +87,7 @@ public static class UpdatePayment
     {
         private readonly ILogger<Handler> _logger;
         private readonly IEnumerable<IPaymentGateway> _gateways;
-        private readonly ITableProvider<PaymentTrace> _paymentTracesTableProvider;
+        private readonly ITableProvider<PaymentNotificationTrace> _paymentTracesTableProvider;
         private readonly ITableProvider<IPaymentTableEntity> _paymentsTableProvider;
         private readonly IMediator _mediator;
         private readonly IEventPublisher _eventPublisher;
@@ -95,7 +95,7 @@ public static class UpdatePayment
         public Handler(
             ILogger<Handler> logger,
             IEnumerable<IPaymentGateway> gateways,
-            ITableProvider<PaymentTrace> paymentTracesTableProvider,
+            ITableProvider<PaymentNotificationTrace> paymentTracesTableProvider,
             ITableProvider<IPaymentTableEntity> paymentsTableProvider,
             IMediator mediator,
             IEventPublisher eventPublisher)
@@ -130,7 +130,7 @@ public static class UpdatePayment
             {
                 //FIX: this could fail if request is large and does not fit into string field of Azure Table, consider writing to blob instead?
                 var paymentNotificationJson = JsonConvert.SerializeObject(command.PaymentNotificationPayload, new Newtonsoft.Json.Converters.StringEnumConverter());
-                var traceRecord = new PaymentTrace(
+                var traceRecord = new PaymentNotificationTrace(
                     applicationId,
                     paymentId,
                     command.GatewayInternalTransactionId,

@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddTableProvider<IPaymentTableEntity>("Payments");
-        services.AddTableProvider<PaymentTrace>("PaymentTraces");
+        services.AddTableProvider<PaymentNotificationTrace>("PaymentNotificationTraces");
         services.AddTableProvider<IPaymentApplicationConfig>("PaymentApplicationConfigs");
     }
 }

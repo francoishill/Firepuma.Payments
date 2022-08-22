@@ -5,7 +5,7 @@ using Firepuma.Payments.Abstractions.ValueObjects;
 
 namespace Firepuma.Payments.FunctionApp.TableModels;
 
-public class PaymentTrace : ITableEntity
+public class PaymentNotificationTrace : ITableEntity
 {
     public string PartitionKey { get; set; }
     public string RowKey { get; set; }
@@ -17,7 +17,7 @@ public class PaymentTrace : ITableEntity
     public string PaymentNotificationJson { get; set; }
     public string IncomingRequestUri { get; set; }
 
-    public PaymentTrace(
+    public PaymentNotificationTrace(
         ClientApplicationId applicationId,
         PaymentId paymentId,
         string gatewayInternalTransactionId,

@@ -61,10 +61,10 @@ public static class AddPayFastItnTrace
 
     public class Handler : IRequestHandler<Command, Result>
     {
-        private readonly ITableProvider<PaymentTrace> _payFastItnTracesTableProvider;
+        private readonly ITableProvider<PaymentNotificationTrace> _payFastItnTracesTableProvider;
 
         public Handler(
-            ITableProvider<PaymentTrace> payFastItnTracesTableProvider)
+            ITableProvider<PaymentNotificationTrace> payFastItnTracesTableProvider)
         {
             _payFastItnTracesTableProvider = payFastItnTracesTableProvider;
         }
@@ -75,7 +75,7 @@ public static class AddPayFastItnTrace
             var payFastRequest = command.PayFastRequest;
 
             var payfastNotificationJson = JsonConvert.SerializeObject(payFastRequest, new Newtonsoft.Json.Converters.StringEnumConverter());
-            var traceRecord = new PayFastItnTrace(
+            var traceRecord = new PaymentNotificationTrace(
                 applicationId,
                 new PaymentId(payFastRequest.m_payment_id),
                 payFastRequest.pf_payment_id,

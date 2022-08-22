@@ -29,7 +29,7 @@ public class SamplePaymentsController : ControllerBase
     public async Task<ActionResult<PreparePayfastOnceOffPaymentResponse>> PreparePayfastPayment(
         CancellationToken cancellationToken)
     {
-        var newPaymentId = Guid.NewGuid().ToString();
+        var newPaymentId = PaymentId.GenerateNew();
 
         _logger.LogInformation("Preparing payment for new payment id '{Id}'", newPaymentId);
 
@@ -49,7 +49,7 @@ public class SamplePaymentsController : ControllerBase
         }
 
         var result = await _paymentsService.PreparePayfastOnceOffPayment(
-            new PaymentId(newPaymentId),
+            newPaymentId,
             returnUrl,
             cancelUrl,
             cancellationToken);

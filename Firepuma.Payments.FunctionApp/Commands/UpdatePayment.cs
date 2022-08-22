@@ -130,8 +130,10 @@ public static class UpdatePayment
             {
                 //FIX: this could fail if request is large and does not fit into string field of Azure Table, consider writing to blob instead?
                 var paymentNotificationJson = JsonConvert.SerializeObject(command.PaymentNotificationPayload, new Newtonsoft.Json.Converters.StringEnumConverter());
+                var rowKey = $"{DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks:D19}-{Guid.NewGuid().ToString()}";
                 var traceRecord = new PaymentNotificationTrace(
                     applicationId,
+                    rowKey,
                     paymentId,
                     command.GatewayInternalTransactionId,
                     paymentNotificationJson,

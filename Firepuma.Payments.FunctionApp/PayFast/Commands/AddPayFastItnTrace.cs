@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
@@ -74,8 +75,10 @@ public static class AddPayFastItnTrace
             var payFastRequest = command.PayFastRequest;
 
             var payfastNotificationJson = JsonConvert.SerializeObject(payFastRequest, new Newtonsoft.Json.Converters.StringEnumConverter());
+            var rowKey = $"{DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks:D19}-{Guid.NewGuid().ToString()}";
             var traceRecord = new PaymentNotificationTrace(
                 applicationId,
+                rowKey,
                 new PaymentId(payFastRequest.m_payment_id),
                 payFastRequest.pf_payment_id,
                 payfastNotificationJson,

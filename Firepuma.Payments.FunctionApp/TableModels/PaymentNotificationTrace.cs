@@ -19,13 +19,14 @@ public class PaymentNotificationTrace : ITableEntity
 
     public PaymentNotificationTrace(
         ClientApplicationId applicationId,
+        string rowKey,
         PaymentId paymentId,
         string gatewayInternalTransactionId,
         string paymentNotificationJson,
         string incomingRequestUri)
     {
         PartitionKey = applicationId.Value;
-        RowKey = Guid.NewGuid().ToString();
+        RowKey = rowKey;
 
         PaymentId = paymentId.Value;
         GatewayInternalTransactionId = gatewayInternalTransactionId;

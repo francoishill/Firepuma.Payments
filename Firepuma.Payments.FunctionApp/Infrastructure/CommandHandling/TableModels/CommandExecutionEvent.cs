@@ -19,7 +19,6 @@ namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableMode
         public DateTimeOffset? Timestamp { get; set; }
         public ETag ETag { get; set; }
 
-        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string CommandId { get; set; }
         public string TypeName { get; set; }
         public string TypeNamespace { get; set; }
@@ -35,10 +34,10 @@ namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableMode
         public DateTime? Updated { get; set; }
 
 
-        public CommandExecutionEvent(BaseCommand baseCommand)
+        public CommandExecutionEvent(BaseCommand baseCommand, string rowKey)
         {
             PartitionKey = "";
-            RowKey = Id;
+            RowKey = rowKey;
 
             CommandId = baseCommand.CommandId;
             TypeName = CommandTypeNameHelpers.GetTypeNameExcludingNamespace(baseCommand.GetType());
@@ -74,7 +73,7 @@ namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableMode
 
         public override string ToString()
         {
-            return $"{Id}/{CommandId}/{TypeNamespace}.{TypeName}";
+            return $"{PartitionKey}/{RowKey}/{CommandId}/{TypeNamespace}.{TypeName}";
         }
     }
 }

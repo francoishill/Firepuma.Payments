@@ -15,6 +15,8 @@ public readonly struct PaymentId : IComparable<PaymentId>, IEquatable<PaymentId>
         Value = value;
     }
 
+    public static PaymentId GenerateNew() => new($"{DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks:D19}-{Guid.NewGuid().ToString()}");
+
     public bool Equals(PaymentId other) => Value?.Equals(other.Value) == true;
     public int CompareTo(PaymentId other) => string.Compare(Value, other.Value, StringComparison.Ordinal);
 

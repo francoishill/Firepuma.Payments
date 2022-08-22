@@ -43,7 +43,8 @@ namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.PipelineB
             BaseCommand baseCommand,
             CancellationToken cancellationToken)
         {
-            var executionEvent = new CommandExecutionEvent(baseCommand);
+            var rowKey = $"{DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks:D19}-{Guid.NewGuid().ToString()}";
+            var executionEvent = new CommandExecutionEvent(baseCommand, rowKey);
             await _commandExecutionTableProvider.AddEntityAsync(executionEvent, cancellationToken);
 
             var startTime = DateTime.UtcNow;

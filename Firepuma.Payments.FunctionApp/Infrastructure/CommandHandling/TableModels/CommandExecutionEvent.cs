@@ -20,12 +20,12 @@ namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableMode
         public ETag ETag { get; set; }
 
         public string CommandId { get; set; }
+        public bool? Successful { get; set; }
         public string TypeName { get; set; }
         public string TypeNamespace { get; set; }
         public string Payload { get; set; }
         public DateTime CreatedOn { get; set; }
 
-        public bool? Successful { get; set; }
         public string Result { get; set; }
         public string ErrorMessage { get; set; }
         public string ErrorStackTrack { get; set; }

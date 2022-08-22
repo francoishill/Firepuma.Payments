@@ -17,6 +17,9 @@ public class PayFastOnceOffPayment : IPaymentTableEntity
 
     public string GatewayTypeId { get; set; }
 
+    public string Status { get; set; }
+    public DateTime? StatusChangedOn { get; set; }
+
     public string EmailAddress { get; set; }
     public string NameFirst { get; set; }
     public double ImmediateAmountInRands { get; set; }
@@ -24,9 +27,6 @@ public class PayFastOnceOffPayment : IPaymentTableEntity
     public string ItemDescription { get; set; }
 
     public string PayfastPaymentToken { get; set; }
-
-    public string Status { get; set; }
-    public DateTime? StatusChangedOn { get; set; }
 
 
     // ReSharper disable once UnusedMember.Local

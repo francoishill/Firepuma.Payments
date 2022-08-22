@@ -44,7 +44,7 @@ namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.PipelineB
             CancellationToken cancellationToken)
         {
             var executionEvent = new CommandExecutionEvent(baseCommand);
-            await _commandExecutionTableProvider.Table.AddEntityAsync(executionEvent, cancellationToken);
+            await _commandExecutionTableProvider.AddEntityAsync(executionEvent, cancellationToken);
 
             var startTime = DateTime.UtcNow;
 
@@ -75,7 +75,7 @@ namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.PipelineB
             executionEvent.ExecutionTimeInSeconds = (finishedTime - startTime).TotalSeconds;
             executionEvent.TotalTimeInSeconds = (finishedTime - baseCommand.CreatedOn).TotalSeconds;
 
-            await _commandExecutionTableProvider.Table.UpdateEntityAsync(executionEvent, ETag.All, TableUpdateMode.Replace, cancellationToken);
+            await _commandExecutionTableProvider.UpdateEntityAsync(executionEvent, ETag.All, TableUpdateMode.Replace, cancellationToken);
 
             if (error != null)
             {

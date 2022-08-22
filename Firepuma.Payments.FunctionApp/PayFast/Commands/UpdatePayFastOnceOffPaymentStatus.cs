@@ -121,7 +121,7 @@ public static class UpdatePayFastOnceOffPaymentStatus
 
             try
             {
-                await _payFastOnceOffPaymentsTableProvider.Table.UpdateEntityAsync(onceOffPayment, ETag.All, TableUpdateMode.Replace, cancellationToken);
+                await _payFastOnceOffPaymentsTableProvider.UpdateEntityAsync(onceOffPayment, ETag.All, TableUpdateMode.Replace, cancellationToken);
             }
             catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.Conflict)
             {
@@ -166,7 +166,7 @@ public static class UpdatePayFastOnceOffPaymentStatus
         {
             try
             {
-                return await _payFastOnceOffPaymentsTableProvider.Table.GetEntityAsync<PayFastOnceOffPayment>(applicationId.Value, paymentId.Value, cancellationToken: cancellationToken);
+                return await _payFastOnceOffPaymentsTableProvider.GetEntityAsync<PayFastOnceOffPayment>(applicationId.Value, paymentId.Value, cancellationToken: cancellationToken);
             }
             catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.NotFound)
             {

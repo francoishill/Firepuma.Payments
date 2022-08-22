@@ -119,7 +119,7 @@ public static class GetPayFastOnceOffPayment
         {
             try
             {
-                return await _payFastOnceOffPaymentsTableProvider.Table.GetEntityAsync<PayFastOnceOffPayment>(applicationId.Value, paymentId.Value, cancellationToken: cancellationToken);
+                return await _payFastOnceOffPaymentsTableProvider.GetEntityAsync<PayFastOnceOffPayment>(applicationId.Value, paymentId.Value, cancellationToken: cancellationToken);
             }
             catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.NotFound)
             {

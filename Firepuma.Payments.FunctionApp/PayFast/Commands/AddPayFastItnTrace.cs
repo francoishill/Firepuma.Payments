@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
-using Firepuma.Payments.FunctionApp.PayFast.TableModels;
 using Firepuma.Payments.FunctionApp.TableModels;
 using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
@@ -82,7 +81,7 @@ public static class AddPayFastItnTrace
                 payfastNotificationJson,
                 command.IncomingRequestUri);
 
-            await _payFastItnTracesTableProvider.Table.AddEntityAsync(traceRecord, cancellationToken);
+            await _payFastItnTracesTableProvider.AddEntityAsync(traceRecord, cancellationToken);
 
             return Result.Success();
         }

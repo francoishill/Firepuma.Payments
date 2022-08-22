@@ -153,7 +153,7 @@ public static class AddPayFastOnceOffPayment
 
                 try
                 {
-                    await _onceOffPaymentsTableProvider.Table.AddEntityAsync(payment, cancellationToken);
+                    await _onceOffPaymentsTableProvider.AddEntityAsync(payment, cancellationToken);
                 }
                 catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.Conflict)
                 {

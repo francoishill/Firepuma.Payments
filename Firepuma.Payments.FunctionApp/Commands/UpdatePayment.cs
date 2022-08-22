@@ -137,7 +137,7 @@ public static class UpdatePayment
                     paymentNotificationJson,
                     command.IncomingRequestUri);
 
-                await _paymentTracesTableProvider.Table.AddEntityAsync(traceRecord, cancellationToken);
+                await _paymentTracesTableProvider.AddEntityAsync(traceRecord, cancellationToken);
             }
             catch (Exception exception)
             {
@@ -165,7 +165,7 @@ public static class UpdatePayment
 
             try
             {
-                await _paymentsTableProvider.Table.UpdateEntityAsync(payment, payment.ETag, TableUpdateMode.Replace, cancellationToken);
+                await _paymentsTableProvider.UpdateEntityAsync(payment, payment.ETag, TableUpdateMode.Replace, cancellationToken);
             }
             catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.Conflict)
             {

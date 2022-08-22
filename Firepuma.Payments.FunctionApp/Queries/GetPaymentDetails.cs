@@ -105,7 +105,7 @@ public static class GetPaymentDetails
 
             //TODO: Is there a better way? The Gateway should decide which specific entity type to load but this Query should decide which Azure Table and handle the loading.
             var paymentEntity = await gateway.GetPaymentDetailsOrNullAsync(
-                _paymentsTableProvider.Table,
+                _paymentsTableProvider,
                 applicationConfig,
                 applicationId.Value,
                 paymentId.Value,

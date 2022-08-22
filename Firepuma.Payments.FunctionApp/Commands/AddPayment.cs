@@ -119,7 +119,7 @@ public static class AddPayment
 
             try
             {
-                await _paymentsTableProvider.Table.AddEntityAsync(paymentEntity, cancellationToken);
+                await _paymentsTableProvider.AddEntityAsync(paymentEntity, cancellationToken);
             }
             catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.Conflict)
             {

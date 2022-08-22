@@ -7,7 +7,6 @@ using Firepuma.Payments.FunctionApp.Infrastructure.Exceptions;
 using Firepuma.Payments.FunctionApp.PayFast.Validation;
 using Firepuma.Payments.Implementations.Config;
 using Firepuma.Payments.Implementations.TableStorage;
-using Firepuma.Payments.Implementations.TableStorage.Helpers;
 
 namespace Firepuma.Payments.FunctionApp.PayFast.Config;
 
@@ -25,11 +24,10 @@ public class PayFastClientAppConfigProvider
         ClientApplicationId applicationId,
         CancellationToken cancellationToken)
     {
-        var applicationConfig = await AzureTableHelper.GetSingleRecordOrNullAsync<PayFastClientAppConfig>(
-            _applicationConfigsTableProvider.Table,
+        var applicationConfig = await _applicationConfigsTableProvider.GetEntityAsync<PayFastClientAppConfig>(
             "PayFast",
             applicationId.Value,
-            cancellationToken);
+            cancellationToken: cancellationToken);
 
         if (applicationConfig == null)
         {

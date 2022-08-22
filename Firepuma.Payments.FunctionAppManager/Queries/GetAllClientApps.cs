@@ -30,9 +30,7 @@ public static class GetAllClientApps
             Query query,
             CancellationToken cancellationToken)
         {
-            var table = _applicationConfigsTableProvider.Table;
-
-            var tableQuery = table.QueryAsync<PayFastClientAppConfig>(c => true);
+            var tableQuery = _applicationConfigsTableProvider.QueryAsync<PayFastClientAppConfig>(c => true);
 
             var rows = new List<PayFastClientAppConfig>();
             await foreach (var row in tableQuery)

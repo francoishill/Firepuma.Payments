@@ -6,7 +6,6 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Azure.Data.Tables;
 using Firepuma.Payments.Abstractions.DTOs.Requests;
 using Firepuma.Payments.Abstractions.Infrastructure.Validation;
 using Firepuma.Payments.Abstractions.ValueObjects;
@@ -19,7 +18,6 @@ using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions.Results;
 using Firepuma.Payments.FunctionApp.TableModels;
 using Firepuma.Payments.Implementations.Config;
 using Firepuma.Payments.Implementations.TableStorage;
-using Firepuma.Payments.Implementations.TableStorage.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -59,11 +57,10 @@ public class PayFastPaymentGateway : IPaymentGateway
         ClientApplicationId applicationId,
         CancellationToken cancellationToken)
     {
-        var applicationConfig = await AzureTableHelper.GetSingleRecordOrNullAsync<PayFastClientAppConfig>(
-            applicationConfigsTableProvider.Table,
+        var applicationConfig = await applicationConfigsTableProvider.GetEntityAsync<PayFastClientAppConfig>(
             "PayFast",
             applicationId.Value,
-            cancellationToken);
+            cancellationToken: cancellationToken);
 
         return applicationConfig;
     }
@@ -132,13 +129,13 @@ public class PayFastPaymentGateway : IPaymentGateway
     }
 
     public async Task<IPaymentTableEntity> GetPaymentDetailsOrNullAsync(
-        TableClient tableClient,
+        ITableProvider<IPaymentTableEntity> tableProvider,
         IPaymentApplicationConfig applicationConfig,
         string partitionKey,
         string rowKey,
         CancellationToken cancellationToken)
     {
-        return await AzureTableHelper.GetSingleRecordOrNullAsync<PayFastOnceOffPayment>(tableClient, partitionKey, rowKey, cancellationToken);
+        return await tableProvider.GetEntityAsync<PayFastOnceOffPayment>(partitionKey, rowKey, cancellationToken: cancellationToken);
     }
 
     public async Task<Uri> CreateRedirectUriAsync(

@@ -2,7 +2,6 @@
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure.Data.Tables;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions.Results;
 using Firepuma.Payments.FunctionApp.TableModels;
@@ -43,7 +42,7 @@ public interface IPaymentGateway
         CancellationToken cancellationToken);
 
     Task<IPaymentTableEntity> GetPaymentDetailsOrNullAsync(
-        TableClient tableClient,
+        ITableProvider<IPaymentTableEntity> tableProvider,
         IPaymentApplicationConfig applicationConfig,
         string partitionKey,
         string rowKey,

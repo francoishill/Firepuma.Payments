@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Azure;
-using Azure.Data.Tables;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.Implementations.Config;
 using Firepuma.Payments.Implementations.TableStorage;
@@ -51,17 +50,16 @@ public static class AddClientAppTableRecord
 
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
         {
-            var table = _applicationConfigsTableProvider.Table;
             var newRow = command.TableRow;
 
             var result = new Result
             {
-                TableName = table.Name,
+                TableName = _applicationConfigsTableProvider.TableName,
             };
 
             try
             {
-                await table.AddEntityAsync(newRow, cancellationToken);
+                await _applicationConfigsTableProvider.AddEntityAsync(newRow, cancellationToken);
 
                 result.IsNew = true;
                 result.TableRow = newRow;
@@ -69,7 +67,6 @@ public static class AddClientAppTableRecord
             catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.Conflict)
             {
                 var existingTableRow = await LoadClientAppConfig(
-                    table,
                     newRow.GatewayTypeId,
                     newRow.ApplicationId,
                     cancellationToken);
@@ -82,14 +79,13 @@ public static class AddClientAppTableRecord
         }
 
         private async Task<PayFastClientAppConfig> LoadClientAppConfig(
-            TableClient table,
             PaymentGatewayTypeId gatewayTypeId,
             ClientApplicationId applicationId,
             CancellationToken cancellationToken)
         {
             try
             {
-                return await table.GetEntityAsync<PayFastClientAppConfig>(gatewayTypeId.Value, applicationId.Value, cancellationToken: cancellationToken);
+                return await _applicationConfigsTableProvider.GetEntityAsync<PayFastClientAppConfig>(gatewayTypeId.Value, applicationId.Value, cancellationToken: cancellationToken);
             }
             catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.NotFound)
             {

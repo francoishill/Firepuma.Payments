@@ -58,11 +58,6 @@ public class GetPayment
             return HttpResponseFactory.CreateBadRequestResponse($"The payment gateway type '{gatewayTypeId}' is not supported");
         }
 
-        if (!gateway.Features.PreparePayment)
-        {
-            return HttpResponseFactory.CreateBadRequestResponse($"Payment gateway '{gatewayTypeId}' does not support feature PreparePayment");
-        }
-
         var requestAppSecret = req.Headers[PaymentHttpRequestHeaderKeys.APP_SECRET].FirstOrDefault();
         if (string.IsNullOrWhiteSpace(requestAppSecret))
         {
@@ -102,6 +97,7 @@ public class GetPayment
             PaymentEntity = result.PaymentTableEntity,
         };
 
+        //FIX: Instead of returning the raw object (dto.PaymentEntity), rather do a mapping but support the additional properties of the Gateway
         return new OkObjectResult(dto);
     }
 }

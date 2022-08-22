@@ -50,7 +50,7 @@ public class GetAllClientApplications
     [AutoMap(typeof(PayFastClientAppConfig))]
     private class ClientAppResponseDto
     {
-        public string PaymentProviderName { get; set; }
+        public string GatewayTypeId { get; set; }
         public string ApplicationId { get; set; }
         public string ApplicationSecret { get; set; }
         public bool IsSandbox { get; set; }

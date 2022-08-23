@@ -52,6 +52,6 @@ public class PayFastOnceOffPayment : IPaymentTableEntity
         ImmediateAmountInRands = immediateAmountInRands;
         ItemName = itemName;
         ItemDescription = itemDescription;
-        Status = PayFastSubscriptionStatus.New.ToString();
+        Status = PaymentStatus.New.ToString();
     }
 }

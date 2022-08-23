@@ -11,6 +11,7 @@ using Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Services;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Services;
 using Firepuma.Payments.FunctionApp.Infrastructure.PipelineBehaviors;
 using Firepuma.Payments.FunctionApp.PayFast;
+using Firepuma.Payments.Implementations.Helpers;
 using MediatR;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,7 +39,7 @@ public class Startup : FunctionsStartup
 
         services.AddPayFastFeature();
 
-        var validateAndStorePaymentNotificationBaseUrl = GetRequiredEnvironmentVariable("FirepumaValidateAndStorePaymentNotificationBaseUrl");
+        var validateAndStorePaymentNotificationBaseUrl = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("FirepumaValidateAndStorePaymentNotificationBaseUrl");
         services.AddPaymentsFeature(validateAndStorePaymentNotificationBaseUrl);
     }
 
@@ -57,14 +58,14 @@ public class Startup : FunctionsStartup
 
     private static void AddCloudStorageAccount(IServiceCollection services)
     {
-        var storageConnectionString = GetRequiredEnvironmentVariable("AzureWebJobsStorage");
+        var storageConnectionString = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("AzureWebJobsStorage");
         services.AddSingleton(_ => new TableServiceClient(storageConnectionString));
     }
 
     private static void AddServiceBusPaymentsMessageSender(IServiceCollection services)
     {
-        var connectionString = GetRequiredEnvironmentVariable("ServiceBus");
-        var queueName = GetRequiredEnvironmentVariable("QueueName");
+        var connectionString = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("ServiceBus");
+        var queueName = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("QueueName");
 
         services.AddSingleton<ServiceBusClient>(_ =>
             new ServiceBusClient(connectionString));
@@ -80,8 +81,8 @@ public class Startup : FunctionsStartup
 
     private static void AddEventPublisher(IServiceCollection services)
     {
-        var eventGridEndpoint = GetRequiredEnvironmentVariable("EventGridEndpoint");
-        var eventGridKey = GetRequiredEnvironmentVariable("EventGridAccessKey");
+        var eventGridEndpoint = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("EventGridEndpoint");
+        var eventGridKey = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("EventGridAccessKey");
 
         services.Configure<EventGridOptions>(opt =>
         {
@@ -100,17 +101,5 @@ public class Startup : FunctionsStartup
         });
 
         services.AddSingleton<IEventPublisher, EventGridEventPublisher>();
-    }
-
-    private static string GetRequiredEnvironmentVariable(string key)
-    {
-        var value = Environment.GetEnvironmentVariable(key);
-
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            throw new Exception($"Environment variable '{key}' is empty but required");
-        }
-
-        return value;
     }
 }

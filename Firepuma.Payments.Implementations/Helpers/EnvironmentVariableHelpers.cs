@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Firepuma.Payments.FunctionAppManager.Infrastructure.Helpers;
+﻿namespace Firepuma.Payments.Implementations.Helpers;
 
 public static class EnvironmentVariableHelpers
 {

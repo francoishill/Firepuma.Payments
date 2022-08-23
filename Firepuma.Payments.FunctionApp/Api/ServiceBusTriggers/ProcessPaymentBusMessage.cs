@@ -64,7 +64,7 @@ public class ProcessPaymentBusMessage
                 var updateResult = await _mediator.Send(updateCommand, cancellationToken);
                 if (!updateResult.IsSuccessful)
                 {
-                    log.LogCritical("UpdatePayFastOnceOffPaymentStatus command execution was unsuccessful, reason {Reason}, errors {Errors}", updateResult.FailedReason.ToString(), string.Join(", ", updateResult.FailedErrors));
+                    log.LogCritical("UpdatePayment command execution was unsuccessful, reason {Reason}, errors {Errors}", updateResult.FailedReason.ToString(), string.Join(", ", updateResult.FailedErrors));
 
                     throw new Exception($"{updateResult.FailedReason.ToString()}, {string.Join(", ", updateResult.FailedErrors)}");
                 }

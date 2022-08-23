@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Firepuma.Payments.Abstractions.Constants;
 using Firepuma.Payments.Abstractions.DTOs.Requests;
 using Firepuma.Payments.Abstractions.DTOs.Responses;
 using Firepuma.Payments.Abstractions.Infrastructure.Validation;
@@ -38,7 +39,7 @@ internal class PaymentsServiceClient : IPaymentsServiceClient
 
         var applicationId = _options.Value.ApplicationId;
 
-        var responseMessage = await _httpClient.PostAsync($"PreparePayFastOnceOffPayment/{applicationId}", postBody, cancellationToken);
+        var responseMessage = await _httpClient.PostAsync($"PreparePayment/{PaymentGatewayIds.PAY_FAST}/{applicationId}", postBody, cancellationToken);
 
         if (!responseMessage.IsSuccessStatusCode)
         {

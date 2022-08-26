@@ -4,6 +4,7 @@ using Azure.Data.Tables;
 using Firepuma.Payments.FunctionAppManager;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Config;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Constants;
+using Firepuma.Payments.FunctionAppManager.PayFast;
 using Firepuma.Payments.Implementations.Helpers;
 using Firepuma.Payments.Implementations.PipelineBehaviors;
 using MediatR;
@@ -45,6 +46,7 @@ public class Startup : FunctionsStartup
         AddMediator(services);
 
         services.AddPaymentsManagementFeature();
+        services.AddPayFastManagerFeature();
     }
 
     private static void AddMediator(IServiceCollection services)

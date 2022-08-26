@@ -9,6 +9,6 @@ public static class ServiceCollectionExtensions
     public static void AddPaymentsManagementFeature(
         this IServiceCollection services)
     {
-        services.AddTableProvider<IPaymentApplicationConfig>("PaymentApplicationConfigs");
+        services.AddTableProvider<BasePaymentApplicationConfig>("PaymentApplicationConfigs");
     }
 }

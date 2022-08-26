@@ -1,8 +1,11 @@
-﻿using System.Net;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure;
 using Firepuma.Payments.Abstractions.ValueObjects;
+using Firepuma.Payments.FunctionAppManager.GatewayAbstractions;
 using Firepuma.Payments.Implementations.Config;
 using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
@@ -18,10 +21,10 @@ public static class AddClientAppTableRecord
 {
     public class Command : IRequest<Result>
     {
-        public PayFastClientAppConfig TableRow { get; set; }
+        public BasePaymentApplicationConfig TableRow { get; set; }
 
         public Command(
-            PayFastClientAppConfig tableRow)
+            BasePaymentApplicationConfig tableRow)
         {
             TableRow = tableRow;
         }
@@ -31,26 +34,38 @@ public static class AddClientAppTableRecord
     {
         public string TableName { get; set; }
         public bool IsNew { get; set; }
-        public PayFastClientAppConfig TableRow { get; set; }
+        public BasePaymentApplicationConfig TableRow { get; set; }
     }
 
 
     public class Handler : IRequestHandler<Command, Result>
     {
         private readonly ILogger<Handler> _logger;
-        private readonly ITableService<IPaymentApplicationConfig> _applicationConfigsTableService;
+        private readonly IEnumerable<IPaymentGatewayManager> _gatewayManagers;
+        private readonly ITableService<BasePaymentApplicationConfig> _applicationConfigsTableService;
 
         public Handler(
             ILogger<Handler> logger,
-            ITableService<IPaymentApplicationConfig> applicationConfigsTableService)
+            IEnumerable<IPaymentGatewayManager> gatewayManagers,
+            ITableService<BasePaymentApplicationConfig> applicationConfigsTableService)
         {
             _logger = logger;
+            _gatewayManagers = gatewayManagers;
             _applicationConfigsTableService = applicationConfigsTableService;
         }
 
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
         {
             var newRow = command.TableRow;
+            var gatewayTypeId = newRow.GatewayTypeId;
+
+            var gatewayManager = _gatewayManagers.GetFromTypeIdOrNull(gatewayTypeId);
+
+            if (gatewayManager == null)
+            {
+                //FIX: consider rather making this a Result.Fail and checking for it in the HttpTrigger
+                throw new Exception($"The payment gateway type '{gatewayTypeId.Value}' is not supported");
+            }
 
             var result = new Result
             {
@@ -67,7 +82,7 @@ public static class AddClientAppTableRecord
             catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.Conflict)
             {
                 var existingTableRow = await LoadClientAppConfig(
-                    newRow.GatewayTypeId,
+                    gatewayManager,
                     newRow.ApplicationId,
                     cancellationToken);
 
@@ -78,21 +93,21 @@ public static class AddClientAppTableRecord
             return result;
         }
 
-        private async Task<PayFastClientAppConfig> LoadClientAppConfig(
-            PaymentGatewayTypeId gatewayTypeId,
+        private async Task<BasePaymentApplicationConfig> LoadClientAppConfig(
+            IPaymentGatewayManager gatewayManager,
             ClientApplicationId applicationId,
             CancellationToken cancellationToken)
         {
             try
             {
-                return await _applicationConfigsTableService.GetEntityAsync<PayFastClientAppConfig>(gatewayTypeId.Value, applicationId.Value, cancellationToken: cancellationToken);
+                return await gatewayManager.GetApplicationConfigAsync(applicationId, cancellationToken);
             }
             catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.NotFound)
             {
                 _logger.LogError(
                     requestFailedException,
                     "ClientAppConfig does not exist for gatewayTypeId: {GatewayTypeId} and applicationId: {ApplicationId}",
-                    gatewayTypeId, applicationId);
+                    gatewayManager.TypeId.Value, applicationId);
                 return null;
             }
         }

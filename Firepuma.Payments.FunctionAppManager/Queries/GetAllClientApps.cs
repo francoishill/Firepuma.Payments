@@ -18,10 +18,10 @@ public static class GetAllClientApps
 
     public class Handler : IRequestHandler<Query, IEnumerable<PayFastClientAppConfig>>
     {
-        private readonly ITableService<IPaymentApplicationConfig> _applicationConfigsTableService;
+        private readonly ITableService<BasePaymentApplicationConfig> _applicationConfigsTableService;
 
         public Handler(
-            ITableService<IPaymentApplicationConfig> applicationConfigsTableService)
+            ITableService<BasePaymentApplicationConfig> applicationConfigsTableService)
         {
             _applicationConfigsTableService = applicationConfigsTableService;
         }

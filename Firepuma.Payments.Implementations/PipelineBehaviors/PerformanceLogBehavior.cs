@@ -1,11 +1,9 @@
 ﻿using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-using Firepuma.Payments.FunctionAppManager.Infrastructure.Helpers;
+using Firepuma.Payments.Implementations.PipelineBehaviors.Helpers;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Firepuma.Payments.FunctionAppManager.Infrastructure.PipelineBehaviors;
+namespace Firepuma.Payments.Implementations.PipelineBehaviors;
 
 public class PerformanceLogBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
@@ -23,7 +21,7 @@ public class PerformanceLogBehavior<TRequest, TResponse>
         CancellationToken cancellationToken,
         RequestHandlerDelegate<TResponse> next)
     {
-        var requestTypeName = typeof(TRequest).GetShortTypeName();
+        var requestTypeName = BehaviorPipelineHelpers.GetShortTypeName(typeof(TRequest));
 
         var stopwatch = Stopwatch.StartNew();
         _logger.LogInformation(
@@ -35,7 +33,7 @@ public class PerformanceLogBehavior<TRequest, TResponse>
         stopwatch.Stop();
         var durationInSeconds = stopwatch.Elapsed.TotalSeconds.ToString("F");
 
-        var responseTypeName = typeof(TResponse).GetShortTypeName();
+        var responseTypeName = BehaviorPipelineHelpers.GetShortTypeName(typeof(TResponse));
         _logger.LogInformation(
             "Finished request {Name} (with response type {ResponseType}) in {Duration}s",
             requestTypeName, responseTypeName, durationInSeconds);

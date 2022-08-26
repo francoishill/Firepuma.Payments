@@ -1,11 +1,8 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Firepuma.Payments.FunctionApp.Infrastructure.PipelineBehaviors.Helpers;
+﻿using Firepuma.Payments.Implementations.PipelineBehaviors.Helpers;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Firepuma.Payments.FunctionApp.Infrastructure.PipelineBehaviors;
+namespace Firepuma.Payments.Implementations.PipelineBehaviors;
 
 public class ExceptionLogBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>

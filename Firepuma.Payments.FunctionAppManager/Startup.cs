@@ -4,9 +4,8 @@ using Azure.Data.Tables;
 using Firepuma.Payments.FunctionAppManager;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Config;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Constants;
-using Firepuma.Payments.FunctionAppManager.Infrastructure.Helpers;
-using Firepuma.Payments.FunctionAppManager.Infrastructure.PipelineBehaviors;
 using Firepuma.Payments.Implementations.Helpers;
+using Firepuma.Payments.Implementations.PipelineBehaviors;
 using MediatR;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,6 +43,7 @@ public class Startup : FunctionsStartup
 
         AddCloudStorageAccount(services);
         AddMediator(services);
+
         services.AddPaymentsManagementFeature();
     }
 
@@ -51,6 +51,7 @@ public class Startup : FunctionsStartup
     {
         services.AddMediatR(typeof(Startup));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceLogBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionLogBehavior<,>));
     }
 
     private static void AddCloudStorageAccount(IServiceCollection services)

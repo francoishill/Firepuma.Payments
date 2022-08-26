@@ -29,7 +29,7 @@ public static class GetPaymentDetails
         public ClientApplicationId ApplicationId { get; set; }
 
         [IgnoreCommandAudit]
-        public IPaymentApplicationConfig ApplicationConfig { get; init; }
+        public BasePaymentApplicationConfig ApplicationConfig { get; init; }
 
         public PaymentId PaymentId { get; set; }
     }

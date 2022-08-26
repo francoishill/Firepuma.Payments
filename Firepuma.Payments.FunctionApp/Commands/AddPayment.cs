@@ -32,7 +32,7 @@ public static class AddPayment
         public ClientApplicationId ApplicationId { get; init; }
 
         [IgnoreCommandAudit]
-        public IPaymentApplicationConfig ApplicationConfig { get; init; }
+        public BasePaymentApplicationConfig ApplicationConfig { get; init; }
 
         public PaymentId PaymentId { get; init; }
         public object RequestDto { get; init; }

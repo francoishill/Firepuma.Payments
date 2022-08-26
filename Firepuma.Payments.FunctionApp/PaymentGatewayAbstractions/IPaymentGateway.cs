@@ -25,8 +25,8 @@ public interface IPaymentGateway
 
     PaymentGatewayFeatures Features { get; }
 
-    Task<IPaymentApplicationConfig> GetApplicationConfigAsync(
-        ITableService<IPaymentApplicationConfig> applicationConfigsTableService,
+    Task<BasePaymentApplicationConfig> GetApplicationConfigAsync(
+        ITableService<BasePaymentApplicationConfig> applicationConfigsTableService,
         ClientApplicationId applicationId,
         CancellationToken cancellationToken);
 
@@ -35,7 +35,7 @@ public interface IPaymentGateway
         CancellationToken cancellationToken);
 
     Task<IPaymentTableEntity> CreatePaymentTableEntityAsync(
-        IPaymentApplicationConfig applicationConfig,
+        BasePaymentApplicationConfig applicationConfig,
         ClientApplicationId applicationId,
         PaymentId paymentId,
         object genericRequestDto,
@@ -43,13 +43,13 @@ public interface IPaymentGateway
 
     Task<IPaymentTableEntity> GetPaymentDetailsAsync(
         ITableService<IPaymentTableEntity> tableService,
-        IPaymentApplicationConfig applicationConfig,
+        BasePaymentApplicationConfig applicationConfig,
         string partitionKey,
         string rowKey,
         CancellationToken cancellationToken);
 
     Task<Uri> CreateRedirectUriAsync(
-        IPaymentApplicationConfig genericApplicationConfig,
+        BasePaymentApplicationConfig genericApplicationConfig,
         ClientApplicationId applicationId,
         PaymentId paymentId,
         object genericRequestDto,
@@ -61,7 +61,7 @@ public interface IPaymentGateway
         CancellationToken cancellationToken);
 
     Task<ResultContainer<ValidatePaymentNotificationResult, ValidatePaymentNotificationFailureReason>> ValidatePaymentNotificationAsync(
-        IPaymentApplicationConfig genericApplicationConfig,
+        BasePaymentApplicationConfig genericApplicationConfig,
         ClientApplicationId applicationId,
         object genericPaymentNotificationPayload,
         IPAddress remoteIp);

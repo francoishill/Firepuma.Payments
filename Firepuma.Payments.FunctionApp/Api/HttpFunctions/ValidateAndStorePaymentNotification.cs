@@ -24,13 +24,13 @@ namespace Firepuma.Payments.FunctionApp.Api.HttpFunctions;
 public class ValidateAndStorePaymentNotification
 {
     private readonly ILogger<ValidateAndStorePaymentNotification> _logger;
-    private readonly ITableService<IPaymentApplicationConfig> _applicationConfigsTableService;
+    private readonly ITableService<BasePaymentApplicationConfig> _applicationConfigsTableService;
     private readonly IMediator _mediator;
     private readonly IEnumerable<IPaymentGateway> _gateways;
 
     public ValidateAndStorePaymentNotification(
         ILogger<ValidateAndStorePaymentNotification> logger,
-        ITableService<IPaymentApplicationConfig> applicationConfigsTableService,
+        ITableService<BasePaymentApplicationConfig> applicationConfigsTableService,
         IMediator mediator,
         IEnumerable<IPaymentGateway> gateways)
     {

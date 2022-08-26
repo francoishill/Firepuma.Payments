@@ -24,13 +24,13 @@ namespace Firepuma.Payments.FunctionApp.Api.HttpFunctions;
 public class GetPayment
 {
     private readonly ILogger<GetPayment> _logger;
-    private readonly ITableService<IPaymentApplicationConfig> _applicationConfigsTableService;
+    private readonly ITableService<BasePaymentApplicationConfig> _applicationConfigsTableService;
     private readonly IMediator _mediator;
     private readonly IEnumerable<IPaymentGateway> _gateways;
 
     public GetPayment(
         ILogger<GetPayment> logger,
-        ITableService<IPaymentApplicationConfig> applicationConfigsTableService,
+        ITableService<BasePaymentApplicationConfig> applicationConfigsTableService,
         IMediator mediator,
         IEnumerable<IPaymentGateway> gateways)
     {

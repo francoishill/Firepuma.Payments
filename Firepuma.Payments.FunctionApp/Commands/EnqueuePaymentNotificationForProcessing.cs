@@ -32,7 +32,7 @@ public static class EnqueuePaymentNotificationForProcessing
         public ClientApplicationId ApplicationId { get; init; }
 
         [IgnoreCommandAudit]
-        public IPaymentApplicationConfig ApplicationConfig { get; init; }
+        public BasePaymentApplicationConfig ApplicationConfig { get; init; }
 
         [IgnoreCommandAudit] //FIX: this means we won't have history of this PaymentNotificationPayload data, rather add another attribute to write the data to BlobStorage 
         public BasePaymentNotificationPayload PaymentNotificationPayload { get; init; }

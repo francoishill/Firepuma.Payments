@@ -51,8 +51,8 @@ public class PayFastPaymentGateway : IPaymentGateway
         _mapper = mapper;
     }
 
-    public async Task<IPaymentApplicationConfig> GetApplicationConfigAsync(
-        ITableService<IPaymentApplicationConfig> applicationConfigsTableService,
+    public async Task<BasePaymentApplicationConfig> GetApplicationConfigAsync(
+        ITableService<BasePaymentApplicationConfig> applicationConfigsTableService,
         ClientApplicationId applicationId,
         CancellationToken cancellationToken)
     {
@@ -103,7 +103,7 @@ public class PayFastPaymentGateway : IPaymentGateway
     }
 
     public async Task<IPaymentTableEntity> CreatePaymentTableEntityAsync(
-        IPaymentApplicationConfig applicationConfig,
+        BasePaymentApplicationConfig applicationConfig,
         ClientApplicationId applicationId,
         PaymentId paymentId,
         object genericRequestDto,
@@ -129,7 +129,7 @@ public class PayFastPaymentGateway : IPaymentGateway
 
     public async Task<IPaymentTableEntity> GetPaymentDetailsAsync(
         ITableService<IPaymentTableEntity> tableService,
-        IPaymentApplicationConfig applicationConfig,
+        BasePaymentApplicationConfig applicationConfig,
         string partitionKey,
         string rowKey,
         CancellationToken cancellationToken)
@@ -138,7 +138,7 @@ public class PayFastPaymentGateway : IPaymentGateway
     }
 
     public async Task<Uri> CreateRedirectUriAsync(
-        IPaymentApplicationConfig genericApplicationConfig,
+        BasePaymentApplicationConfig genericApplicationConfig,
         ClientApplicationId applicationId,
         PaymentId paymentId,
         object genericRequestDto,
@@ -221,7 +221,7 @@ public class PayFastPaymentGateway : IPaymentGateway
     }
 
     public async Task<ResultContainer<ValidatePaymentNotificationResult, ValidatePaymentNotificationFailureReason>> ValidatePaymentNotificationAsync(
-        IPaymentApplicationConfig genericApplicationConfig,
+        BasePaymentApplicationConfig genericApplicationConfig,
         ClientApplicationId applicationId,
         object genericPaymentNotificationPayload,
         IPAddress remoteIp)

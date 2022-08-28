@@ -12,9 +12,9 @@ public class PaymentApplicationConfigCosmosDbRepository : CosmosDbRepository<Pay
     }
 
     public override string GenerateId(PaymentApplicationConfig entity) => GenerateId(entity.ApplicationId, entity.GatewayTypeId);
-    public override PartitionKey ResolvePartitionKey(string entityId) => new(entityId.Split(':')[0]);
+    public override PartitionKey ResolvePartitionKey(string entityId) => new(entityId.Split(':')[1]);
 
-    private static string GenerateId(ClientApplicationId applicationId, PaymentGatewayTypeId gatewayTypeId) => $"{applicationId.Value}:{gatewayTypeId.Value}";
+    private static string GenerateId(ClientApplicationId applicationId, PaymentGatewayTypeId gatewayTypeId) => $"{gatewayTypeId.Value}:{applicationId.Value}";
 
     public async Task<PaymentApplicationConfig> GetItemOrDefaultAsync(
         ClientApplicationId applicationId,

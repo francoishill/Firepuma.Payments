@@ -16,7 +16,6 @@ using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions.Results;
 using Firepuma.Payments.Implementations.Config;
 using Firepuma.Payments.Implementations.Payments.TableModels;
-using Firepuma.Payments.Implementations.TableStorage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -89,7 +88,7 @@ public class PayFastPaymentGateway : IPaymentGateway
         return ResultContainer<PrepareRequestResult, PrepareRequestFailureReason>.Success(successfulValue);
     }
 
-    public async Task<IPaymentTableEntity> CreatePaymentTableEntityAsync(
+    public async Task<Dictionary<string, object>> CreatePaymentEntityExtraValuesAsync(
         ClientApplicationId applicationId,
         PaymentId paymentId,
         object genericRequestDto,
@@ -100,9 +99,7 @@ public class PayFastPaymentGateway : IPaymentGateway
             throw new NotSupportedException($"RequestDto is incorrect type in CreatePaymentTableEntity, it should be PreparePayFastOnceOffPaymentRequest but it is '{genericRequestDto.GetType().FullName}'");
         }
 
-        var payment = new PayFastOnceOffPayment(
-            applicationId,
-            paymentId,
+        var payment = new PayFastPaymentExtraValues(
             requestDTO.BuyerEmailAddress,
             requestDTO.BuyerFirstName,
             requestDTO.ImmediateAmountInRands ?? throw new ArgumentNullException(nameof(requestDTO.ImmediateAmountInRands)),
@@ -110,16 +107,8 @@ public class PayFastPaymentGateway : IPaymentGateway
             requestDTO.ItemDescription);
 
         await Task.CompletedTask;
-        return payment;
-    }
 
-    public async Task<IPaymentTableEntity> GetPaymentDetailsAsync(
-        ITableService<IPaymentTableEntity> tableService,
-        string partitionKey,
-        string rowKey,
-        CancellationToken cancellationToken)
-    {
-        return await tableService.GetEntityAsync<PayFastOnceOffPayment>(partitionKey, rowKey, cancellationToken: cancellationToken);
+        return PaymentEntity.CastToExtraValues(payment);
     }
 
     public async Task<Uri> CreateRedirectUriAsync(
@@ -135,7 +124,7 @@ public class PayFastPaymentGateway : IPaymentGateway
             throw new NotSupportedException($"RequestDto is incorrect type in CreateRedirectUri, it should be PreparePayFastOnceOffPaymentRequest but it is '{genericRequestDto.GetType().FullName}'");
         }
 
-        if (!genericApplicationConfig.TryCastExtraValuesToType<PayFastClientAppConfig>(out var applicationConfig, out var castError))
+        if (!genericApplicationConfig.TryCastExtraValuesToType<PayFastAppConfigExtraValues>(out var applicationConfig, out var castError))
         {
             throw new NotSupportedException($"Unable to cast ExtraValues to type PayFastClientAppConfig in CreateRedirectUriAsync, error: {castError}");
         }
@@ -216,7 +205,7 @@ public class PayFastPaymentGateway : IPaymentGateway
             throw new NotSupportedException($"PaymentNotificationPayload is incorrect type in ValidatePaymentNotificationAsync, it should be PayFastNotificationPayload but it is '{genericPaymentNotificationPayload.GetType().FullName}'");
         }
 
-        if (!genericApplicationConfig.TryCastExtraValuesToType<PayFastClientAppConfig>(out var applicationConfig, out var castError))
+        if (!genericApplicationConfig.TryCastExtraValuesToType<PayFastAppConfigExtraValues>(out var applicationConfig, out var castError))
         {
             throw new NotSupportedException($"Unable to cast ExtraValues to type PayFastClientAppConfig in ValidatePaymentNotificationAsync, error: {castError}");
         }
@@ -308,11 +297,11 @@ public class PayFastPaymentGateway : IPaymentGateway
         return ResultContainer<ValidatePaymentNotificationResult, ValidatePaymentNotificationFailureReason>.Success(successfulValue);
     }
 
-    public void SetPaymentPropertiesFromNotification(IPaymentTableEntity genericPayment, BasePaymentNotificationPayload genericPaymentNotificationPayload)
+    public void SetPaymentPropertiesFromNotification(PaymentEntity genericPayment, BasePaymentNotificationPayload genericPaymentNotificationPayload)
     {
-        if (genericPayment is not PayFastOnceOffPayment payFastPayment)
+        if (!genericPayment.TryCastExtraValuesToType<PayFastPaymentExtraValues>(out var payFastPayment, out var castError))
         {
-            throw new NotSupportedException($"Payment is incorrect type in SetPaymentPropertiesFromNotification, it should be PayFastOnceOffPayment but it is '{genericPayment.GetType().FullName}'");
+            throw new NotSupportedException($"Unable to cast ExtraValues to type PayFastOnceOffPayment in SetPaymentPropertiesFromNotification, error: {castError}");
         }
 
         if (genericPaymentNotificationPayload is not PayFastNotificationPayload payFastNotificationPayload)

@@ -2,12 +2,14 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using Firepuma.Payments.Abstractions.Constants;
 using Firepuma.Payments.Abstractions.DTOs.Responses;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
 using Firepuma.Payments.FunctionApp.Queries;
 using Firepuma.Payments.Implementations.Factories;
+using Firepuma.Payments.Implementations.Payments.TableModels;
 using Firepuma.Payments.Implementations.Repositories.EntityRepositories;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -24,17 +26,20 @@ public class GetPayment
 {
     private readonly ILogger<GetPayment> _logger;
     private readonly IMediator _mediator;
+    private readonly IMapper _mapper;
     private readonly IEnumerable<IPaymentGateway> _gateways;
     private readonly IPaymentApplicationConfigRepository _applicationConfigRepository;
 
     public GetPayment(
         ILogger<GetPayment> logger,
         IMediator mediator,
+        IMapper mapper,
         IEnumerable<IPaymentGateway> gateways,
         IPaymentApplicationConfigRepository applicationConfigRepository)
     {
         _logger = logger;
         _mediator = mediator;
+        _mapper = mapper;
         _gateways = gateways;
         _applicationConfigRepository = applicationConfigRepository;
     }
@@ -95,14 +100,17 @@ public class GetPayment
             return HttpResponseFactory.CreateBadRequestResponse($"{result.FailedReason.ToString()}, {string.Join(", ", result.FailedErrors)}");
         }
 
-        var dto = new GetPaymentResponse
-        {
-            PaymentId = result.PaymentTableEntity.PaymentId,
-            GatewayTypeId = result.PaymentTableEntity.GatewayTypeId,
-            PaymentEntity = result.PaymentTableEntity,
-        };
+        var dto = _mapper.Map<GetPaymentResponse>(result.PaymentEntity);
 
-        //FIX: Instead of returning the raw object (dto.PaymentEntity), rather do a mapping but support the additional properties of the Gateway
         return new OkObjectResult(dto);
+    }
+
+    // ReSharper disable once UnusedType.Local
+    private class SplitPaymentMappingProfile : Profile
+    {
+        public SplitPaymentMappingProfile()
+        {
+            CreateMap<PaymentEntity, GetPaymentResponse>();
+        }
     }
 }

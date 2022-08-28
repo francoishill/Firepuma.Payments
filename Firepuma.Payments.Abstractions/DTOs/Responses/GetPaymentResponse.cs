@@ -1,8 +1,18 @@
-﻿namespace Firepuma.Payments.Abstractions.DTOs.Responses;
+﻿using Firepuma.Payments.Abstractions.ValueObjects;
+
+// ReSharper disable CollectionNeverUpdated.Global
+
+namespace Firepuma.Payments.Abstractions.DTOs.Responses;
 
 public class GetPaymentResponse
 {
-    public string PaymentId { get; set; }
-    public string GatewayTypeId { get; set; }
-    public object PaymentEntity { get; set; }
+    public ClientApplicationId ApplicationId { get; set; }
+    public PaymentGatewayTypeId GatewayTypeId { get; set; }
+
+    public PaymentId PaymentId { get; set; }
+
+    public PaymentStatus Status { get; set; }
+    public DateTime? StatusChangedOn { get; set; }
+
+    public Dictionary<string, object> ExtraValues { get; set; }
 }

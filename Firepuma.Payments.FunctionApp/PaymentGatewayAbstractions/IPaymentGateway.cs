@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,7 +7,6 @@ using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions.Results;
 using Firepuma.Payments.Implementations.Config;
 using Firepuma.Payments.Implementations.Payments.TableModels;
-using Firepuma.Payments.Implementations.TableStorage;
 using Microsoft.AspNetCore.Http;
 
 namespace Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
@@ -29,16 +29,10 @@ public interface IPaymentGateway
         HttpRequest req,
         CancellationToken cancellationToken);
 
-    Task<IPaymentTableEntity> CreatePaymentTableEntityAsync(
+    Task<Dictionary<string, object>> CreatePaymentEntityExtraValuesAsync(
         ClientApplicationId applicationId,
         PaymentId paymentId,
         object genericRequestDto,
-        CancellationToken cancellationToken);
-
-    Task<IPaymentTableEntity> GetPaymentDetailsAsync(
-        ITableService<IPaymentTableEntity> tableService,
-        string partitionKey,
-        string rowKey,
         CancellationToken cancellationToken);
 
     Task<Uri> CreateRedirectUriAsync(
@@ -60,6 +54,6 @@ public interface IPaymentGateway
         IPAddress remoteIp);
 
     void SetPaymentPropertiesFromNotification(
-        IPaymentTableEntity genericPayment,
+        PaymentEntity genericPayment,
         BasePaymentNotificationPayload genericPaymentNotificationPayload);
 }

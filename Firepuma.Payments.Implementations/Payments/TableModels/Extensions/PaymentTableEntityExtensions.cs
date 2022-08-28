@@ -4,9 +4,9 @@ namespace Firepuma.Payments.Implementations.Payments.TableModels.Extensions;
 
 public static class PaymentTableEntityExtensions
 {
-    public static void SetStatus(this IPaymentTableEntity entity, PaymentStatus status)
+    public static void SetStatus(this PaymentEntity entity, PaymentStatus status)
     {
-        entity.Status = status.ToString();
+        entity.Status = status;
         entity.StatusChangedOn = DateTime.UtcNow;
     }
 }

@@ -4,7 +4,7 @@
 
 namespace Firepuma.Payments.Implementations.Config;
 
-public class PayFastClientAppConfig
+public class PayFastAppConfigExtraValues
 {
     public bool IsSandbox { get; set; }
 
@@ -17,12 +17,12 @@ public class PayFastClientAppConfig
     public string PassPhrase { get; set; }
 
     // ReSharper disable once UnusedMember.Global
-    public PayFastClientAppConfig()
+    public PayFastAppConfigExtraValues()
     {
         // used by Azure Table deserialization (like in GetEntityAsync method)
     }
 
-    public PayFastClientAppConfig(
+    public PayFastAppConfigExtraValues(
         bool isSandbox,
         string merchantId,
         string merchantKey,

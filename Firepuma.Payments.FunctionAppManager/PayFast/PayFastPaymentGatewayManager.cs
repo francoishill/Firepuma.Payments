@@ -56,7 +56,7 @@ public class PayFastPaymentGatewayManager : IPaymentGatewayManager
             throw new NotSupportedException($"RequestDto is incorrect type in CreatePaymentApplicationConfig, it should be CreatePayFastClientApplicationRequest but it is '{genericRequestDto.GetType().FullName}'");
         }
 
-        var newClientAppConfig = new PayFastClientAppConfig(
+        var newClientAppConfig = new PayFastAppConfigExtraValues(
             requestDTO.IsSandbox,
             requestDTO.MerchantId,
             requestDTO.MerchantKey,

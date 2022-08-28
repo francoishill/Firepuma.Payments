@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
-using Azure.Data.Tables;
 using Firepuma.Payments.Abstractions.Events.EventGridMessages;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Services;
@@ -15,8 +12,8 @@ using Firepuma.Payments.Implementations.CommandHandling.TableModels.Attributes;
 using Firepuma.Payments.Implementations.Payments.TableModels;
 using Firepuma.Payments.Implementations.Payments.TableModels.Extensions;
 using Firepuma.Payments.Implementations.Repositories.EntityRepositories;
-using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -89,7 +86,7 @@ public static class UpdatePayment
         private readonly ILogger<Handler> _logger;
         private readonly IEnumerable<IPaymentGateway> _gateways;
         private readonly IPaymentNotificationTraceRepository _paymentTracesRepository;
-        private readonly ITableService<IPaymentTableEntity> _paymentsTableService;
+        private readonly IPaymentRepository _paymentRepository;
         private readonly IMediator _mediator;
         private readonly IEventPublisher _eventPublisher;
 
@@ -97,14 +94,14 @@ public static class UpdatePayment
             ILogger<Handler> logger,
             IEnumerable<IPaymentGateway> gateways,
             IPaymentNotificationTraceRepository paymentTracesRepository,
-            ITableService<IPaymentTableEntity> paymentsTableService,
+            IPaymentRepository paymentRepository,
             IMediator mediator,
             IEventPublisher eventPublisher)
         {
             _logger = logger;
             _gateways = gateways;
             _paymentTracesRepository = paymentTracesRepository;
-            _paymentsTableService = paymentsTableService;
+            _paymentRepository = paymentRepository;
             _mediator = mediator;
             _eventPublisher = eventPublisher;
         }
@@ -160,25 +157,25 @@ public static class UpdatePayment
                 return Result.Failed(Result.FailureReason.UnableToLoadPayment, $"Unable to load payment with gatewayTypeId {gatewayTypeId}, applicationId {applicationId} and paymentId {paymentId}");
             }
 
-            var payment = getPaymentResult.PaymentTableEntity;
+            var payment = getPaymentResult.PaymentEntity;
 
             gateway.SetPaymentPropertiesFromNotification(payment, command.PaymentNotificationPayload);
             payment.SetStatus(paymentStatus);
 
             try
             {
-                await _paymentsTableService.UpdateEntityAsync(payment, payment.ETag, TableUpdateMode.Replace, cancellationToken);
+                await _paymentRepository.UpdateItemAsync(payment, cancellationToken);
             }
-            catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.Conflict)
+            catch (CosmosException cosmosException) when (cosmosException.StatusCode == System.Net.HttpStatusCode.Conflict)
             {
                 _logger.LogCritical(
-                    requestFailedException,
+                    cosmosException,
                     "Unable to update payments table for applicationId: {ApplicationId}, paymentId: {PaymentId}, due to ETag mismatch, exception message is: {Exception}",
-                    applicationId, paymentId, requestFailedException.Message);
+                    applicationId, paymentId, cosmosException.Message);
 
                 return Result.Failed(
                     Result.FailureReason.ConflictUpdatingTableEntity,
-                    $"Unable to update payments table for applicationId: {applicationId}, paymentId: {paymentId}, due to ETag mismatch, exception message is: {requestFailedException.Message}");
+                    $"Unable to update payments table for applicationId: {applicationId}, paymentId: {paymentId}, due to ETag mismatch, exception message is: {cosmosException.Message}");
             }
 
             await PublishEvent(command, payment, cancellationToken);
@@ -188,7 +185,7 @@ public static class UpdatePayment
 
         private async Task PublishEvent(
             Command command,
-            IPaymentTableEntity payment,
+            PaymentEntity payment,
             CancellationToken cancellationToken)
         {
             var eventData = new PaymentUpdatedEvent

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Config;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
@@ -11,8 +10,10 @@ using Firepuma.Payments.Implementations.CommandHandling;
 using Firepuma.Payments.Implementations.CommandHandling.TableModels.Attributes;
 using Firepuma.Payments.Implementations.Config;
 using Firepuma.Payments.Implementations.Payments.TableModels;
-using Firepuma.Payments.Implementations.TableStorage;
+using Firepuma.Payments.Implementations.Repositories.EntityRepositories;
 using MediatR;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -81,17 +82,20 @@ public static class AddPayment
     public class Handler : IRequestHandler<Command, Result>
     {
         private readonly IOptions<PaymentGeneralOptions> _paymentOptions;
+        private readonly ILogger<Handler> _logger;
         private readonly IEnumerable<IPaymentGateway> _gateways;
-        private readonly ITableService<IPaymentTableEntity> _paymentsTableService;
+        private readonly IPaymentRepository _paymentRepository;
 
         public Handler(
             IOptions<PaymentGeneralOptions> paymentOptions,
+            ILogger<Handler> logger,
             IEnumerable<IPaymentGateway> gateways,
-            ITableService<IPaymentTableEntity> paymentsTableService)
+            IPaymentRepository paymentRepository)
         {
             _paymentOptions = paymentOptions;
+            _logger = logger;
             _gateways = gateways;
-            _paymentsTableService = paymentsTableService;
+            _paymentRepository = paymentRepository;
         }
 
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
@@ -108,20 +112,29 @@ public static class AddPayment
                 return Result.Failed(Result.FailureReason.UnknownGatewayTypeId, $"The payment gateway type '{command.GatewayTypeId}' is not supported");
             }
 
-            var paymentEntity = await gateway.CreatePaymentTableEntityAsync(
+            var paymentEntityExtraValues = await gateway.CreatePaymentEntityExtraValuesAsync(
                 applicationId,
                 paymentId,
                 command.RequestDto,
                 cancellationToken);
 
-            paymentEntity.GatewayTypeId = gateway.TypeId.Value;
+            var paymentEntity = new PaymentEntity(
+                applicationId,
+                gatewayTypeId,
+                paymentId,
+                paymentEntityExtraValues);
 
             try
             {
-                await _paymentsTableService.AddEntityAsync(paymentEntity, cancellationToken);
+                await _paymentRepository.AddItemAsync(paymentEntity, cancellationToken);
             }
-            catch (RequestFailedException requestFailedException) when (requestFailedException.Status == (int)HttpStatusCode.Conflict)
+            catch (CosmosException cosmosException) when (cosmosException.StatusCode == HttpStatusCode.Conflict)
             {
+                _logger.LogCritical(
+                    cosmosException,
+                    "The payment (id \'{PaymentId}\' and application id \'{ApplicationId}\') is already added and cannot be added again",
+                    paymentId, applicationId);
+
                 return Result.Failed(Result.FailureReason.PaymentAlreadyExists, $"The payment (id '{paymentId}' and application id '{applicationId}') is already added and cannot be added again");
             }
 

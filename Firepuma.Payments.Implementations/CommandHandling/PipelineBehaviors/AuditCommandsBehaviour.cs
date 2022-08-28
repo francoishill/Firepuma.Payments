@@ -1,27 +1,22 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Azure;
-using Azure.Data.Tables;
-using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels;
-using Firepuma.Payments.Implementations.TableStorage;
+﻿using Firepuma.Payments.Implementations.CommandHandling.TableModels;
+using Firepuma.Payments.Implementations.Repositories.EntityRepositories;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.PipelineBehaviors
+namespace Firepuma.Payments.Implementations.CommandHandling.PipelineBehaviors
 {
     public class AuditCommandsBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {
         private readonly ILogger<AuditCommandsBehaviour<TRequest, TResponse>> _logger;
-        private readonly ITableService<CommandExecutionEvent> _commandExecutionTableService;
+        private readonly ICommandExecutionEventRepository _commandExecutionEventRepository;
 
         public AuditCommandsBehaviour(
             ILogger<AuditCommandsBehaviour<TRequest, TResponse>> logger,
-            ITableService<CommandExecutionEvent> commandExecutionTableService)
+            ICommandExecutionEventRepository commandExecutionEventRepository)
         {
             _logger = logger;
-            _commandExecutionTableService = commandExecutionTableService;
+            _commandExecutionEventRepository = commandExecutionEventRepository;
         }
 
         public async Task<TResponse> Handle(
@@ -43,9 +38,8 @@ namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.PipelineB
             BaseCommand baseCommand,
             CancellationToken cancellationToken)
         {
-            var rowKey = $"{DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks:D19}-{Guid.NewGuid().ToString()}";
-            var executionEvent = new CommandExecutionEvent(baseCommand, rowKey);
-            await _commandExecutionTableService.AddEntityAsync(executionEvent, cancellationToken);
+            var executionEvent = new CommandExecutionEvent(baseCommand);
+            await _commandExecutionEventRepository.AddItemAsync(executionEvent, cancellationToken);
 
             var startTime = DateTime.UtcNow;
 
@@ -76,7 +70,7 @@ namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.PipelineB
             executionEvent.ExecutionTimeInSeconds = (finishedTime - startTime).TotalSeconds;
             executionEvent.TotalTimeInSeconds = (finishedTime - baseCommand.CreatedOn).TotalSeconds;
 
-            await _commandExecutionTableService.UpdateEntityAsync(executionEvent, ETag.All, TableUpdateMode.Replace, cancellationToken);
+            await _commandExecutionEventRepository.UpdateItemAsync(executionEvent, cancellationToken);
 
             if (error != null)
             {

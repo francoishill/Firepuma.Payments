@@ -43,6 +43,7 @@ public class Startup : FunctionsStartup
             });
 
         AddCloudStorageAccount(services);
+        AddCosmosDb(services);
         AddMediator(services);
 
         services.AddPaymentsManagementFeature();
@@ -60,5 +61,14 @@ public class Startup : FunctionsStartup
     {
         var storageConnectionString = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("AzureWebJobsStorage");
         services.AddSingleton(_ => new TableServiceClient(storageConnectionString));
+    }
+
+    private static void AddCosmosDb(IServiceCollection services)
+    {
+        var connectionString = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("CosmosConnectionString");
+        var databaseId = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("CosmosDatabaseId");
+        var client = new Microsoft.Azure.Cosmos.CosmosClient(connectionString);
+        var database = client.GetDatabase(databaseId);
+        services.AddSingleton(_ => database);
     }
 }

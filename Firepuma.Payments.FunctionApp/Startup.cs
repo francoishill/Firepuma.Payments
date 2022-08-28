@@ -5,11 +5,11 @@ using Azure.Data.Tables;
 using Azure.Messaging.EventGrid;
 using Azure.Messaging.ServiceBus;
 using Firepuma.Payments.FunctionApp;
-using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
 using Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Config;
 using Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Services;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Services;
 using Firepuma.Payments.FunctionApp.PayFast;
+using Firepuma.Payments.Implementations.CommandHandling;
 using Firepuma.Payments.Implementations.Helpers;
 using Firepuma.Payments.Implementations.PipelineBehaviors;
 using MediatR;
@@ -32,6 +32,7 @@ public class Startup : FunctionsStartup
         AddAutoMapper(services);
         AddMediator(services);
         AddCloudStorageAccount(services);
+        AddCosmosDb(services);
         AddServiceBusPaymentsMessageSender(services);
         AddEventPublisher(services);
 
@@ -60,6 +61,15 @@ public class Startup : FunctionsStartup
     {
         var storageConnectionString = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("AzureWebJobsStorage");
         services.AddSingleton(_ => new TableServiceClient(storageConnectionString));
+    }
+
+    private static void AddCosmosDb(IServiceCollection services)
+    {
+        var connectionString = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("CosmosConnectionString");
+        var databaseId = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("CosmosDatabaseId");
+        var client = new Microsoft.Azure.Cosmos.CosmosClient(connectionString);
+        var database = client.GetDatabase(databaseId);
+        services.AddSingleton(_ => database);
     }
 
     private static void AddServiceBusPaymentsMessageSender(IServiceCollection services)

@@ -65,3 +65,7 @@ dotnet pack --configuration Release --output . --version-suffix "dev" Firepuma.P
 dotnet pack --configuration Release --output . --version-suffix "dev" Firepuma.Payments.Client/Firepuma.Payments.Client.csproj
 dotnet nuget push *.nupkg --source "Local feed"
 ```
+
+### Credits to
+
+* [ShawnShiSS/clean-architecture-azure-cosmos-db](https://github.com/ShawnShiSS/clean-architecture-azure-cosmos-db)

@@ -1,24 +1,16 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Reflection;
-using Azure;
-using Azure.Data.Tables;
-using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels.Attributes;
-using Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels.Helpers;
+using Firepuma.Payments.Abstractions.Entities;
+using Firepuma.Payments.Implementations.CommandHandling.TableModels.Attributes;
+using Firepuma.Payments.Implementations.CommandHandling.TableModels.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableModels
+namespace Firepuma.Payments.Implementations.CommandHandling.TableModels
 {
     [DebuggerDisplay("{ToString()}")]
-    public class CommandExecutionEvent : ITableEntity
+    public class CommandExecutionEvent : BaseEntity
     {
-        public string PartitionKey { get; set; }
-        public string RowKey { get; set; }
-        public DateTimeOffset? Timestamp { get; set; }
-        public ETag ETag { get; set; }
-
         public string CommandId { get; set; }
         public bool? Successful { get; set; }
         public string TypeName { get; set; }
@@ -31,14 +23,15 @@ namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableMode
         public string ErrorStackTrack { get; set; }
         public double ExecutionTimeInSeconds { get; set; }
         public double TotalTimeInSeconds { get; set; }
-        public DateTime? Updated { get; set; }
 
-
-        public CommandExecutionEvent(BaseCommand baseCommand, string rowKey)
+        // ReSharper disable once UnusedMember.Global
+        public CommandExecutionEvent()
         {
-            PartitionKey = "";
-            RowKey = rowKey;
+            // used by Azure Cosmos deserialization (including the Add methods, like repository.AddItemAsync)
+        }
 
+        public CommandExecutionEvent(BaseCommand baseCommand)
+        {
             CommandId = baseCommand.CommandId;
             TypeName = CommandTypeNameHelpers.GetTypeNameExcludingNamespace(baseCommand.GetType());
             TypeNamespace = CommandTypeNameHelpers.GetTypeNamespace(baseCommand.GetType());
@@ -73,7 +66,7 @@ namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling.TableMode
 
         public override string ToString()
         {
-            return $"{PartitionKey}/{RowKey}/{CommandId}/{TypeNamespace}.{TypeName}";
+            return $"{Id}/{CommandId}/{TypeNamespace}.{TypeName}";
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Firepuma.Payments.FunctionApp.Infrastructure.CommandHandling;
+﻿namespace Firepuma.Payments.Implementations.CommandHandling;
 
 public abstract class BaseCommand
 {

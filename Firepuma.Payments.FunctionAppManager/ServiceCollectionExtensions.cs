@@ -14,7 +14,7 @@ public static class ServiceCollectionExtensions
             PaymentApplicationConfig,
             IPaymentApplicationConfigRepository,
             PaymentApplicationConfigCosmosDbRepository>(
-            "ApplicationConfigs",
+            CosmosContainerNames.APPLICATION_CONFIGS,
             container => new PaymentApplicationConfigCosmosDbRepository(container));
     }
 }

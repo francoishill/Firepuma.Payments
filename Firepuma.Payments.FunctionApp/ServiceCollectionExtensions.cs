@@ -1,6 +1,8 @@
 ﻿using Firepuma.Payments.FunctionApp.Config;
+using Firepuma.Payments.Implementations.Config;
+using Firepuma.Payments.Implementations.Payments.TableModels;
+using Firepuma.Payments.Implementations.Repositories;
 using Firepuma.Payments.Implementations.Repositories.EntityRepositories;
-using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Firepuma.Payments.FunctionApp;
@@ -16,25 +18,25 @@ public static class ServiceCollectionExtensions
             opt.ValidateAndStorePaymentNotificationBaseUrl = validateAndStorePaymentNotificationBaseUrl;
         });
 
-        services.AddSingleton<IPaymentRepository, PaymentCosmosDbRepository>(s =>
-        {
-            var database = s.GetRequiredService<Database>();
-            var container = database.GetContainer("Payments");
-            return new PaymentCosmosDbRepository(container);
-        });
+        services.AddCosmosDbRepository<
+            PaymentEntity,
+            IPaymentRepository,
+            PaymentCosmosDbRepository>(
+            "Payments",
+            container => new PaymentCosmosDbRepository(container));
 
-        services.AddSingleton<IPaymentNotificationTraceRepository, PaymentNotificationTraceCosmosDbRepository>(s =>
-        {
-            var database = s.GetRequiredService<Database>();
-            var container = database.GetContainer("NotificationTraces");
-            return new PaymentNotificationTraceCosmosDbRepository(container);
-        });
+        services.AddCosmosDbRepository<
+            PaymentNotificationTrace,
+            IPaymentNotificationTraceRepository,
+            PaymentNotificationTraceCosmosDbRepository>(
+            "NotificationTraces",
+            container => new PaymentNotificationTraceCosmosDbRepository(container));
 
-        services.AddSingleton<IPaymentApplicationConfigRepository, PaymentApplicationConfigCosmosDbRepository>(s =>
-        {
-            var database = s.GetRequiredService<Database>();
-            var container = database.GetContainer("ApplicationConfigs");
-            return new PaymentApplicationConfigCosmosDbRepository(container);
-        });
+        services.AddCosmosDbRepository<
+            PaymentApplicationConfig,
+            IPaymentApplicationConfigRepository,
+            PaymentApplicationConfigCosmosDbRepository>(
+            "ApplicationConfigs",
+            container => new PaymentApplicationConfigCosmosDbRepository(container));
     }
 }

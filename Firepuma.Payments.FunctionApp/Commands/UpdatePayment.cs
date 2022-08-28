@@ -10,10 +10,11 @@ using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Services;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
 using Firepuma.Payments.FunctionApp.Queries;
-using Firepuma.Payments.FunctionApp.TableModels;
-using Firepuma.Payments.FunctionApp.TableModels.Extensions;
 using Firepuma.Payments.Implementations.CommandHandling;
 using Firepuma.Payments.Implementations.CommandHandling.TableModels.Attributes;
+using Firepuma.Payments.Implementations.Payments.TableModels;
+using Firepuma.Payments.Implementations.Payments.TableModels.Extensions;
+using Firepuma.Payments.Implementations.Repositories.EntityRepositories;
 using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -87,7 +88,7 @@ public static class UpdatePayment
     {
         private readonly ILogger<Handler> _logger;
         private readonly IEnumerable<IPaymentGateway> _gateways;
-        private readonly ITableService<PaymentNotificationTrace> _paymentTracesTableService;
+        private readonly IPaymentNotificationTraceRepository _paymentTracesRepository;
         private readonly ITableService<IPaymentTableEntity> _paymentsTableService;
         private readonly IMediator _mediator;
         private readonly IEventPublisher _eventPublisher;
@@ -95,14 +96,14 @@ public static class UpdatePayment
         public Handler(
             ILogger<Handler> logger,
             IEnumerable<IPaymentGateway> gateways,
-            ITableService<PaymentNotificationTrace> paymentTracesTableService,
+            IPaymentNotificationTraceRepository paymentTracesRepository,
             ITableService<IPaymentTableEntity> paymentsTableService,
             IMediator mediator,
             IEventPublisher eventPublisher)
         {
             _logger = logger;
             _gateways = gateways;
-            _paymentTracesTableService = paymentTracesTableService;
+            _paymentTracesRepository = paymentTracesRepository;
             _paymentsTableService = paymentsTableService;
             _mediator = mediator;
             _eventPublisher = eventPublisher;
@@ -130,16 +131,15 @@ public static class UpdatePayment
             {
                 //FIX: this could fail if request is large and does not fit into string field of Azure Table, consider writing to blob instead?
                 var paymentNotificationJson = JsonConvert.SerializeObject(command.PaymentNotificationPayload, new Newtonsoft.Json.Converters.StringEnumConverter());
-                var rowKey = $"{DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks:D19}-{Guid.NewGuid().ToString()}";
                 var traceRecord = new PaymentNotificationTrace(
                     applicationId,
-                    rowKey,
+                    gatewayTypeId,
                     paymentId,
                     command.GatewayInternalTransactionId,
                     paymentNotificationJson,
                     command.IncomingRequestUri);
 
-                await _paymentTracesTableService.AddEntityAsync(traceRecord, cancellationToken);
+                await _paymentTracesRepository.AddItemAsync(traceRecord, cancellationToken);
             }
             catch (Exception exception)
             {

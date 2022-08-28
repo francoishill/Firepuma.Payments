@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Azure;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
-using Firepuma.Payments.FunctionApp.TableModels;
+using Firepuma.Payments.Implementations.Payments.TableModels;
 using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
 using Microsoft.Extensions.Logging;

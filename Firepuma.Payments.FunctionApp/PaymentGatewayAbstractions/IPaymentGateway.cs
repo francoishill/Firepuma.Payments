@@ -4,8 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions.Results;
-using Firepuma.Payments.FunctionApp.TableModels;
 using Firepuma.Payments.Implementations.Config;
+using Firepuma.Payments.Implementations.Payments.TableModels;
 using Firepuma.Payments.Implementations.TableStorage;
 using Microsoft.AspNetCore.Http;
 

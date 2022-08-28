@@ -1,5 +1,5 @@
 ﻿using Firepuma.Payments.FunctionApp.Config;
-using Firepuma.Payments.FunctionApp.TableModels;
+using Firepuma.Payments.Implementations.Payments.TableModels;
 using Firepuma.Payments.Implementations.Repositories.EntityRepositories;
 using Firepuma.Payments.Implementations.TableStorage;
 using Microsoft.Azure.Cosmos;
@@ -19,7 +19,13 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddTableProvider<IPaymentTableEntity>("Payments");
-        services.AddTableProvider<PaymentNotificationTrace>("PaymentNotificationTraces");
+        
+        services.AddSingleton<IPaymentNotificationTraceRepository, PaymentNotificationTraceCosmosDbRepository>(s =>
+        {
+            var database = s.GetRequiredService<Database>();
+            var container = database.GetContainer("NotificationTraces");
+            return new PaymentNotificationTraceCosmosDbRepository(container);
+        });
 
         services.AddSingleton<IPaymentApplicationConfigRepository, PaymentApplicationConfigCosmosDbRepository>(s =>
         {

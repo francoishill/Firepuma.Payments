@@ -1,7 +1,6 @@
-﻿using System;
-using Firepuma.Payments.Abstractions.ValueObjects;
+﻿using Firepuma.Payments.Abstractions.ValueObjects;
 
-namespace Firepuma.Payments.FunctionApp.TableModels.Extensions;
+namespace Firepuma.Payments.Implementations.Payments.TableModels.Extensions;
 
 public static class PaymentTableEntityExtensions
 {

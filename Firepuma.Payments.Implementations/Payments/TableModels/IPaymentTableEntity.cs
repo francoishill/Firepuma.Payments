@@ -1,7 +1,6 @@
-﻿using System;
-using Azure.Data.Tables;
+﻿using Azure.Data.Tables;
 
-namespace Firepuma.Payments.FunctionApp.TableModels;
+namespace Firepuma.Payments.Implementations.Payments.TableModels;
 
 public interface IPaymentTableEntity : ITableEntity
 {

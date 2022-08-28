@@ -1,32 +1,35 @@
-﻿using System;
-using Azure;
-using Azure.Data.Tables;
+﻿using Firepuma.Payments.Abstractions.Entities;
 using Firepuma.Payments.Abstractions.ValueObjects;
 
-namespace Firepuma.Payments.FunctionApp.TableModels;
+namespace Firepuma.Payments.Implementations.Payments.TableModels;
 
-public class PaymentNotificationTrace : ITableEntity
+public class PaymentNotificationTrace : BaseEntity
 {
-    public string PartitionKey { get; set; }
-    public string RowKey { get; set; }
-    public DateTimeOffset? Timestamp { get; set; }
-    public ETag ETag { get; set; }
+    public ClientApplicationId ApplicationId { get; set; }
+    public PaymentGatewayTypeId GatewayTypeId { get; set; }
 
     public string PaymentId { get; set; }
+
     public string GatewayInternalTransactionId { get; set; }
     public string PaymentNotificationJson { get; set; }
     public string IncomingRequestUri { get; set; }
 
+    // ReSharper disable once UnusedMember.Global
+    public PaymentNotificationTrace()
+    {
+        // used by Azure Cosmos deserialization (including the Add methods, like repository.AddItemAsync)
+    }
+
     public PaymentNotificationTrace(
         ClientApplicationId applicationId,
-        string rowKey,
+        PaymentGatewayTypeId gatewayTypeId,
         PaymentId paymentId,
         string gatewayInternalTransactionId,
         string paymentNotificationJson,
         string incomingRequestUri)
     {
-        PartitionKey = applicationId.Value;
-        RowKey = rowKey;
+        ApplicationId = applicationId;
+        GatewayTypeId = gatewayTypeId;
 
         PaymentId = paymentId.Value;
         GatewayInternalTransactionId = gatewayInternalTransactionId;

@@ -1,7 +1,7 @@
 ﻿using System;
 using Azure;
 using Firepuma.Payments.Abstractions.ValueObjects;
-using Firepuma.Payments.FunctionApp.TableModels;
+using Firepuma.Payments.Implementations.Payments.TableModels;
 
 namespace Firepuma.Payments.FunctionApp.PayFast.TableModels;
 

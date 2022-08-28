@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Firepuma.Payments.FunctionAppManager.GatewayAbstractions;
 using Firepuma.Payments.Implementations.Config;
 using Firepuma.Payments.Implementations.Repositories.EntityRepositories;

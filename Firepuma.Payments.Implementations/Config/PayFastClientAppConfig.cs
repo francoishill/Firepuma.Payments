@@ -1,14 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Firepuma.Payments.Abstractions.ValueObjects;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
 namespace Firepuma.Payments.Implementations.Config;
 
-public class PayFastClientAppConfig : BasePaymentApplicationConfig
+public class PayFastClientAppConfig
 {
-    private static readonly PaymentGatewayTypeId _staticGatewayTypeId = new("PayFast");
-
     public bool IsSandbox { get; set; }
 
     [Required]
@@ -21,19 +18,15 @@ public class PayFastClientAppConfig : BasePaymentApplicationConfig
 
     // ReSharper disable once UnusedMember.Global
     public PayFastClientAppConfig()
-        : base(_staticGatewayTypeId)
     {
         // used by Azure Table deserialization (like in GetEntityAsync method)
     }
 
     public PayFastClientAppConfig(
-        ClientApplicationId applicationId,
-        string applicationSecret,
         bool isSandbox,
         string merchantId,
         string merchantKey,
         string passPhrase)
-        : base(_staticGatewayTypeId, applicationId, applicationSecret)
     {
         IsSandbox = isSandbox;
         MerchantId = merchantId;

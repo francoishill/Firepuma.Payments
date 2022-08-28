@@ -1,4 +1,4 @@
-namespace Firepuma.Payments.Abstractions.Specifications;
+namespace Firepuma.Payments.Abstractions.Infrastructure.Specifications;
 
 public interface ISpecificationEvaluator<T> where T : class
 {

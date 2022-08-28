@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -9,7 +10,6 @@ using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionAppManager.GatewayAbstractions;
 using Firepuma.Payments.FunctionAppManager.GatewayAbstractions.Results;
 using Firepuma.Payments.Implementations.Config;
-using Firepuma.Payments.Implementations.TableStorage;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
@@ -19,14 +19,6 @@ public class PayFastPaymentGatewayManager : IPaymentGatewayManager
 {
     public PaymentGatewayTypeId TypeId => new("PayFast");
     public string DisplayName => "PayFast";
-
-    private readonly ITableService<BasePaymentApplicationConfig> _applicationConfigsTableService;
-
-    public PayFastPaymentGatewayManager(
-        ITableService<BasePaymentApplicationConfig> applicationConfigsTableService)
-    {
-        _applicationConfigsTableService = applicationConfigsTableService;
-    }
 
     public async Task<ResultContainer<CreateClientApplicationRequestResult, CreateClientApplicationRequestFailureReason>> DeserializeCreateClientApplicationRequestAsync(
         HttpRequest req,
@@ -57,10 +49,7 @@ public class PayFastPaymentGatewayManager : IPaymentGatewayManager
         return ResultContainer<CreateClientApplicationRequestResult, CreateClientApplicationRequestFailureReason>.Success(successfulValue);
     }
 
-    public BasePaymentApplicationConfig CreatePaymentApplicationConfig(
-        ClientApplicationId applicationId,
-        object genericRequestDto,
-        string applicationSecret)
+    public Dictionary<string, object> CreatePaymentApplicationConfigExtraValues(object genericRequestDto)
     {
         if (genericRequestDto is not CreatePayFastClientApplicationRequest requestDTO)
         {
@@ -68,25 +57,11 @@ public class PayFastPaymentGatewayManager : IPaymentGatewayManager
         }
 
         var newClientAppConfig = new PayFastClientAppConfig(
-            applicationId,
-            applicationSecret,
             requestDTO.IsSandbox,
             requestDTO.MerchantId,
             requestDTO.MerchantKey,
             requestDTO.PassPhrase);
 
-        return newClientAppConfig;
-    }
-
-    public async Task<BasePaymentApplicationConfig> GetApplicationConfigAsync(
-        ClientApplicationId applicationId,
-        CancellationToken cancellationToken)
-    {
-        var applicationConfig = await _applicationConfigsTableService.GetEntityAsync<PayFastClientAppConfig>(
-            "PayFast",
-            applicationId.Value,
-            cancellationToken: cancellationToken);
-
-        return applicationConfig;
+        return PaymentApplicationConfig.CastToExtraValues(newClientAppConfig);
     }
 }

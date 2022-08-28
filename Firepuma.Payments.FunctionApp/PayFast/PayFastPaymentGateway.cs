@@ -51,19 +51,6 @@ public class PayFastPaymentGateway : IPaymentGateway
         _mapper = mapper;
     }
 
-    public async Task<BasePaymentApplicationConfig> GetApplicationConfigAsync(
-        ITableService<BasePaymentApplicationConfig> applicationConfigsTableService,
-        ClientApplicationId applicationId,
-        CancellationToken cancellationToken)
-    {
-        var applicationConfig = await applicationConfigsTableService.GetEntityAsync<PayFastClientAppConfig>(
-            "PayFast",
-            applicationId.Value,
-            cancellationToken: cancellationToken);
-
-        return applicationConfig;
-    }
-
     public async Task<ResultContainer<PrepareRequestResult, PrepareRequestFailureReason>> DeserializePrepareRequestAsync(HttpRequest req, CancellationToken cancellationToken)
     {
         var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
@@ -103,7 +90,6 @@ public class PayFastPaymentGateway : IPaymentGateway
     }
 
     public async Task<IPaymentTableEntity> CreatePaymentTableEntityAsync(
-        BasePaymentApplicationConfig applicationConfig,
         ClientApplicationId applicationId,
         PaymentId paymentId,
         object genericRequestDto,
@@ -129,7 +115,6 @@ public class PayFastPaymentGateway : IPaymentGateway
 
     public async Task<IPaymentTableEntity> GetPaymentDetailsAsync(
         ITableService<IPaymentTableEntity> tableService,
-        BasePaymentApplicationConfig applicationConfig,
         string partitionKey,
         string rowKey,
         CancellationToken cancellationToken)
@@ -138,7 +123,7 @@ public class PayFastPaymentGateway : IPaymentGateway
     }
 
     public async Task<Uri> CreateRedirectUriAsync(
-        BasePaymentApplicationConfig genericApplicationConfig,
+        PaymentApplicationConfig genericApplicationConfig,
         ClientApplicationId applicationId,
         PaymentId paymentId,
         object genericRequestDto,
@@ -150,9 +135,9 @@ public class PayFastPaymentGateway : IPaymentGateway
             throw new NotSupportedException($"RequestDto is incorrect type in CreateRedirectUri, it should be PreparePayFastOnceOffPaymentRequest but it is '{genericRequestDto.GetType().FullName}'");
         }
 
-        if (genericApplicationConfig is not PayFastClientAppConfig applicationConfig)
+        if (!genericApplicationConfig.TryCastExtraValuesToType<PayFastClientAppConfig>(out var applicationConfig, out var castError))
         {
-            throw new NotSupportedException($"ApplicationConfig is incorrect type in CreateRedirectUri, it should be PayFastClientAppConfig but it is '{genericApplicationConfig.GetType().FullName}'");
+            throw new NotSupportedException($"Unable to cast ExtraValues to type PayFastClientAppConfig in CreateRedirectUriAsync, error: {castError}");
         }
 
         var payFastSettings = PayFastSettingsFactory.CreatePayFastSettings(
@@ -221,7 +206,7 @@ public class PayFastPaymentGateway : IPaymentGateway
     }
 
     public async Task<ResultContainer<ValidatePaymentNotificationResult, ValidatePaymentNotificationFailureReason>> ValidatePaymentNotificationAsync(
-        BasePaymentApplicationConfig genericApplicationConfig,
+        PaymentApplicationConfig genericApplicationConfig,
         ClientApplicationId applicationId,
         object genericPaymentNotificationPayload,
         IPAddress remoteIp)
@@ -231,9 +216,9 @@ public class PayFastPaymentGateway : IPaymentGateway
             throw new NotSupportedException($"PaymentNotificationPayload is incorrect type in ValidatePaymentNotificationAsync, it should be PayFastNotificationPayload but it is '{genericPaymentNotificationPayload.GetType().FullName}'");
         }
 
-        if (genericApplicationConfig is not PayFastClientAppConfig applicationConfig)
+        if (!genericApplicationConfig.TryCastExtraValuesToType<PayFastClientAppConfig>(out var applicationConfig, out var castError))
         {
-            throw new NotSupportedException($"ApplicationConfig is incorrect type in CreateRedirectUri, it should be PayFastClientAppConfig but it is '{genericApplicationConfig.GetType().FullName}'");
+            throw new NotSupportedException($"Unable to cast ExtraValues to type PayFastClientAppConfig in ValidatePaymentNotificationAsync, error: {castError}");
         }
 
         var payFastRequest = payFastNotificationPayload.PayFastNotify;

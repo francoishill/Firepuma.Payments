@@ -1,8 +1,8 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 using Firepuma.Payments.Abstractions.Entities;
+using Firepuma.Payments.Abstractions.Infrastructure.Specifications;
 using Firepuma.Payments.Abstractions.Repositories;
-using Firepuma.Payments.Abstractions.Specifications;
 using Firepuma.Payments.Implementations.Specifications;
 
 // ReSharper disable RedundantTypeArgumentsOfMethod
@@ -11,17 +11,17 @@ namespace Firepuma.Payments.Implementations.Repositories;
 
 public abstract class CosmosDbRepository<T> : IRepository<T>, ICosmosContainerContext<T> where T : BaseEntity, new()
 {
-    private readonly Container _container;
+    protected readonly Container Container;
 
     protected CosmosDbRepository(Container container)
     {
-        _container = container;
+        Container = container;
     }
 
     public abstract string GenerateId(T entity);
     public abstract PartitionKey ResolvePartitionKey(string entityId);
 
-    public string ContainerName => _container.Id;
+    public string ContainerName => Container.Id;
 
     public async Task<IEnumerable<T>> GetItemsAsync(
         ISpecification<T> specification,
@@ -45,7 +45,7 @@ public abstract class CosmosDbRepository<T> : IRepository<T>, ICosmosContainerCo
         string queryString,
         CancellationToken cancellationToken)
     {
-        var resultSetIterator = _container.GetItemQueryIterator<T>(new QueryDefinition(queryString));
+        var resultSetIterator = Container.GetItemQueryIterator<T>(new QueryDefinition(queryString));
         var results = new List<T>();
         while (resultSetIterator.HasMoreResults)
         {
@@ -65,13 +65,13 @@ public abstract class CosmosDbRepository<T> : IRepository<T>, ICosmosContainerCo
         return await queryable.CountAsync(cancellationToken: cancellationToken);
     }
 
-    public async Task<T> GetItemAsync(
+    public async Task<T> GetItemOrDefaultAsync(
         string id,
         CancellationToken cancellationToken)
     {
         try
         {
-            var response = await _container.ReadItemAsync<T>(id, ResolvePartitionKey(id), cancellationToken: cancellationToken);
+            var response = await Container.ReadItemAsync<T>(id, ResolvePartitionKey(id), cancellationToken: cancellationToken);
             return response.Resource;
         }
         catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -85,26 +85,26 @@ public abstract class CosmosDbRepository<T> : IRepository<T>, ICosmosContainerCo
         CancellationToken cancellationToken)
     {
         item.Id = GenerateId(item);
-        await _container.CreateItemAsync<T>(item, ResolvePartitionKey(item.Id), cancellationToken: cancellationToken);
+        await Container.CreateItemAsync<T>(item, ResolvePartitionKey(item.Id), cancellationToken: cancellationToken);
     }
 
     public async Task UpdateItemAsync(
         T item,
         CancellationToken cancellationToken)
     {
-        await _container.UpsertItemAsync<T>(item, ResolvePartitionKey(item.Id), cancellationToken: cancellationToken);
+        await Container.UpsertItemAsync<T>(item, ResolvePartitionKey(item.Id), cancellationToken: cancellationToken);
     }
 
     public async Task DeleteItemAsync(
         T item,
         CancellationToken cancellationToken)
     {
-        await _container.DeleteItemAsync<T>(item.Id, ResolvePartitionKey(item.Id), cancellationToken: cancellationToken);
+        await Container.DeleteItemAsync<T>(item.Id, ResolvePartitionKey(item.Id), cancellationToken: cancellationToken);
     }
 
     private IQueryable<T> ApplySpecification(ISpecification<T> specification)
     {
         var evaluator = new CosmosDbSpecificationEvaluator<T>();
-        return evaluator.GetQuery(_container.GetItemLinqQueryable<T>(), specification);
+        return evaluator.GetQuery(Container.GetItemLinqQueryable<T>(), specification);
     }
 }

@@ -1,4 +1,4 @@
-﻿using Firepuma.Payments.Abstractions.Specifications;
+﻿using Firepuma.Payments.Abstractions.Infrastructure.Specifications;
 
 namespace Firepuma.Payments.Implementations.Specifications;
 

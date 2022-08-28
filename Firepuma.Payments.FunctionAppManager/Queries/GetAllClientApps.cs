@@ -2,7 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.Payments.Implementations.Config;
-using Firepuma.Payments.Implementations.TableStorage;
+using Firepuma.Payments.Implementations.EntitySpecifications;
+using Firepuma.Payments.Implementations.Repositories.EntityRepositories;
 using MediatR;
 
 // ReSharper disable UnusedType.Global
@@ -12,29 +13,29 @@ namespace Firepuma.Payments.FunctionAppManager.Queries;
 
 public static class GetAllClientApps
 {
-    public class Query : IRequest<IEnumerable<BasePaymentApplicationConfig>>
+    public class Query : IRequest<IEnumerable<PaymentApplicationConfig>>
     {
     }
 
-    public class Handler : IRequestHandler<Query, IEnumerable<BasePaymentApplicationConfig>>
+    public class Handler : IRequestHandler<Query, IEnumerable<PaymentApplicationConfig>>
     {
-        private readonly ITableService<BasePaymentApplicationConfig> _applicationConfigsTableService;
+        private readonly IPaymentApplicationConfigRepository _applicationConfigRepository;
 
         public Handler(
-            ITableService<BasePaymentApplicationConfig> applicationConfigsTableService)
+            IPaymentApplicationConfigRepository applicationConfigRepository)
         {
-            _applicationConfigsTableService = applicationConfigsTableService;
+            _applicationConfigRepository = applicationConfigRepository;
         }
 
-        public async Task<IEnumerable<BasePaymentApplicationConfig>> Handle(
+        public async Task<IEnumerable<PaymentApplicationConfig>> Handle(
             Query query,
             CancellationToken cancellationToken)
         {
-            //FIX: remove direct usage of PayFastClientAppConfig here (should support multiple gateways and be gateway agnostic)
-            var tableQuery = _applicationConfigsTableService.QueryAsync<PayFastClientAppConfig>(c => true, cancellationToken: cancellationToken);
+            var specification = new ClientAppsGetAllSpecification();
+            var tableQuery = await _applicationConfigRepository.GetItemsAsync(specification, cancellationToken);
 
-            var rows = new List<BasePaymentApplicationConfig>();
-            await foreach (var row in tableQuery)
+            var rows = new List<PaymentApplicationConfig>();
+            foreach (var row in tableQuery)
             {
                 rows.Add(row);
             }

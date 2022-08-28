@@ -32,7 +32,7 @@ public static class AddPayment
         public ClientApplicationId ApplicationId { get; init; }
 
         [IgnoreCommandAudit]
-        public BasePaymentApplicationConfig ApplicationConfig { get; init; }
+        public PaymentApplicationConfig ApplicationConfig { get; init; }
 
         public PaymentId PaymentId { get; init; }
         public object RequestDto { get; init; }
@@ -109,7 +109,6 @@ public static class AddPayment
             }
 
             var paymentEntity = await gateway.CreatePaymentTableEntityAsync(
-                applicationConfig,
                 applicationId,
                 paymentId,
                 command.RequestDto,

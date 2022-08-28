@@ -6,8 +6,6 @@ using Azure;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
 using Firepuma.Payments.FunctionApp.TableModels;
-using Firepuma.Payments.Implementations.CommandHandling.TableModels.Attributes;
-using Firepuma.Payments.Implementations.Config;
 using Firepuma.Payments.Implementations.TableStorage;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -27,9 +25,6 @@ public static class GetPaymentDetails
         public PaymentGatewayTypeId GatewayTypeId { get; init; }
 
         public ClientApplicationId ApplicationId { get; set; }
-
-        [IgnoreCommandAudit]
-        public BasePaymentApplicationConfig ApplicationConfig { get; init; }
 
         public PaymentId PaymentId { get; set; }
     }
@@ -95,7 +90,6 @@ public static class GetPaymentDetails
         {
             var gatewayTypeId = query.GatewayTypeId;
             var applicationId = query.ApplicationId;
-            var applicationConfig = query.ApplicationConfig;
             var paymentId = query.PaymentId;
 
             var gateway = _gateways.GetFromTypeIdOrNull(gatewayTypeId);
@@ -110,7 +104,6 @@ public static class GetPaymentDetails
             {
                 var paymentEntity = await gateway.GetPaymentDetailsAsync(
                     _paymentsTableService,
-                    applicationConfig,
                     applicationId.Value,
                     paymentId.Value,
                     cancellationToken);

@@ -1,5 +1,5 @@
 ﻿using Firepuma.Payments.Abstractions.Entities;
-using Firepuma.Payments.Abstractions.Specifications;
+using Firepuma.Payments.Abstractions.Infrastructure.Specifications;
 
 namespace Firepuma.Payments.Abstractions.Repositories;
 
@@ -17,7 +17,7 @@ public interface IRepository<T> where T : BaseEntity, new()
         ISpecification<T> specification,
         CancellationToken cancellationToken);
 
-    Task<T> GetItemAsync(
+    Task<T> GetItemOrDefaultAsync(
         string id,
         CancellationToken cancellationToken);
 

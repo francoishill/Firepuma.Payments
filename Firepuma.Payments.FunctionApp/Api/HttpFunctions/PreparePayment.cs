@@ -7,9 +7,8 @@ using Firepuma.Payments.Abstractions.DTOs.Responses;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionApp.Commands;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
-using Firepuma.Payments.Implementations.Config;
 using Firepuma.Payments.Implementations.Factories;
-using Firepuma.Payments.Implementations.TableStorage;
+using Firepuma.Payments.Implementations.Repositories.EntityRepositories;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -22,20 +21,20 @@ namespace Firepuma.Payments.FunctionApp.Api.HttpFunctions;
 public class PreparePayment
 {
     private readonly ILogger<PreparePayment> _logger;
-    private readonly ITableService<BasePaymentApplicationConfig> _applicationConfigsTableService;
     private readonly IMediator _mediator;
     private readonly IEnumerable<IPaymentGateway> _gateways;
+    private readonly IPaymentApplicationConfigRepository _applicationConfigRepository;
 
     public PreparePayment(
         ILogger<PreparePayment> logger,
-        ITableService<BasePaymentApplicationConfig> applicationConfigsTableService,
         IMediator mediator,
-        IEnumerable<IPaymentGateway> gateways)
+        IEnumerable<IPaymentGateway> gateways,
+        IPaymentApplicationConfigRepository applicationConfigRepository)
     {
         _logger = logger;
-        _applicationConfigsTableService = applicationConfigsTableService;
         _mediator = mediator;
         _gateways = gateways;
+        _applicationConfigRepository = applicationConfigRepository;
     }
 
     [FunctionName("PreparePayment")]
@@ -69,10 +68,16 @@ public class PreparePayment
             return HttpResponseFactory.CreateBadRequestResponse($"A value is required for header {PaymentHttpRequestHeaderKeys.APP_SECRET}");
         }
 
-        var applicationConfig = await gateway.GetApplicationConfigAsync(
-            _applicationConfigsTableService,
+        var applicationConfig = await _applicationConfigRepository.GetItemOrDefaultAsync(
             new ClientApplicationId(applicationId),
+            new PaymentGatewayTypeId(gatewayTypeId),
             cancellationToken);
+
+        if (applicationConfig == null)
+        {
+            _logger.LogError("Unable to find applicationConfig for applicationId: {ApplicationId} and gatewayTypeId: {GatewayTypeId}", applicationId, gatewayTypeId);
+            return HttpResponseFactory.CreateBadRequestResponse($"Unable to find applicationConfig for applicationId: {applicationId} and gatewayTypeId: {gatewayTypeId}");
+        }
 
         if (applicationConfig.ApplicationSecret != requestAppSecret)
         {

@@ -1,8 +1,8 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.Payments.Abstractions.ValueObjects;
 using Firepuma.Payments.FunctionAppManager.GatewayAbstractions.Results;
-using Firepuma.Payments.Implementations.Config;
 using Microsoft.AspNetCore.Http;
 
 namespace Firepuma.Payments.FunctionAppManager.GatewayAbstractions;
@@ -23,12 +23,5 @@ public interface IPaymentGatewayManager
         HttpRequest req,
         CancellationToken cancellationToken);
 
-    BasePaymentApplicationConfig CreatePaymentApplicationConfig(
-        ClientApplicationId applicationId,
-        object genericRequestDto,
-        string applicationSecret);
-
-    Task<BasePaymentApplicationConfig> GetApplicationConfigAsync(
-        ClientApplicationId applicationId,
-        CancellationToken cancellationToken);
+    Dictionary<string, object> CreatePaymentApplicationConfigExtraValues(object genericRequestDto);
 }

@@ -1,6 +1,6 @@
-﻿using Firepuma.Payments.Abstractions.Constants;
-using Firepuma.Payments.Client.Configuration;
+﻿using Firepuma.Payments.Client.Configuration;
 using Firepuma.Payments.Client.HttpClient;
+using Firepuma.Payments.Core.Constants;
 using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable UnusedMember.Global

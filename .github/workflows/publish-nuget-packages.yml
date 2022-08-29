@@ -23,7 +23,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          dotnet restore Firepuma.Payments.Abstractions
+          dotnet restore Firepuma.Payments.Core
           dotnet restore Firepuma.Payments.Client
           dotnet restore Firepuma.Payments.FunctionApp
           dotnet restore Firepuma.Payments.FunctionAppManager
@@ -35,7 +35,7 @@ jobs:
 
       - name: Package
         run: |
-          dotnet pack --configuration Release --output . --version-suffix ${{ env.VERSION_SUFFIX }} Firepuma.Payments.Abstractions/Firepuma.Payments.Abstractions.csproj
+          dotnet pack --configuration Release --output . --version-suffix ${{ env.VERSION_SUFFIX }} Firepuma.Payments.Core/Firepuma.Payments.Core.csproj
           dotnet pack --configuration Release --output . --version-suffix ${{ env.VERSION_SUFFIX }} Firepuma.Payments.Client/Firepuma.Payments.Client.csproj
 
       - name: Publish

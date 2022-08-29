@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.Payments.Abstractions.Events;
+using Firepuma.Payments.Core.Events;
 
 namespace Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Services;
 

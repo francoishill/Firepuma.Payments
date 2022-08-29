@@ -4,7 +4,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper.Internal;
-using Firepuma.Payments.Abstractions.ValueObjects;
+using Firepuma.Payments.Core.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.BusMessages;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Services;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;

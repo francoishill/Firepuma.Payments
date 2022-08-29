@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firepuma.Payments.FunctionApp", "Firepuma.Payments.FunctionApp\Firepuma.Payments.FunctionApp.csproj", "{C338143F-8715-48BB-9999-411F8A01F4F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firepuma.Payments.Abstractions", "Firepuma.Payments.Abstractions\Firepuma.Payments.Abstractions.csproj", "{093F169F-4C8C-4F29-8AF0-71C6D0609FB9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firepuma.Payments.Core", "Firepuma.Payments.Core\Firepuma.Payments.Core.csproj", "{093F169F-4C8C-4F29-8AF0-71C6D0609FB9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OtherFiles", "OtherFiles", "{287CA8BC-FD73-437C-85B1-27745431F719}"
 	ProjectSection(SolutionItems) = preProject

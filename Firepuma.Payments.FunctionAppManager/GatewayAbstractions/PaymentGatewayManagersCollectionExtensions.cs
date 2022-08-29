@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Firepuma.Payments.Abstractions.ValueObjects;
+using Firepuma.Payments.Core.ValueObjects;
 
 namespace Firepuma.Payments.FunctionAppManager.GatewayAbstractions;
 

@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.Payments.Abstractions.ValueObjects;
+using Firepuma.Payments.Core.ValueObjects;
 using Firepuma.Payments.FunctionAppManager.Commands;
 using Firepuma.Payments.FunctionAppManager.GatewayAbstractions;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Helpers;

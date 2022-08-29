@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Firepuma.Payments.Abstractions.ValueObjects;
+using Firepuma.Payments.Core.ValueObjects;
 using Firepuma.Payments.FunctionAppManager.Queries;
 using Firepuma.Payments.Implementations.Config;
 using MediatR;

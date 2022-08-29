@@ -1,4 +1,4 @@
-﻿using Firepuma.Payments.Abstractions.ValueObjects;
+﻿using Firepuma.Payments.Core.ValueObjects;
 using Firepuma.Payments.FunctionApp.PayFast.ValueObjects;
 using PayFast;
 

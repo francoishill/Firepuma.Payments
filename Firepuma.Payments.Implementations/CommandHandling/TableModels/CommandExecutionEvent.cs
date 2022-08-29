@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
-using Firepuma.Payments.Abstractions.Entities;
+using Firepuma.Payments.Core.Entities;
 using Firepuma.Payments.Implementations.CommandHandling.TableModels.Attributes;
 using Firepuma.Payments.Implementations.CommandHandling.TableModels.Helpers;
 using Newtonsoft.Json;

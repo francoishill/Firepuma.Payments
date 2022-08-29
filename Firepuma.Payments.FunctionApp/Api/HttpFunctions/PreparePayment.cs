@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.Payments.Abstractions.Constants;
-using Firepuma.Payments.Abstractions.DTOs.Responses;
-using Firepuma.Payments.Abstractions.ValueObjects;
+using Firepuma.Payments.Core.Constants;
+using Firepuma.Payments.Core.DTOs.Responses;
+using Firepuma.Payments.Core.ValueObjects;
 using Firepuma.Payments.FunctionApp.Commands;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
 using Firepuma.Payments.Implementations.Factories;

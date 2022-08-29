@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Firepuma.Payments.Abstractions.DTOs.Responses;
-using Firepuma.Payments.Abstractions.ValueObjects;
+using Firepuma.Payments.Core.DTOs.Responses;
+using Firepuma.Payments.Core.ValueObjects;
 
 #pragma warning disable CS8618
 // ReSharper disable UnusedMember.Global

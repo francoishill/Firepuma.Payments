@@ -27,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Firepuma.Payments.Abstractions\Firepuma.Payments.Abstractions.csproj" />
+      <ProjectReference Include="..\Firepuma.Payments.Core\Firepuma.Payments.Core.csproj" />
       <ProjectReference Include="..\Firepuma.Payments.Implementations\Firepuma.Payments.Implementations.csproj" />
     </ItemGroup>
 </Project>

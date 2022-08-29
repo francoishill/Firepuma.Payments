@@ -1,8 +1,8 @@
-﻿using Microsoft.Azure.Cosmos;
+﻿using Firepuma.Payments.Core.Entities;
+using Firepuma.Payments.Core.Infrastructure.Specifications;
+using Firepuma.Payments.Core.Repositories;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
-using Firepuma.Payments.Abstractions.Entities;
-using Firepuma.Payments.Abstractions.Infrastructure.Specifications;
-using Firepuma.Payments.Abstractions.Repositories;
 using Firepuma.Payments.Implementations.Specifications;
 
 // ReSharper disable RedundantTypeArgumentsOfMethod

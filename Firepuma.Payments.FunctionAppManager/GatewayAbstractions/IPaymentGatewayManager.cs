@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.Payments.Abstractions.ValueObjects;
+using Firepuma.Payments.Core.ValueObjects;
 using Firepuma.Payments.FunctionAppManager.GatewayAbstractions.Results;
 using Microsoft.AspNetCore.Http;
 

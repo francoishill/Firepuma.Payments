@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Firepuma.Payments.Abstractions.Constants;
-using Firepuma.Payments.Abstractions.DTOs.Requests;
-using Firepuma.Payments.Abstractions.DTOs.Responses;
-using Firepuma.Payments.Abstractions.Infrastructure.Validation;
 using Firepuma.Payments.Client.Configuration;
+using Firepuma.Payments.Core.Constants;
+using Firepuma.Payments.Core.DTOs.Requests;
+using Firepuma.Payments.Core.DTOs.Responses;
+using Firepuma.Payments.Core.Infrastructure.Validation;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;

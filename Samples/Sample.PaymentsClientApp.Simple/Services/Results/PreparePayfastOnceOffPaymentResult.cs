@@ -1,4 +1,4 @@
-﻿using Firepuma.Payments.Abstractions.ValueObjects;
+﻿using Firepuma.Payments.Core.ValueObjects;
 
 namespace Sample.PaymentsClientApp.Simple.Services.Results;
 

@@ -61,7 +61,7 @@ Run the following commands:
 
 ```shell
 cd [root folder of this solution]
-dotnet pack --configuration Release --output . --version-suffix "dev" Firepuma.Payments.Abstractions/Firepuma.Payments.Abstractions.csproj
+dotnet pack --configuration Release --output . --version-suffix "dev" Firepuma.Payments.Core/Firepuma.Payments.Core.csproj
 dotnet pack --configuration Release --output . --version-suffix "dev" Firepuma.Payments.Client/Firepuma.Payments.Client.csproj
 dotnet nuget push *.nupkg --source "Local feed"
 ```

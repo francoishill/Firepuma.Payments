@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using AutoMapper;
-using Firepuma.Payments.Abstractions.DTOs.Requests;
+using Firepuma.Payments.Core.DTOs.Requests;
 using Firepuma.Payments.FunctionApp.PayFast.ValueObjects;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;

@@ -1,5 +1,5 @@
-﻿using Firepuma.Payments.Abstractions.Entities;
-using Firepuma.Payments.Abstractions.ValueObjects;
+﻿using Firepuma.Payments.Core.Entities;
+using Firepuma.Payments.Core.ValueObjects;
 using Newtonsoft.Json;
 
 // ReSharper disable MemberCanBePrivate.Global

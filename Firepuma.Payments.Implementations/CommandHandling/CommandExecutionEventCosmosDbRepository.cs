@@ -1,7 +1,9 @@
-using Firepuma.Payments.Implementations.CommandHandling.TableModels;
+using Firepuma.Payments.Core.Infrastructure.CommandHandling.Repositories;
+using Firepuma.Payments.Core.Infrastructure.CommandHandling.TableModels;
+using Firepuma.Payments.Implementations.Repositories;
 using Microsoft.Azure.Cosmos;
 
-namespace Firepuma.Payments.Implementations.Repositories.EntityRepositories;
+namespace Firepuma.Payments.Implementations.CommandHandling;
 
 public class CommandExecutionEventCosmosDbRepository : CosmosDbRepository<CommandExecutionEvent>, ICommandExecutionEventRepository
 {

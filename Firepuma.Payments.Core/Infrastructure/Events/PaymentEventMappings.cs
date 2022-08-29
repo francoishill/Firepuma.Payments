@@ -1,8 +1,8 @@
 using Azure.Messaging.EventGrid;
-using Firepuma.Payments.Core.Events.EventGridMessages;
+using Firepuma.Payments.Core.Infrastructure.Events.EventGridMessages;
 using Newtonsoft.Json;
 
-namespace Firepuma.Payments.Core.Events;
+namespace Firepuma.Payments.Core.Infrastructure.Events;
 
 public static class PaymentEventMappings
 {

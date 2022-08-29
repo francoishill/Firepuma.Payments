@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.Payments.Core.Events.EventGridMessages;
+using Firepuma.Payments.Core.Infrastructure.CommandHandling;
+using Firepuma.Payments.Core.Infrastructure.CommandHandling.TableModels.Attributes;
+using Firepuma.Payments.Core.Infrastructure.Events.EventGridMessages;
 using Firepuma.Payments.Core.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Services;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
 using Firepuma.Payments.FunctionApp.Queries;
-using Firepuma.Payments.Implementations.CommandHandling;
-using Firepuma.Payments.Implementations.CommandHandling.TableModels.Attributes;
 using Firepuma.Payments.Implementations.Payments.TableModels;
 using Firepuma.Payments.Implementations.Payments.TableModels.Extensions;
 using Firepuma.Payments.Implementations.Repositories.EntityRepositories;

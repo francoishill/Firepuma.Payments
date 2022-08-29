@@ -1,8 +1,8 @@
-﻿using Firepuma.Payments.Implementations.CommandHandling.PipelineBehaviors;
-using Firepuma.Payments.Implementations.CommandHandling.TableModels;
+﻿using Firepuma.Payments.Core.Infrastructure.CommandHandling.PipelineBehaviors;
+using Firepuma.Payments.Core.Infrastructure.CommandHandling.Repositories;
+using Firepuma.Payments.Core.Infrastructure.CommandHandling.TableModels;
 using Firepuma.Payments.Implementations.Config;
 using Firepuma.Payments.Implementations.Repositories;
-using Firepuma.Payments.Implementations.Repositories.EntityRepositories;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 

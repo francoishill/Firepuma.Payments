@@ -1,10 +1,10 @@
-﻿using Firepuma.Payments.Implementations.CommandHandling.TableModels;
-using Firepuma.Payments.Implementations.Repositories.EntityRepositories;
+﻿using Firepuma.Payments.Core.Infrastructure.CommandHandling.Repositories;
+using Firepuma.Payments.Core.Infrastructure.CommandHandling.TableModels;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace Firepuma.Payments.Implementations.CommandHandling.PipelineBehaviors
+namespace Firepuma.Payments.Core.Infrastructure.CommandHandling.PipelineBehaviors
 {
     public class AuditCommandsBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {

@@ -1,5 +1,5 @@
 ﻿using Azure.Messaging.EventGrid;
-using Firepuma.Payments.Core.Events;
+using Firepuma.Payments.Core.Infrastructure.Events;
 
 namespace Firepuma.Payments.Tests.Core.Events;
 

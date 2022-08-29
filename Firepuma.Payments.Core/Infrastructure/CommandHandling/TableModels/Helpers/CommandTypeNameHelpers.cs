@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace Firepuma.Payments.Implementations.CommandHandling.TableModels.Helpers;
+namespace Firepuma.Payments.Core.Infrastructure.CommandHandling.TableModels.Helpers;
 
 public static class CommandTypeNameHelpers
 {

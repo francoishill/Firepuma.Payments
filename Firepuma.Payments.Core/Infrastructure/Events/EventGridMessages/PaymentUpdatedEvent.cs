@@ -1,6 +1,6 @@
 ﻿using Firepuma.Payments.Core.ValueObjects;
 
-namespace Firepuma.Payments.Core.Events.EventGridMessages;
+namespace Firepuma.Payments.Core.Infrastructure.Events.EventGridMessages;
 
 public class PaymentUpdatedEvent : IPaymentEventGridMessage
 {

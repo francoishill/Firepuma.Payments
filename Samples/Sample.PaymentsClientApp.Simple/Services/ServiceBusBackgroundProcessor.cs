@@ -1,7 +1,7 @@
 ﻿using Azure.Messaging.EventGrid;
 using Azure.Messaging.ServiceBus;
-using Firepuma.Payments.Core.Events;
-using Firepuma.Payments.Core.Events.EventGridMessages;
+using Firepuma.Payments.Core.Infrastructure.Events;
+using Firepuma.Payments.Core.Infrastructure.Events.EventGridMessages;
 using Microsoft.Extensions.Options;
 using Sample.PaymentsClientApp.Simple.Config;
 

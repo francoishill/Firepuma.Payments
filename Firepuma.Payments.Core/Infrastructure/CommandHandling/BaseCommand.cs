@@ -1,4 +1,4 @@
-﻿namespace Firepuma.Payments.Implementations.CommandHandling;
+﻿namespace Firepuma.Payments.Core.Infrastructure.CommandHandling;
 
 public abstract class BaseCommand
 {

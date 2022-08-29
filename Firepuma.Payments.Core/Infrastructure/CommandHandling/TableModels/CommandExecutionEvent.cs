@@ -1,12 +1,12 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using Firepuma.Payments.Core.Entities;
-using Firepuma.Payments.Implementations.CommandHandling.TableModels.Attributes;
-using Firepuma.Payments.Implementations.CommandHandling.TableModels.Helpers;
+using Firepuma.Payments.Core.Infrastructure.CommandHandling.TableModels.Attributes;
+using Firepuma.Payments.Core.Infrastructure.CommandHandling.TableModels.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Firepuma.Payments.Implementations.CommandHandling.TableModels
+namespace Firepuma.Payments.Core.Infrastructure.CommandHandling.TableModels
 {
     [DebuggerDisplay("{ToString()}")]
     public class CommandExecutionEvent : BaseEntity

@@ -4,12 +4,12 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper.Internal;
+using Firepuma.Payments.Core.Infrastructure.CommandHandling;
+using Firepuma.Payments.Core.Infrastructure.CommandHandling.TableModels.Attributes;
 using Firepuma.Payments.Core.ValueObjects;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.BusMessages;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Services;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
-using Firepuma.Payments.Implementations.CommandHandling;
-using Firepuma.Payments.Implementations.CommandHandling.TableModels.Attributes;
 using Firepuma.Payments.Implementations.Config;
 using MediatR;
 

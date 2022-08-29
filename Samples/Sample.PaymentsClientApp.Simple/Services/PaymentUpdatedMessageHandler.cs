@@ -1,4 +1,4 @@
-﻿using Firepuma.Payments.Core.Events.EventGridMessages;
+﻿using Firepuma.Payments.Core.Infrastructure.Events.EventGridMessages;
 using Firepuma.Payments.Core.ValueObjects;
 
 // ReSharper disable ClassNeverInstantiated.Global

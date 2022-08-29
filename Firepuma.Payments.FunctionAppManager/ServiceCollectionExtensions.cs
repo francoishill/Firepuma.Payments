@@ -1,6 +1,6 @@
-﻿using Firepuma.Payments.Implementations.Config;
-using Firepuma.Payments.Implementations.Repositories;
-using Firepuma.Payments.Implementations.Repositories.EntityRepositories;
+﻿using Firepuma.Payments.Infrastructure.Config;
+using Firepuma.Payments.Infrastructure.Repositories;
+using Firepuma.Payments.Infrastructure.Repositories.EntityRepositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Firepuma.Payments.FunctionAppManager;

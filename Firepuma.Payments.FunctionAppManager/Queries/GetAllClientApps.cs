@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.Payments.Implementations.Config;
-using Firepuma.Payments.Implementations.EntitySpecifications;
-using Firepuma.Payments.Implementations.Repositories.EntityRepositories;
+using Firepuma.Payments.Infrastructure.Config;
+using Firepuma.Payments.Infrastructure.EntitySpecifications;
+using Firepuma.Payments.Infrastructure.Repositories.EntityRepositories;
 using MediatR;
 
 // ReSharper disable UnusedType.Global

@@ -1,5 +1,5 @@
 ﻿using Firepuma.Payments.FunctionApp.PayFast.ValueObjects;
-using Firepuma.Payments.Implementations.Config;
+using Firepuma.Payments.Infrastructure.Config;
 
 namespace Firepuma.Payments.FunctionApp.PayFast.Factories;
 

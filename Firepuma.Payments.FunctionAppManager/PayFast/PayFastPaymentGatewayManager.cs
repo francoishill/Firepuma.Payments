@@ -10,7 +10,7 @@ using Firepuma.Payments.Core.ValueObjects;
 using Firepuma.Payments.FunctionAppManager.GatewayAbstractions;
 using Firepuma.Payments.FunctionAppManager.GatewayAbstractions.Results;
 using Firepuma.Payments.FunctionAppManager.PayFast.Requests;
-using Firepuma.Payments.Implementations.Config;
+using Firepuma.Payments.Infrastructure.Config;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 

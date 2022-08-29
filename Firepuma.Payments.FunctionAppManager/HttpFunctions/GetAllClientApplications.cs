@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Firepuma.Payments.Core.ValueObjects;
 using Firepuma.Payments.FunctionAppManager.Queries;
-using Firepuma.Payments.Implementations.Config;
+using Firepuma.Payments.Infrastructure.Config;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

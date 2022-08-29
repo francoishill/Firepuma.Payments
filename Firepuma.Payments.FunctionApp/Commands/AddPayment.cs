@@ -8,9 +8,9 @@ using Firepuma.Payments.Core.Infrastructure.CommandHandling.TableModels.Attribut
 using Firepuma.Payments.Core.ValueObjects;
 using Firepuma.Payments.FunctionApp.Config;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
-using Firepuma.Payments.Implementations.Config;
-using Firepuma.Payments.Implementations.Payments.TableModels;
-using Firepuma.Payments.Implementations.Repositories.EntityRepositories;
+using Firepuma.Payments.Infrastructure.Config;
+using Firepuma.Payments.Infrastructure.Payments.TableModels;
+using Firepuma.Payments.Infrastructure.Repositories.EntityRepositories;
 using MediatR;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;

@@ -27,7 +27,7 @@ jobs:
           dotnet restore Firepuma.Payments.Client
           dotnet restore Firepuma.Payments.FunctionApp
           dotnet restore Firepuma.Payments.FunctionAppManager
-          dotnet restore Firepuma.Payments.Implementations
+          dotnet restore Firepuma.Payments.Infrastructure
           dotnet restore Firepuma.Payments.Tests
 
       - name: Test

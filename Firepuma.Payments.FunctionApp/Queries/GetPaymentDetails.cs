@@ -3,8 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.Payments.Core.ValueObjects;
 using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
-using Firepuma.Payments.Implementations.Payments.TableModels;
-using Firepuma.Payments.Implementations.Repositories.EntityRepositories;
+using Firepuma.Payments.Infrastructure.Payments.TableModels;
+using Firepuma.Payments.Infrastructure.Repositories.EntityRepositories;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

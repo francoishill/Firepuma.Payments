@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
+using Firepuma.Payments.FunctionApp.Gateways;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;

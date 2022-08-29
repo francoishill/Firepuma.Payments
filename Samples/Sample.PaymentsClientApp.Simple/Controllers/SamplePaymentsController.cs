@@ -1,6 +1,6 @@
 using System.Net;
 using AutoMapper;
-using Firepuma.Payments.Core.ValueObjects;
+using Firepuma.Payments.Core.Payments.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Sample.PaymentsClientApp.Simple.Controllers.Responses;

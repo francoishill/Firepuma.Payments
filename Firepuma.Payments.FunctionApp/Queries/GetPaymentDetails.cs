@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.Payments.Core.ValueObjects;
-using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
-using Firepuma.Payments.Infrastructure.Payments.TableModels;
-using Firepuma.Payments.Infrastructure.Repositories.EntityRepositories;
+using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
+using Firepuma.Payments.Core.Payments.Entities;
+using Firepuma.Payments.Core.Payments.Repositories;
+using Firepuma.Payments.Core.Payments.ValueObjects;
+using Firepuma.Payments.FunctionApp.Gateways;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

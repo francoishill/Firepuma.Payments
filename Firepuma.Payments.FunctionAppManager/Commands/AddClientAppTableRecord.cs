@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.Payments.FunctionAppManager.GatewayAbstractions;
-using Firepuma.Payments.Infrastructure.Config;
-using Firepuma.Payments.Infrastructure.Repositories.EntityRepositories;
+using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
+using Firepuma.Payments.Core.PaymentAppConfiguration.Repositories;
+using Firepuma.Payments.FunctionAppManager.Gateways;
 using MediatR;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;

@@ -1,4 +1,5 @@
-﻿using Firepuma.Payments.Core.ValueObjects;
+﻿using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
+using Firepuma.Payments.Core.Payments.ValueObjects;
 
 namespace Firepuma.Payments.Core.Infrastructure.Events.EventGridMessages;
 

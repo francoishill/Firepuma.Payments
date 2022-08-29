@@ -1,8 +1,11 @@
-﻿using Firepuma.Payments.FunctionApp.Config;
-using Firepuma.Payments.Infrastructure.Config;
-using Firepuma.Payments.Infrastructure.Payments.TableModels;
-using Firepuma.Payments.Infrastructure.Repositories;
-using Firepuma.Payments.Infrastructure.Repositories.EntityRepositories;
+﻿using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
+using Firepuma.Payments.Core.PaymentAppConfiguration.Repositories;
+using Firepuma.Payments.Core.Payments.Entities;
+using Firepuma.Payments.Core.Payments.Repositories;
+using Firepuma.Payments.FunctionApp.Infrastructure.Config;
+using Firepuma.Payments.Infrastructure.CosmosDb;
+using Firepuma.Payments.Infrastructure.PaymentAppConfiguration.Repositories;
+using Firepuma.Payments.Infrastructure.Payments.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Firepuma.Payments.FunctionApp;

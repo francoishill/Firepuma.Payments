@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Firepuma.Payments.Core.ValueObjects;
+using Firepuma.Payments.Core.Payments.ValueObjects;
 
 namespace Firepuma.Payments.Core.ClientDtos.ClientRequests;
 

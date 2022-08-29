@@ -1,5 +1,5 @@
-﻿using Firepuma.Payments.Core.Infrastructure.CommandHandling.Repositories;
-using Firepuma.Payments.Core.Infrastructure.CommandHandling.TableModels;
+﻿using Firepuma.Payments.Core.Infrastructure.CommandHandling.Entities;
+using Firepuma.Payments.Core.Infrastructure.CommandHandling.Repositories;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;

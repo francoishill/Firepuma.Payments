@@ -1,12 +1,12 @@
 ﻿using System;
 using AutoMapper;
 using Azure.Data.Tables;
+using Firepuma.Payments.Core.Infrastructure.PipelineBehaviors;
 using Firepuma.Payments.FunctionAppManager;
+using Firepuma.Payments.FunctionAppManager.Gateways.PayFast;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Config;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Constants;
-using Firepuma.Payments.FunctionAppManager.PayFast;
-using Firepuma.Payments.Infrastructure.Helpers;
-using Firepuma.Payments.Infrastructure.PipelineBehaviors;
+using Firepuma.Payments.Infrastructure.Config;
 using MediatR;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;

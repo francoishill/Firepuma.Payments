@@ -5,12 +5,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper.Internal;
 using Firepuma.Payments.Core.Infrastructure.CommandHandling;
-using Firepuma.Payments.Core.Infrastructure.CommandHandling.TableModels.Attributes;
-using Firepuma.Payments.Core.ValueObjects;
+using Firepuma.Payments.Core.Infrastructure.CommandHandling.Attributes;
+using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
+using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
+using Firepuma.Payments.Core.Payments.ValueObjects;
+using Firepuma.Payments.FunctionApp.Gateways;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.BusMessages;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Services;
-using Firepuma.Payments.FunctionApp.PaymentGatewayAbstractions;
-using Firepuma.Payments.Infrastructure.Config;
 using MediatR;
 
 // ReSharper disable MemberCanBePrivate.Global

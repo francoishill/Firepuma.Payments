@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Firepuma.Payments.Client.Configuration;
+using Firepuma.Payments.Core.ClientDtos.ClientRequests;
+using Firepuma.Payments.Core.ClientDtos.ClientResponses;
 using Firepuma.Payments.Core.Constants;
-using Firepuma.Payments.Core.DTOs.Requests;
-using Firepuma.Payments.Core.DTOs.Responses;
 using Firepuma.Payments.Core.Infrastructure.Validation;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

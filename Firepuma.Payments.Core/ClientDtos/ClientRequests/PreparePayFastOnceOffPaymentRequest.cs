@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Firepuma.Payments.Core.ValueObjects;
 
-namespace Firepuma.Payments.Core.DTOs.Requests;
+namespace Firepuma.Payments.Core.ClientDtos.ClientRequests;
 
 public class PreparePayFastOnceOffPaymentRequest
 {

@@ -2,7 +2,7 @@
 
 // ReSharper disable CollectionNeverUpdated.Global
 
-namespace Firepuma.Payments.Core.DTOs.Responses;
+namespace Firepuma.Payments.Core.ClientDtos.ClientResponses;
 
 public class GetPaymentResponse
 {

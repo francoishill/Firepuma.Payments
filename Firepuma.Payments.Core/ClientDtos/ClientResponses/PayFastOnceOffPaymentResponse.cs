@@ -1,6 +1,6 @@
 ﻿using Firepuma.Payments.Core.ValueObjects;
 
-namespace Firepuma.Payments.Core.DTOs.Responses;
+namespace Firepuma.Payments.Core.ClientDtos.ClientResponses;
 
 public class PayFastOnceOffPaymentResponse
 {

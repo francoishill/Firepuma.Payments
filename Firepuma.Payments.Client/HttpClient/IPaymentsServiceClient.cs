@@ -1,5 +1,5 @@
-using Firepuma.Payments.Core.DTOs.Requests;
-using Firepuma.Payments.Core.DTOs.Responses;
+using Firepuma.Payments.Core.ClientDtos.ClientRequests;
+using Firepuma.Payments.Core.ClientDtos.ClientResponses;
 
 // ReSharper disable UnusedMember.Global
 

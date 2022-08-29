@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Firepuma.Payments.Core.DTOs.Responses;
+using Firepuma.Payments.Core.ClientDtos.ClientResponses;
 using Firepuma.Payments.Core.ValueObjects;
 
 #pragma warning disable CS8618

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Firepuma.Payments.Core.DTOs.Requests;
+namespace Firepuma.Payments.FunctionAppManager.PayFast.Requests;
 
 public class CreatePayFastClientApplicationRequest
 {

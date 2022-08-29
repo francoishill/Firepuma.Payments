@@ -1,6 +1,6 @@
 ﻿using Firepuma.Payments.Core.Entities;
-using Firepuma.Payments.Core.Infrastructure.Specifications;
 using Firepuma.Payments.Core.Repositories;
+using Firepuma.Payments.Core.Specifications;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 using Firepuma.Payments.Implementations.Specifications;

@@ -1,4 +1,4 @@
-namespace Firepuma.Payments.Core.Infrastructure.Specifications.Exceptions;
+namespace Firepuma.Payments.Core.Specifications.Exceptions;
 
 public class DuplicateOrderChainException : Exception
 {

@@ -1,6 +1,6 @@
-﻿using Firepuma.Payments.Core.Infrastructure.Specifications.Exceptions;
+﻿using Firepuma.Payments.Core.Specifications.Exceptions;
 
-namespace Firepuma.Payments.Core.Infrastructure.Specifications;
+namespace Firepuma.Payments.Core.Specifications;
 
 public abstract class SpecificationEvaluatorBase<T> : ISpecificationEvaluator<T> where T : class
 {

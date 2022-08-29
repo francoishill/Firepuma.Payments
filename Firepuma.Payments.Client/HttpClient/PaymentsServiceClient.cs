@@ -3,7 +3,7 @@ using Firepuma.Payments.Client.Configuration;
 using Firepuma.Payments.Core.ClientDtos.ClientRequests;
 using Firepuma.Payments.Core.ClientDtos.ClientResponses;
 using Firepuma.Payments.Core.Constants;
-using Firepuma.Payments.Core.Infrastructure.Validation;
+using Firepuma.Payments.Core.Validation;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;

@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace Firepuma.Payments.Core.Infrastructure.Specifications;
+namespace Firepuma.Payments.Core.Specifications;
 
 public interface ISpecification<T>
 {

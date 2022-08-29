@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Firepuma.Payments.Core.ClientDtos.ClientRequests;
 using Firepuma.Payments.Core.Constants;
-using Firepuma.Payments.Core.Infrastructure.Validation;
+using Firepuma.Payments.Core.Validation;
 using Firepuma.Payments.Core.ValueObjects;
 using Firepuma.Payments.FunctionApp.PayFast.Factories;
 using Firepuma.Payments.FunctionApp.PayFast.TableModels;

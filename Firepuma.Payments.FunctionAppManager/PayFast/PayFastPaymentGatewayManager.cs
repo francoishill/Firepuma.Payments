@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.Payments.Core.Constants;
-using Firepuma.Payments.Core.Infrastructure.Validation;
+using Firepuma.Payments.Core.Validation;
 using Firepuma.Payments.Core.ValueObjects;
 using Firepuma.Payments.FunctionAppManager.GatewayAbstractions;
 using Firepuma.Payments.FunctionAppManager.GatewayAbstractions.Results;

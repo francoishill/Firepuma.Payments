@@ -1,4 +1,4 @@
-namespace Firepuma.Payments.Core.Infrastructure.Specifications;
+namespace Firepuma.Payments.Core.Specifications;
 
 public enum OrderTypeEnum
 {

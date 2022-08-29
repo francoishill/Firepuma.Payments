@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.Entities;
 using Firepuma.Payments.Core.Payments.Repositories;
 using Firepuma.Payments.Core.Payments.ValueObjects;
-using Firepuma.Payments.FunctionApp.Gateways;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -21,8 +19,6 @@ public static class GetPaymentDetails
 {
     public class Query : IRequest<Result>
     {
-        public PaymentGatewayTypeId GatewayTypeId { get; init; }
-
         public ClientApplicationId ApplicationId { get; set; }
 
         public PaymentId PaymentId { get; set; }
@@ -63,7 +59,6 @@ public static class GetPaymentDetails
 
         public enum FailureReason
         {
-            UnknownGatewayTypeId,
             PaymentDoesNotExist,
         }
     }
@@ -72,44 +67,32 @@ public static class GetPaymentDetails
     public class Handler : IRequestHandler<Query, Result>
     {
         private readonly ILogger<Handler> _logger;
-        private readonly IEnumerable<IPaymentGateway> _gateways;
         private readonly IPaymentRepository _paymentRepository;
 
         public Handler(
             ILogger<Handler> logger,
-            IEnumerable<IPaymentGateway> gateways,
             IPaymentRepository paymentRepository)
         {
             _logger = logger;
-            _gateways = gateways;
             _paymentRepository = paymentRepository;
         }
 
         public async Task<Result> Handle(Query query, CancellationToken cancellationToken)
         {
-            var gatewayTypeId = query.GatewayTypeId;
             var applicationId = query.ApplicationId;
             var paymentId = query.PaymentId;
 
-            var gateway = _gateways.GetFromTypeIdOrNull(gatewayTypeId);
-
-            if (gateway == null)
-            {
-                return Result.Failed(Result.FailureReason.UnknownGatewayTypeId, $"The payment gateway type '{gatewayTypeId}' is not supported");
-            }
-
-            //TODO: Is there a better way? The Gateway should decide which specific entity type to load but this Query should decide which Azure Table and handle the loading.
             var paymentEntity = await _paymentRepository.GetItemOrDefaultAsync(applicationId, paymentId, cancellationToken);
 
             if (paymentEntity == null)
             {
                 _logger.LogCritical(
-                    "Unable to load payment for gatewayTypeId: {GatewayTypeId}, applicationId: {AppId} and paymentId: {PaymentId}, it was null",
-                    gatewayTypeId, applicationId, paymentId);
+                    "Unable to load payment for applicationId: {AppId} and paymentId: {PaymentId}, it was null",
+                    applicationId, paymentId);
 
                 return Result.Failed(
                     Result.FailureReason.PaymentDoesNotExist,
-                    $"Unable to load payment for gatewayTypeId: {gatewayTypeId}, applicationId: {applicationId} and paymentId: {paymentId}, it was null");
+                    $"Unable to load payment for applicationId: {applicationId} and paymentId: {paymentId}, it was null");
             }
 
             return Result.Success(paymentEntity);

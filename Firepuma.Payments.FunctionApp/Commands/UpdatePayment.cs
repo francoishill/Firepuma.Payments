@@ -146,7 +146,6 @@ public static class UpdatePayment
 
             var getPaymentQuery = new GetPaymentDetails.Query
             {
-                GatewayTypeId = gatewayTypeId,
                 ApplicationId = applicationId,
                 PaymentId = paymentId,
             };

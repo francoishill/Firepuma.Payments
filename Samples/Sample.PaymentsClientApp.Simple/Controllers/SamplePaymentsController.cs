@@ -62,7 +62,7 @@ public class SamplePaymentsController : ControllerBase
         string paymentId,
         CancellationToken cancellationToken)
     {
-        var paymentResult = await _paymentsService.GetPayfastOnceOffPayment(paymentId, cancellationToken);
+        var paymentResult = await _paymentsService.GetPaymentDetails(paymentId, cancellationToken);
         return new OkObjectResult($"Thank you, your payment ID {paymentId} is being processed in the background. {JsonConvert.SerializeObject(paymentResult, new Newtonsoft.Json.Converters.StringEnumConverter())}");
     }
 
@@ -71,7 +71,7 @@ public class SamplePaymentsController : ControllerBase
         string paymentId,
         CancellationToken cancellationToken)
     {
-        var paymentResult = await _paymentsService.GetPayfastOnceOffPayment(paymentId, cancellationToken);
+        var paymentResult = await _paymentsService.GetPaymentDetails(paymentId, cancellationToken);
         return new OkObjectResult($"Your payment ID {paymentId} has been cancelled. {JsonConvert.SerializeObject(paymentResult, new Newtonsoft.Json.Converters.StringEnumConverter())}");
     }
 }

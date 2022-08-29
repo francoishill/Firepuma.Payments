@@ -47,16 +47,30 @@ public class GetPayment
 
     [FunctionName("GetPayment")]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetPayment/{gatewayTypeId}/{applicationId}/{paymentId}")] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetPayment/{applicationId}/{paymentId}")] HttpRequest req,
         ILogger log,
-        string gatewayTypeId,
         string applicationId,
         string paymentId,
         CancellationToken cancellationToken)
     {
-        log.LogInformation("C# HTTP trigger function processed a request with gatewayTypeId '{GatewayTypeId}' and applicationId '{ApplicationId}'", gatewayTypeId, applicationId);
+        log.LogInformation("C# HTTP trigger function processed a request with applicationId '{ApplicationId}'", applicationId);
 
-        var gateway = _gateways.GetFromTypeIdOrNull(new PaymentGatewayTypeId(gatewayTypeId));
+        var query = new GetPaymentDetails.Query
+        {
+            ApplicationId = new ClientApplicationId(applicationId),
+            PaymentId = new PaymentId(paymentId),
+        };
+
+        var result = await _mediator.Send(query, cancellationToken);
+
+        if (!result.IsSuccessful)
+        {
+            return HttpResponseFactory.CreateBadRequestResponse($"{result.FailedReason.ToString()}, {string.Join(", ", result.FailedErrors)}");
+        }
+
+        var gatewayTypeId = result.PaymentEntity.GatewayTypeId;
+
+        var gateway = _gateways.GetFromTypeIdOrNull(gatewayTypeId);
 
         if (gateway == null)
         {
@@ -72,7 +86,7 @@ public class GetPayment
 
         var applicationConfig = await _applicationConfigRepository.GetItemOrDefaultAsync(
             new ClientApplicationId(applicationId),
-            new PaymentGatewayTypeId(gatewayTypeId),
+            gatewayTypeId,
             cancellationToken);
 
         if (applicationConfig == null)
@@ -85,20 +99,6 @@ public class GetPayment
         {
             _logger.LogError($"The application secret is invalid");
             return HttpResponseFactory.CreateBadRequestResponse($"The application secret is invalid");
-        }
-
-        var query = new GetPaymentDetails.Query
-        {
-            GatewayTypeId = new PaymentGatewayTypeId(gatewayTypeId),
-            ApplicationId = new ClientApplicationId(applicationId),
-            PaymentId = new PaymentId(paymentId),
-        };
-
-        var result = await _mediator.Send(query, cancellationToken);
-
-        if (!result.IsSuccessful)
-        {
-            return HttpResponseFactory.CreateBadRequestResponse($"{result.FailedReason.ToString()}, {string.Join(", ", result.FailedErrors)}");
         }
 
         var dto = _mapper.Map<GetPaymentResponse>(result.PaymentEntity);

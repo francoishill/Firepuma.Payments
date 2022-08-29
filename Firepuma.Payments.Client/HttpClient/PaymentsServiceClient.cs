@@ -65,30 +65,30 @@ internal class PaymentsServiceClient : IPaymentsServiceClient
         return responseDTO;
     }
 
-    public async Task<GetPaymentResponse> GetPayFastPaymentTransactionDetails(string paymentId, CancellationToken cancellationToken)
+    public async Task<GetPaymentResponse> GetPaymentDetails(string paymentId, CancellationToken cancellationToken)
     {
         var applicationId = _options.Value.ApplicationId;
-        var responseMessage = await _httpClient.GetAsync($"GetPayment/{PaymentGatewayIds.PayFast.Value}/{applicationId}/{paymentId}", cancellationToken);
+        var responseMessage = await _httpClient.GetAsync($"GetPayment/{applicationId}/{paymentId}", cancellationToken);
 
         if (!responseMessage.IsSuccessStatusCode)
         {
             var body = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
-            _logger.LogError("Unable to get PayFast once-off payment, status code was {Code}, body: {Body}", (int)responseMessage.StatusCode, body);
+            _logger.LogError("Unable to get payment, status code was {Code}, body: {Body}", (int)responseMessage.StatusCode, body);
             responseMessage.EnsureSuccessStatusCode();
         }
 
         var rawBody = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
         if (string.IsNullOrWhiteSpace(rawBody))
         {
-            _logger.LogError("Body is empty, cannot PreparePayFastOnceOffPayment");
-            throw new InvalidOperationException("Body is empty, cannot PreparePayFastOnceOffPayment");
+            _logger.LogError("Body is empty, cannot GetPaymentDetails");
+            throw new InvalidOperationException("Body is empty, cannot GetPaymentDetails");
         }
 
         var responseDTO = JsonConvert.DeserializeObject<GetPaymentResponse>(rawBody);
         if (responseDTO == null)
         {
-            _logger.LogError("Json parsed body is null when trying to deserialize body '{RawBody}' as GetPayFastPaymentTransactionDetails", rawBody);
-            throw new InvalidOperationException($"Json parsed body is null when trying to deserialize as GetPayFastPaymentTransactionDetails");
+            _logger.LogError("Json parsed body is null when trying to deserialize body '{RawBody}' as GetPaymentResponse", rawBody);
+            throw new InvalidOperationException($"Json parsed body is null when trying to deserialize as GetPaymentResponse");
         }
 
         return responseDTO;

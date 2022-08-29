@@ -39,7 +39,7 @@ internal class PaymentsServiceClient : IPaymentsServiceClient
 
         var applicationId = _options.Value.ApplicationId;
 
-        var responseMessage = await _httpClient.PostAsync($"PreparePayment/{PaymentGatewayIds.PAY_FAST}/{applicationId}", postBody, cancellationToken);
+        var responseMessage = await _httpClient.PostAsync($"PreparePayment/{PaymentGatewayIds.PayFast.Value}/{applicationId}", postBody, cancellationToken);
 
         if (!responseMessage.IsSuccessStatusCode)
         {

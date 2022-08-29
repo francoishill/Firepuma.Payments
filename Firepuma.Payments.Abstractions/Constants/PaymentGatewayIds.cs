@@ -1,6 +1,8 @@
-﻿namespace Firepuma.Payments.Abstractions.Constants;
+﻿using Firepuma.Payments.Abstractions.ValueObjects;
+
+namespace Firepuma.Payments.Abstractions.Constants;
 
 public static class PaymentGatewayIds
 {
-    public const string PAY_FAST = "PayFast";
+    public static readonly PaymentGatewayTypeId PayFast = new("PayFast");
 }

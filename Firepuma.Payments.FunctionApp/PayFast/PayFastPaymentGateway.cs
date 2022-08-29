@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Firepuma.Payments.Abstractions.Constants;
 using Firepuma.Payments.Abstractions.DTOs.Requests;
 using Firepuma.Payments.Abstractions.Infrastructure.Validation;
 using Firepuma.Payments.Abstractions.ValueObjects;
@@ -25,7 +26,7 @@ namespace Firepuma.Payments.FunctionApp.PayFast;
 
 public class PayFastPaymentGateway : IPaymentGateway
 {
-    public PaymentGatewayTypeId TypeId => new("PayFast");
+    public PaymentGatewayTypeId TypeId => PaymentGatewayIds.PayFast;
     public string DisplayName => "PayFast";
 
     public PaymentGatewayFeatures Features => new()

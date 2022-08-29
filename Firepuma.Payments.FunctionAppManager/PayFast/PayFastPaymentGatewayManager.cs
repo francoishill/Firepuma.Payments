@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.Payments.Abstractions.Constants;
 using Firepuma.Payments.Abstractions.DTOs.Requests;
 using Firepuma.Payments.Abstractions.Infrastructure.Validation;
 using Firepuma.Payments.Abstractions.ValueObjects;
@@ -17,7 +18,7 @@ namespace Firepuma.Payments.FunctionAppManager.PayFast;
 
 public class PayFastPaymentGatewayManager : IPaymentGatewayManager
 {
-    public PaymentGatewayTypeId TypeId => new("PayFast");
+    public PaymentGatewayTypeId TypeId => PaymentGatewayIds.PayFast;
     public string DisplayName => "PayFast";
 
     public async Task<ResultContainer<CreateClientApplicationRequestResult, CreateClientApplicationRequestFailureReason>> DeserializeCreateClientApplicationRequestAsync(

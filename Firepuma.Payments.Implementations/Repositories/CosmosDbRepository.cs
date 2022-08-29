@@ -9,7 +9,7 @@ using Firepuma.Payments.Implementations.Specifications;
 
 namespace Firepuma.Payments.Implementations.Repositories;
 
-public abstract class CosmosDbRepository<T> : IRepository<T>, ICosmosContainerContext<T> where T : BaseEntity, new()
+public abstract class CosmosDbRepository<T> : IRepository<T> where T : BaseEntity, new()
 {
     protected readonly Container Container;
 

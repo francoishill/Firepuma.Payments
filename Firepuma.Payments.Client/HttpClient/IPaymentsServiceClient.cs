@@ -11,7 +11,7 @@ public interface IPaymentsServiceClient
         PreparePayFastOnceOffPaymentRequest requestDTO,
         CancellationToken cancellationToken);
     
-    Task<PayFastOnceOffPaymentResponse> GetPayFastPaymentTransactionDetails(
+    Task<GetPaymentResponse> GetPayFastPaymentTransactionDetails(
         string paymentId,
         CancellationToken cancellationToken);
 }

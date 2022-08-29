@@ -67,11 +67,11 @@ public class PaymentsService
         return new PreparePayfastOnceOffPaymentResult(redirectUri, preparedPayment.PaymentId);
     }
 
-    public async Task<PayfastOnceOffPaymentResult> GetPayfastOnceOffPayment(string paymentId, CancellationToken cancellationToken)
+    public async Task<SamplePaymentResponse> GetPayfastOnceOffPayment(string paymentId, CancellationToken cancellationToken)
     {
         var payment = await _paymentsServiceClient.GetPayFastPaymentTransactionDetails(paymentId, cancellationToken);
 
-        var mappedPayment = _mapper.Map<PayfastOnceOffPaymentResult>(payment);
+        var mappedPayment = _mapper.Map<SamplePaymentResponse>(payment);
 
         return mappedPayment;
     }

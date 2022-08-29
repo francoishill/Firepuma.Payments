@@ -65,10 +65,10 @@ internal class PaymentsServiceClient : IPaymentsServiceClient
         return responseDTO;
     }
 
-    public async Task<PayFastOnceOffPaymentResponse> GetPayFastPaymentTransactionDetails(string paymentId, CancellationToken cancellationToken)
+    public async Task<GetPaymentResponse> GetPayFastPaymentTransactionDetails(string paymentId, CancellationToken cancellationToken)
     {
         var applicationId = _options.Value.ApplicationId;
-        var responseMessage = await _httpClient.GetAsync($"GetPayFastPaymentTransactionDetails/{applicationId}/{paymentId}", cancellationToken);
+        var responseMessage = await _httpClient.GetAsync($"GetPayment/{PaymentGatewayIds.PayFast.Value}/{applicationId}/{paymentId}", cancellationToken);
 
         if (!responseMessage.IsSuccessStatusCode)
         {
@@ -84,7 +84,7 @@ internal class PaymentsServiceClient : IPaymentsServiceClient
             throw new InvalidOperationException("Body is empty, cannot PreparePayFastOnceOffPayment");
         }
 
-        var responseDTO = JsonConvert.DeserializeObject<PayFastOnceOffPaymentResponse>(rawBody);
+        var responseDTO = JsonConvert.DeserializeObject<GetPaymentResponse>(rawBody);
         if (responseDTO == null)
         {
             _logger.LogError("Json parsed body is null when trying to deserialize body '{RawBody}' as GetPayFastPaymentTransactionDetails", rawBody);

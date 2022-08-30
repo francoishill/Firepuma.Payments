@@ -17,8 +17,8 @@ public abstract class CosmosDbRepository<T> : IRepository<T> where T : BaseEntit
         Container = container;
     }
 
-    public abstract string GenerateId(T entity);
-    public abstract PartitionKey ResolvePartitionKey(string entityId);
+    protected abstract string GenerateId(T entity);
+    protected abstract PartitionKey ResolvePartitionKey(string entityId);
 
     public async Task<IEnumerable<T>> GetItemsAsync(
         ISpecification<T> specification,

@@ -12,6 +12,6 @@ public class CommandExecutionEventCosmosDbRepository : CosmosDbRepository<Comman
     {
     }
 
-    public override string GenerateId(CommandExecutionEvent entity) => $"{DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks:D19}-{Guid.NewGuid().ToString()}:{entity.TypeName}";
-    public override PartitionKey ResolvePartitionKey(string entityId) => new(entityId.Split(':')[1]);
+    protected override string GenerateId(CommandExecutionEvent entity) => $"{DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks:D19}-{Guid.NewGuid().ToString()}:{entity.TypeName}";
+    protected override PartitionKey ResolvePartitionKey(string entityId) => new(entityId.Split(':')[1]);
 }

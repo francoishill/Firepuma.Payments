@@ -14,8 +14,8 @@ public class PaymentApplicationConfigCosmosDbRepository : CosmosDbRepository<Pay
     {
     }
 
-    public override string GenerateId(PaymentApplicationConfig entity) => GenerateId(entity.ApplicationId, entity.GatewayTypeId);
-    public override PartitionKey ResolvePartitionKey(string entityId) => new(entityId.Split(':')[1]);
+    protected override string GenerateId(PaymentApplicationConfig entity) => GenerateId(entity.ApplicationId, entity.GatewayTypeId);
+    protected override PartitionKey ResolvePartitionKey(string entityId) => new(entityId.Split(':')[1]);
 
     private static string GenerateId(ClientApplicationId applicationId, PaymentGatewayTypeId gatewayTypeId) => $"{gatewayTypeId.Value}:{applicationId.Value}";
 

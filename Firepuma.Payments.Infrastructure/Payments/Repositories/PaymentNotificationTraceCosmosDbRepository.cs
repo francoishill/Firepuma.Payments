@@ -12,6 +12,6 @@ public class PaymentNotificationTraceCosmosDbRepository : CosmosDbRepository<Pay
     {
     }
 
-    public override string GenerateId(PaymentNotificationTrace entity) => $"{DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks:D19}-{Guid.NewGuid().ToString()}:{entity.ApplicationId}";
-    public override PartitionKey ResolvePartitionKey(string entityId) => new(entityId.Split(':')[1]);
+    protected override string GenerateId(PaymentNotificationTrace entity) => $"{DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks:D19}-{Guid.NewGuid().ToString()}:{entity.ApplicationId}";
+    protected override PartitionKey ResolvePartitionKey(string entityId) => new(entityId.Split(':')[1]);
 }

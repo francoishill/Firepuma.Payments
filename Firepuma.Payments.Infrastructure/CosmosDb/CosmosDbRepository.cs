@@ -3,6 +3,7 @@ using Firepuma.Payments.Core.Repositories;
 using Firepuma.Payments.Core.Specifications;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
+using Microsoft.Extensions.Logging;
 
 // ReSharper disable RedundantTypeArgumentsOfMethod
 
@@ -10,10 +11,14 @@ namespace Firepuma.Payments.Infrastructure.CosmosDb;
 
 public abstract class CosmosDbRepository<T> : IRepository<T> where T : BaseEntity, new()
 {
+    protected readonly ILogger Logger;
     protected readonly Container Container;
 
-    protected CosmosDbRepository(Container container)
+    protected CosmosDbRepository(
+        ILogger logger,
+        Container container)
     {
+        Logger = logger;
         Container = container;
     }
 
@@ -27,13 +32,25 @@ public abstract class CosmosDbRepository<T> : IRepository<T> where T : BaseEntit
         var queryable = ApplySpecification(specification);
         var iterator = queryable.ToFeedIterator<T>();
 
+        var totalRequestCharge = 0D;
+
         var results = new List<T>();
         while (iterator.HasMoreResults)
         {
             var response = await iterator.ReadNextAsync(cancellationToken);
 
             results.AddRange(response.ToList());
+
+            Logger.LogDebug(
+                "Fetching {Count} items from container {Container} consumed {Charge} RUs",
+                response.Count, Container.Id, response.RequestCharge);
+
+            totalRequestCharge += response.RequestCharge;
         }
+
+        Logger.LogInformation(
+            "A total of {Count} items were fetched from container {Container} and consumed total {Charge} RUs",
+            results.Count, Container.Id, totalRequestCharge);
 
         return results;
     }
@@ -43,13 +60,26 @@ public abstract class CosmosDbRepository<T> : IRepository<T> where T : BaseEntit
         CancellationToken cancellationToken)
     {
         var resultSetIterator = Container.GetItemQueryIterator<T>(new QueryDefinition(queryString));
+
+        var totalRequestCharge = 0D;
+
         var results = new List<T>();
         while (resultSetIterator.HasMoreResults)
         {
             var response = await resultSetIterator.ReadNextAsync(cancellationToken);
 
             results.AddRange(response.ToList());
+
+            Logger.LogDebug(
+                "Fetching {Count} items (with query {Query}) from container {Container} consumed {Charge} RUs",
+                response.Count, queryString, Container.Id, response.RequestCharge);
+
+            totalRequestCharge += response.RequestCharge;
         }
+
+        Logger.LogInformation(
+            "A total of {Count} items were fetched from container {Container} and consumed total {Charge} RUs",
+            results.Count, Container.Id, totalRequestCharge);
 
         return results;
     }
@@ -59,7 +89,14 @@ public abstract class CosmosDbRepository<T> : IRepository<T> where T : BaseEntit
         CancellationToken cancellationToken)
     {
         var queryable = ApplySpecification(specification);
-        return await queryable.CountAsync(cancellationToken: cancellationToken);
+
+        var response = await queryable.CountAsync(cancellationToken: cancellationToken);
+
+        Logger.LogInformation(
+            "Counting items from container {Container} consumed {Charge} RUs",
+            Container.Id, response.RequestCharge);
+
+        return response.Resource;
     }
 
     public async Task<T> GetItemOrDefaultAsync(
@@ -69,6 +106,11 @@ public abstract class CosmosDbRepository<T> : IRepository<T> where T : BaseEntit
         try
         {
             var response = await Container.ReadItemAsync<T>(id, ResolvePartitionKey(id), cancellationToken: cancellationToken);
+
+            Logger.LogInformation(
+                "Fetching item id {Id} from container {Container} consumed {Charge} RUs",
+                id, Container.Id, response.RequestCharge);
+
             return response.Resource;
         }
         catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -82,21 +124,34 @@ public abstract class CosmosDbRepository<T> : IRepository<T> where T : BaseEntit
         CancellationToken cancellationToken)
     {
         item.Id = GenerateId(item);
-        await Container.CreateItemAsync<T>(item, ResolvePartitionKey(item.Id), cancellationToken: cancellationToken);
+
+        var response = await Container.CreateItemAsync<T>(item, ResolvePartitionKey(item.Id), cancellationToken: cancellationToken);
+
+        Logger.LogInformation(
+            "Adding item id {Id} to container {Container} consumed {Charge} RUs",
+            item.Id, Container.Id, response.RequestCharge);
     }
 
     public async Task UpdateItemAsync(
         T item,
         CancellationToken cancellationToken)
     {
-        await Container.UpsertItemAsync<T>(item, ResolvePartitionKey(item.Id), cancellationToken: cancellationToken);
+        var response = await Container.UpsertItemAsync<T>(item, ResolvePartitionKey(item.Id), cancellationToken: cancellationToken);
+
+        Logger.LogInformation(
+            "Updating item id {Id} in container {Container} consumed {Charge} RUs",
+            item.Id, Container.Id, response.RequestCharge);
     }
 
     public async Task DeleteItemAsync(
         T item,
         CancellationToken cancellationToken)
     {
-        await Container.DeleteItemAsync<T>(item.Id, ResolvePartitionKey(item.Id), cancellationToken: cancellationToken);
+        var response = await Container.DeleteItemAsync<T>(item.Id, ResolvePartitionKey(item.Id), cancellationToken: cancellationToken);
+
+        Logger.LogInformation(
+            "Deleting item id {Id} from container {Container} consumed {Charge} RUs",
+            item.Id, Container.Id, response.RequestCharge);
     }
 
     private IQueryable<T> ApplySpecification(ISpecification<T> specification)

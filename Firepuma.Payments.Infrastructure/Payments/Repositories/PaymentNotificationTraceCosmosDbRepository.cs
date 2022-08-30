@@ -2,13 +2,18 @@ using Firepuma.Payments.Core.Payments.Entities;
 using Firepuma.Payments.Core.Payments.Repositories;
 using Firepuma.Payments.Infrastructure.CosmosDb;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Logging;
+
+// ReSharper disable SuggestBaseTypeForParameterInConstructor
 
 namespace Firepuma.Payments.Infrastructure.Payments.Repositories;
 
 public class PaymentNotificationTraceCosmosDbRepository : CosmosDbRepository<PaymentNotificationTrace>, IPaymentNotificationTraceRepository
 {
-    public PaymentNotificationTraceCosmosDbRepository(Container container)
-        : base(container)
+    public PaymentNotificationTraceCosmosDbRepository(
+        ILogger<PaymentNotificationTraceCosmosDbRepository> logger,
+        Container container)
+        : base(logger, container)
     {
     }
 

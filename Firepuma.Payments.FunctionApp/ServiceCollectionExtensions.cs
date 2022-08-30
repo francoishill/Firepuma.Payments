@@ -26,20 +26,20 @@ public static class ServiceCollectionExtensions
             IPaymentRepository,
             PaymentCosmosDbRepository>(
             CosmosContainerNames.PAYMENTS,
-            container => new PaymentCosmosDbRepository(container));
+            (logger, container) => new PaymentCosmosDbRepository(logger, container));
 
         services.AddCosmosDbRepository<
             PaymentNotificationTrace,
             IPaymentNotificationTraceRepository,
             PaymentNotificationTraceCosmosDbRepository>(
             CosmosContainerNames.NOTIFICATION_TRACES,
-            container => new PaymentNotificationTraceCosmosDbRepository(container));
+            (logger, container) => new PaymentNotificationTraceCosmosDbRepository(logger, container));
 
         services.AddCosmosDbRepository<
             PaymentApplicationConfig,
             IPaymentApplicationConfigRepository,
             PaymentApplicationConfigCosmosDbRepository>(
             CosmosContainerNames.APPLICATION_CONFIGS,
-            container => new PaymentApplicationConfigCosmosDbRepository(container));
+            (logger, container) => new PaymentApplicationConfigCosmosDbRepository(logger, container));
     }
 }

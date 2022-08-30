@@ -19,6 +19,6 @@ public static class ServiceCollectionExtensions
             ICommandExecutionEventRepository,
             CommandExecutionEventCosmosDbRepository>(
             CosmosContainerNames.COMMAND_EXECUTIONS,
-            container => new CommandExecutionEventCosmosDbRepository(container));
+            (logger, container) => new CommandExecutionEventCosmosDbRepository(logger, container));
     }
 }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.Payments.Core.ClientDtos.ClientRequests;
+using Firepuma.Payments.Core.ClientDtos.ClientRequests.ExtraValues;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.Entities;
@@ -27,21 +29,21 @@ public interface IPaymentGateway
 
     PaymentGatewayFeatures Features { get; }
 
-    Task<ResultContainer<PrepareRequestResult, PrepareRequestFailureReason>> DeserializePrepareRequestAsync(
-        HttpRequest req,
+    Task<ResultContainer<ValidatePrepareRequestResult, ValidatePrepareRequestFailureReason>> ValidatePrepareRequestAsync(
+        PreparePaymentRequest preparePaymentRequest,
         CancellationToken cancellationToken);
 
     Task<Dictionary<string, object>> CreatePaymentEntityExtraValuesAsync(
         ClientApplicationId applicationId,
         PaymentId paymentId,
-        object genericRequestDto,
+        IPreparePaymentExtraValues genericExtraValues,
         CancellationToken cancellationToken);
 
     Task<Uri> CreateRedirectUriAsync(
         PaymentApplicationConfig genericApplicationConfig,
         ClientApplicationId applicationId,
         PaymentId paymentId,
-        object genericRequestDto,
+        IPreparePaymentExtraValues genericExtraValues,
         string backendNotifyUrl,
         CancellationToken cancellationToken);
 

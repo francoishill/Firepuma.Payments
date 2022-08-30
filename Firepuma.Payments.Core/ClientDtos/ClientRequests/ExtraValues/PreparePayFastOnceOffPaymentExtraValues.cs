@@ -1,13 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Firepuma.Payments.Core.Payments.ValueObjects;
 
-namespace Firepuma.Payments.Core.ClientDtos.ClientRequests;
+namespace Firepuma.Payments.Core.ClientDtos.ClientRequests.ExtraValues;
 
-public class PreparePayFastOnceOffPaymentRequest
+public class PreparePayFastOnceOffPaymentExtraValues : IPreparePaymentExtraValues
 {
-    [Required]
-    public PaymentId PaymentId { get; set; }
-
     [Required]
     public string BuyerEmailAddress { get; set; }
 

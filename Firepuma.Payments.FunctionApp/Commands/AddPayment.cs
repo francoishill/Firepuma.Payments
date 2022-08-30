@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.Payments.Core.ClientDtos.ClientRequests.ExtraValues;
 using Firepuma.Payments.Core.Infrastructure.CommandHandling;
 using Firepuma.Payments.Core.Infrastructure.CommandHandling.Attributes;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
@@ -37,7 +38,7 @@ public static class AddPayment
         public PaymentApplicationConfig ApplicationConfig { get; init; }
 
         public PaymentId PaymentId { get; init; }
-        public object RequestDto { get; init; }
+        public IPreparePaymentExtraValues ExtraValues { get; init; }
     }
 
     public class Result
@@ -116,7 +117,7 @@ public static class AddPayment
             var paymentEntityExtraValues = await gateway.CreatePaymentEntityExtraValuesAsync(
                 applicationId,
                 paymentId,
-                command.RequestDto,
+                command.ExtraValues,
                 cancellationToken);
 
             var paymentEntity = new PaymentEntity(
@@ -154,7 +155,7 @@ public static class AddPayment
                 applicationConfig,
                 applicationId,
                 paymentId,
-                command.RequestDto,
+                command.ExtraValues,
                 backendNotifyUrl,
                 cancellationToken);
 

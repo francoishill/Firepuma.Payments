@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.Payments.Core.ClientDtos.ClientRequests;
 using Firepuma.Payments.Core.ClientDtos.ClientResponses;
 using Firepuma.Payments.Core.Constants;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Repositories;
@@ -16,6 +18,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Firepuma.Payments.FunctionApp.Api.HttpFunctions;
 
@@ -86,14 +89,24 @@ public class PreparePayment
             return HttpResponseFactory.CreateBadRequestResponse($"The application secret is invalid");
         }
 
-        var prepareRequest = await gateway.DeserializePrepareRequestAsync(req, cancellationToken);
-        if (!prepareRequest.IsSuccessful)
+        var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+        var prepareRequest = JsonConvert.DeserializeObject<PreparePaymentRequest>(requestBody);
+
+        if (prepareRequest == null)
         {
-            _logger.LogError("{Reason}, {Errors}", prepareRequest.FailedReason.ToString(), string.Join(", ", prepareRequest.FailedErrors));
-            return HttpResponseFactory.CreateBadRequestResponse($"{prepareRequest.FailedReason.ToString()}, {string.Join(", ", prepareRequest.FailedErrors)}");
+            _logger.LogError("Request body is required but empty");
+            return HttpResponseFactory.CreateBadRequestResponse("Request body is required but empty");
         }
 
-        var paymentId = prepareRequest.Result.PaymentId;
+        var validationResult = await gateway.ValidatePrepareRequestAsync(prepareRequest, cancellationToken);
+        if (!validationResult.IsSuccessful)
+        {
+            _logger.LogError("{Reason}, {Errors}", validationResult.FailedReason.ToString(), string.Join(", ", validationResult.FailedErrors));
+            return HttpResponseFactory.CreateBadRequestResponse($"{validationResult.FailedReason.ToString()}, {string.Join(", ", validationResult.FailedErrors)}");
+        }
+
+        var paymentId = prepareRequest.PaymentId;
+        var extraValues = validationResult.Result.ExtraValues;
 
         var addCommand = new AddPayment.Command
         {
@@ -101,7 +114,7 @@ public class PreparePayment
             ApplicationId = new ClientApplicationId(applicationId),
             ApplicationConfig = applicationConfig,
             PaymentId = paymentId,
-            RequestDto = prepareRequest.Result.RequestDto,
+            ExtraValues = extraValues,
         };
 
         var result = await _mediator.Send(addCommand, cancellationToken);

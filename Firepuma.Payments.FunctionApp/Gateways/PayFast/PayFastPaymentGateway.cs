@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Firepuma.Payments.Core.ClientDtos.ClientRequests;
+using Firepuma.Payments.Core.ClientDtos.ClientRequests.ExtraValues;
 using Firepuma.Payments.Core.Constants;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
@@ -20,7 +21,6 @@ using Firepuma.Payments.FunctionApp.Gateways.Results;
 using Firepuma.Payments.Infrastructure.Gateways.PayFast;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using PayFast;
 
 namespace Firepuma.Payments.FunctionApp.Gateways.PayFast;
@@ -52,61 +52,61 @@ public class PayFastPaymentGateway : IPaymentGateway
         _mapper = mapper;
     }
 
-    public async Task<ResultContainer<PrepareRequestResult, PrepareRequestFailureReason>> DeserializePrepareRequestAsync(HttpRequest req, CancellationToken cancellationToken)
+    public async Task<ResultContainer<ValidatePrepareRequestResult, ValidatePrepareRequestFailureReason>> ValidatePrepareRequestAsync(
+        PreparePaymentRequest preparePaymentRequest,
+        CancellationToken cancellationToken)
     {
-        var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-        var requestDTO = JsonConvert.DeserializeObject<PreparePayFastOnceOffPaymentRequest>(requestBody);
-
-        if (requestDTO == null)
+        if (!preparePaymentRequest.TryCastExtraValuesToType<PreparePayFastOnceOffPaymentExtraValues>(out var extraValues, out var castError))
         {
-            return ResultContainer<PrepareRequestResult, PrepareRequestFailureReason>.Failed(
-                PrepareRequestFailureReason.ValidationFailed,
-                "Request body is required but empty");
+            return ResultContainer<ValidatePrepareRequestResult, ValidatePrepareRequestFailureReason>.Failed(
+                ValidatePrepareRequestFailureReason.UnableToCast,
+                $"The ExtraValues of PreparePaymentRequest should be type PreparePayFastOnceOffPaymentExtraValues, error: {castError}");
         }
 
-        if (!ValidationHelpers.ValidateDataAnnotations(requestDTO, out var validationResultsForRequest))
+        if (!ValidationHelpers.ValidateDataAnnotations(extraValues, out var validationResultsForRequest))
         {
-            return ResultContainer<PrepareRequestResult, PrepareRequestFailureReason>.Failed(
-                PrepareRequestFailureReason.ValidationFailed,
-                new[] { "Request body is invalid" }.Concat(validationResultsForRequest.Select(s => s.ErrorMessage)).ToArray());
+            return ResultContainer<ValidatePrepareRequestResult, ValidatePrepareRequestFailureReason>.Failed(
+                ValidatePrepareRequestFailureReason.ValidationFailed,
+                new[] { "ExtraValues is invalid" }.Concat(validationResultsForRequest.Select(s => s.ErrorMessage)).ToArray());
         }
 
-        if (requestDTO.SplitPayment != null)
+        if (extraValues.SplitPayment != null)
         {
-            if (!ValidationHelpers.ValidateDataAnnotations(requestDTO.SplitPayment, out var validationResultsForSplitPayment))
+            if (!ValidationHelpers.ValidateDataAnnotations(extraValues.SplitPayment, out var validationResultsForSplitPayment))
             {
-                return ResultContainer<PrepareRequestResult, PrepareRequestFailureReason>.Failed(
-                    PrepareRequestFailureReason.ValidationFailed,
-                    new[] { "SplitPayment is invalid" }.Concat(validationResultsForSplitPayment.Select(s => s.ErrorMessage)).ToArray());
+                return ResultContainer<ValidatePrepareRequestResult, ValidatePrepareRequestFailureReason>.Failed(
+                    ValidatePrepareRequestFailureReason.ValidationFailed,
+                    new[] { "ExtraValues is invalid" }.Concat(validationResultsForSplitPayment.Select(s => s.ErrorMessage)).ToArray());
             }
         }
 
-        var successfulValue = new PrepareRequestResult
+        await Task.CompletedTask;
+
+        var successResult = new ValidatePrepareRequestResult
         {
-            PaymentId = requestDTO.PaymentId,
-            RequestDto = requestDTO,
+            ExtraValues = extraValues,
         };
 
-        return ResultContainer<PrepareRequestResult, PrepareRequestFailureReason>.Success(successfulValue);
+        return ResultContainer<ValidatePrepareRequestResult, ValidatePrepareRequestFailureReason>.Success(successResult);
     }
 
     public async Task<Dictionary<string, object>> CreatePaymentEntityExtraValuesAsync(
         ClientApplicationId applicationId,
         PaymentId paymentId,
-        object genericRequestDto,
+        IPreparePaymentExtraValues genericExtraValues,
         CancellationToken cancellationToken)
     {
-        if (genericRequestDto is not PreparePayFastOnceOffPaymentRequest requestDTO)
+        if (genericExtraValues is not PreparePayFastOnceOffPaymentExtraValues extraValues)
         {
-            throw new NotSupportedException($"RequestDto is incorrect type in CreatePaymentTableEntity, it should be PreparePayFastOnceOffPaymentRequest but it is '{genericRequestDto.GetType().FullName}'");
+            throw new NotSupportedException($"ExtraValues is incorrect type in CreatePaymentEntityExtraValuesAsync, it should be PreparePayFastOnceOffPaymentExtraValues but it is '{genericExtraValues.GetType().FullName}'");
         }
 
         var payment = new PayFastPaymentExtraValues(
-            requestDTO.BuyerEmailAddress,
-            requestDTO.BuyerFirstName,
-            requestDTO.ImmediateAmountInRands ?? throw new ArgumentNullException(nameof(requestDTO.ImmediateAmountInRands)),
-            requestDTO.ItemName,
-            requestDTO.ItemDescription);
+            extraValues.BuyerEmailAddress,
+            extraValues.BuyerFirstName,
+            extraValues.ImmediateAmountInRands ?? throw new ArgumentNullException(nameof(extraValues.ImmediateAmountInRands)),
+            extraValues.ItemName,
+            extraValues.ItemDescription);
 
         await Task.CompletedTask;
 
@@ -117,13 +117,13 @@ public class PayFastPaymentGateway : IPaymentGateway
         PaymentApplicationConfig genericApplicationConfig,
         ClientApplicationId applicationId,
         PaymentId paymentId,
-        object genericRequestDto,
+        IPreparePaymentExtraValues genericExtraValues,
         string backendNotifyUrl,
         CancellationToken cancellationToken)
     {
-        if (genericRequestDto is not PreparePayFastOnceOffPaymentRequest requestDTO)
+        if (genericExtraValues is not PreparePayFastOnceOffPaymentExtraValues extraValues)
         {
-            throw new NotSupportedException($"RequestDto is incorrect type in CreateRedirectUri, it should be PreparePayFastOnceOffPaymentRequest but it is '{genericRequestDto.GetType().FullName}'");
+            throw new NotSupportedException($"ExtraValues is incorrect type in CreateRedirectUriAsync, it should be PreparePayFastOnceOffPaymentExtraValues but it is '{genericExtraValues.GetType().FullName}'");
         }
 
         if (!genericApplicationConfig.TryCastExtraValuesToType<PayFastAppConfigExtraValues>(out var applicationConfig, out var castError))
@@ -134,19 +134,19 @@ public class PayFastPaymentGateway : IPaymentGateway
         var payFastSettings = PayFastSettingsFactory.CreatePayFastSettings(
             applicationConfig,
             backendNotifyUrl,
-            requestDTO.ReturnUrl,
-            requestDTO.CancelUrl);
+            extraValues.ReturnUrl,
+            extraValues.CancelUrl);
 
         var payfastRequest = PayFastRequestFactory.CreateOnceOffPaymentRequest(
             payFastSettings,
             paymentId,
-            requestDTO.BuyerEmailAddress,
-            requestDTO.BuyerFirstName,
-            requestDTO.ImmediateAmountInRands ?? throw new ArgumentNullException(nameof(requestDTO.ImmediateAmountInRands)),
-            requestDTO.ItemName,
-            requestDTO.ItemDescription);
+            extraValues.BuyerEmailAddress,
+            extraValues.BuyerFirstName,
+            extraValues.ImmediateAmountInRands ?? throw new ArgumentNullException(nameof(extraValues.ImmediateAmountInRands)),
+            extraValues.ItemName,
+            extraValues.ItemDescription);
 
-        var mappedCommandSplitPaymentConfig = _mapper.Map<PayFastRedirectFactory.SplitPaymentConfig>(requestDTO.SplitPayment);
+        var mappedCommandSplitPaymentConfig = _mapper.Map<PayFastRedirectFactory.SplitPaymentConfig>(extraValues.SplitPayment);
 
         var redirectUrl = PayFastRedirectFactory.CreateRedirectUrl(
             _logger,

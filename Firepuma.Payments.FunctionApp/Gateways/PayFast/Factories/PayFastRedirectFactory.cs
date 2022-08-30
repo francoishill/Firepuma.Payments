@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using AutoMapper;
-using Firepuma.Payments.Core.ClientDtos.ClientRequests;
+using Firepuma.Payments.Core.ClientDtos.ClientRequests.ExtraValues;
 using Firepuma.Payments.FunctionApp.Gateways.PayFast.ValueObjects;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -83,7 +83,7 @@ public static class PayFastRedirectFactory
         {
             public SplitPaymentMappingProfile()
             {
-                CreateMap<PreparePayFastOnceOffPaymentRequest.SplitPaymentConfig, SplitPaymentConfig>();
+                CreateMap<PreparePayFastOnceOffPaymentExtraValues.SplitPaymentConfig, SplitPaymentConfig>();
             }
         }
     }

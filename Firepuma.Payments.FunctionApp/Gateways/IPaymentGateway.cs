@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +11,7 @@ using Firepuma.Payments.Core.Payments.ValueObjects;
 using Firepuma.Payments.Core.Results.ValueObjects;
 using Firepuma.Payments.FunctionApp.Gateways.Results;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Linq;
 
 namespace Firepuma.Payments.FunctionApp.Gateways;
 
@@ -33,7 +33,7 @@ public interface IPaymentGateway
         PreparePaymentRequest preparePaymentRequest,
         CancellationToken cancellationToken);
 
-    Task<Dictionary<string, object>> CreatePaymentEntityExtraValuesAsync(
+    Task<JObject> CreatePaymentEntityExtraValuesAsync(
         ClientApplicationId applicationId,
         PaymentId paymentId,
         IPreparePaymentExtraValues genericExtraValues,

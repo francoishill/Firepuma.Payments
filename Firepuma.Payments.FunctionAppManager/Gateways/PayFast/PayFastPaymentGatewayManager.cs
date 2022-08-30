@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -14,6 +13,7 @@ using Firepuma.Payments.FunctionAppManager.Gateways.Results;
 using Firepuma.Payments.Infrastructure.Gateways.PayFast;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Firepuma.Payments.FunctionAppManager.Gateways.PayFast;
 
@@ -51,7 +51,7 @@ public class PayFastPaymentGatewayManager : IPaymentGatewayManager
         return ResultContainer<CreateClientApplicationRequestResult, CreateClientApplicationRequestFailureReason>.Success(successfulValue);
     }
 
-    public Dictionary<string, object> CreatePaymentApplicationConfigExtraValues(object genericRequestDto)
+    public JObject CreatePaymentApplicationConfigExtraValues(object genericRequestDto)
     {
         if (genericRequestDto is not CreatePayFastClientApplicationRequest requestDTO)
         {

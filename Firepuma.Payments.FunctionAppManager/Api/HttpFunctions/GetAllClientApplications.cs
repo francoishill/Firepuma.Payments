@@ -55,6 +55,6 @@ public class GetAllClientApplications
 
         public string ApplicationSecret { get; set; }
 
-        public Dictionary<string, object> ExtraValues { get; set; }
+        public object ExtraValues { get; set; }
     }
 }

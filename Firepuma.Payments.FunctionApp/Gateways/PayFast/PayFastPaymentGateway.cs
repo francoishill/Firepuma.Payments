@@ -21,6 +21,7 @@ using Firepuma.Payments.FunctionApp.Gateways.Results;
 using Firepuma.Payments.Infrastructure.Gateways.PayFast;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using PayFast;
 
 namespace Firepuma.Payments.FunctionApp.Gateways.PayFast;
@@ -90,7 +91,7 @@ public class PayFastPaymentGateway : IPaymentGateway
         return ResultContainer<ValidatePrepareRequestResult, ValidatePrepareRequestFailureReason>.Success(successResult);
     }
 
-    public async Task<Dictionary<string, object>> CreatePaymentEntityExtraValuesAsync(
+    public async Task<JObject> CreatePaymentEntityExtraValuesAsync(
         ClientApplicationId applicationId,
         PaymentId paymentId,
         IPreparePaymentExtraValues genericExtraValues,

@@ -1,19 +1,18 @@
 ﻿using Firepuma.Payments.Core.Payments.ValueObjects;
-using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Firepuma.Payments.Core.ClientDtos.ClientRequests;
 
 public class PreparePaymentRequest
 {
     public PaymentId PaymentId { get; set; }
-    public object ExtraValues { get; set; }
+    public JObject ExtraValues { get; set; }
 
     public bool TryCastExtraValuesToType<T>(out T extraValues, out string error) where T : class
     {
         try
         {
-            //FIX: is there a better way than this?
-            extraValues = JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(ExtraValues));
+            extraValues = ExtraValues.ToObject<T>();
             error = null;
             return true;
         }
@@ -23,5 +22,10 @@ public class PreparePaymentRequest
             error = exception.Message;
             return false;
         }
+    }
+
+    public static JObject CastToExtraValues<T>(T extraValues) where T : class
+    {
+        return JObject.FromObject(extraValues);
     }
 }

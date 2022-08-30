@@ -1,7 +1,7 @@
 ﻿using Firepuma.Payments.Core.Entities;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.ValueObjects;
-using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -14,14 +14,13 @@ public class PaymentApplicationConfig : BaseEntity
 
     public string ApplicationSecret { get; set; }
 
-    public Dictionary<string, object> ExtraValues { get; set; } // can be used to store extra values specific to each payment gateway
+    public JObject ExtraValues { get; set; } // can be used to store extra values specific to each payment gateway
 
     public bool TryCastExtraValuesToType<T>(out T extraValues, out string error) where T : class
     {
         try
         {
-            //FIX: is there a better way than this?
-            extraValues = JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(ExtraValues));
+            extraValues = ExtraValues.ToObject<T>();
             error = null;
             return true;
         }
@@ -33,9 +32,8 @@ public class PaymentApplicationConfig : BaseEntity
         }
     }
 
-    public static Dictionary<string, object> CastToExtraValues<T>(T extraValues) where T : class
+    public static JObject CastToExtraValues<T>(T extraValues) where T : class
     {
-        //FIX: is there a better way than this?
-        return JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(extraValues));
+        return JObject.FromObject(extraValues);
     }
 }

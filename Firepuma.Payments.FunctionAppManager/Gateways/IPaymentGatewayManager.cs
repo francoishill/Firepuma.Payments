@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.Payments.Core.Payments.ValueObjects;
 using Firepuma.Payments.Core.Results.ValueObjects;
 using Firepuma.Payments.FunctionAppManager.Gateways.Results;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Linq;
 
 namespace Firepuma.Payments.FunctionAppManager.Gateways;
 
@@ -24,5 +24,5 @@ public interface IPaymentGatewayManager
         HttpRequest req,
         CancellationToken cancellationToken);
 
-    Dictionary<string, object> CreatePaymentApplicationConfigExtraValues(object genericRequestDto);
+    JObject CreatePaymentApplicationConfigExtraValues(object genericRequestDto);
 }

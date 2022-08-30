@@ -1,7 +1,7 @@
 ﻿using Firepuma.Payments.Core.Entities;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.ValueObjects;
-using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Firepuma.Payments.Core.Payments.Entities;
 
@@ -15,7 +15,7 @@ public class PaymentEntity : BaseEntity
     public PaymentStatus Status { get; set; }
     public DateTime? StatusChangedOn { get; set; }
 
-    public Dictionary<string, object> ExtraValues { get; set; }
+    public JObject ExtraValues { get; set; }
 
     // ReSharper disable once UnusedMember.Global
     public PaymentEntity()
@@ -27,7 +27,7 @@ public class PaymentEntity : BaseEntity
         ClientApplicationId applicationId,
         PaymentGatewayTypeId gatewayTypeId,
         PaymentId paymentId,
-        Dictionary<string, object> extraValues)
+        JObject extraValues)
     {
         ApplicationId = applicationId;
         GatewayTypeId = gatewayTypeId;
@@ -41,8 +41,7 @@ public class PaymentEntity : BaseEntity
     {
         try
         {
-            //FIX: is there a better way than this?
-            extraValues = JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(ExtraValues));
+            extraValues = ExtraValues.ToObject<T>();
             error = null;
             return true;
         }
@@ -54,9 +53,8 @@ public class PaymentEntity : BaseEntity
         }
     }
 
-    public static Dictionary<string, object> CastToExtraValues<T>(T extraValues) where T : class
+    public static JObject CastToExtraValues<T>(T extraValues) where T : class
     {
-        //FIX: is there a better way than this?
-        return JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(extraValues));
+        return JObject.FromObject(extraValues);
     }
 }

@@ -38,10 +38,12 @@ internal class PaymentsServiceClient : IPaymentsServiceClient
             throw new ValidationException(string.Join(". ", new[] { "ExtraValues is invalid" }.Concat(validationResultsForExtraValues.Select(s => s.ErrorMessage))));
         }
 
+        var extraValuesCasted = PreparePaymentRequest.CastToExtraValues(extraValues);
+
         var prepareRequest = new PreparePaymentRequest
         {
             PaymentId = paymentId,
-            ExtraValues = extraValues,
+            ExtraValues = extraValuesCasted,
         };
 
         var postBody = new StringContent(JsonConvert.SerializeObject(prepareRequest, new Newtonsoft.Json.Converters.StringEnumConverter()));

@@ -35,7 +35,6 @@ public static class EnqueuePaymentNotificationForProcessing
         [IgnoreCommandAudit]
         public PaymentApplicationConfig ApplicationConfig { get; init; }
 
-        [IgnoreCommandAudit] //FIX: this means we won't have history of this PaymentNotificationPayload data, rather add another attribute to write the data to BlobStorage 
         public BasePaymentNotificationPayload PaymentNotificationPayload { get; init; }
 
         public string RemoteIp { get; init; }

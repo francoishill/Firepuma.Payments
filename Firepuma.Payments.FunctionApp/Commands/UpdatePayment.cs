@@ -39,7 +39,6 @@ public static class UpdatePayment
 
         public PaymentStatus PaymentStatus { get; set; }
 
-        [IgnoreCommandAudit] //FIX: this means we won't have history of this PaymentNotificationPayload data, rather add another attribute to write the data to BlobStorage
         public BasePaymentNotificationPayload PaymentNotificationPayload { get; init; }
 
         public string IncomingRequestUri { get; init; }
@@ -127,7 +126,6 @@ public static class UpdatePayment
 
             try
             {
-                //FIX: this could fail if request is large and does not fit into string field of Azure Table, consider writing to blob instead?
                 var paymentNotificationJson = JsonConvert.SerializeObject(command.PaymentNotificationPayload, new Newtonsoft.Json.Converters.StringEnumConverter());
                 var traceRecord = new PaymentNotificationTrace(
                     applicationId,

@@ -1,6 +1,5 @@
 ﻿using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.ValueObjects;
-using Newtonsoft.Json.Linq;
 
 // ReSharper disable CollectionNeverUpdated.Global
 

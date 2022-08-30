@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.Payments.Core.Infrastructure.CommandHandling;
-using Firepuma.Payments.Core.Infrastructure.CommandHandling.Attributes;
 using Firepuma.Payments.Core.Infrastructure.Events.EventGridMessages;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.Entities;

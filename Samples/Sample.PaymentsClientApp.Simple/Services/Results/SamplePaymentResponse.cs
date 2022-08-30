@@ -2,7 +2,6 @@
 using Firepuma.Payments.Core.ClientDtos.ClientResponses;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.ValueObjects;
-using Newtonsoft.Json.Linq;
 
 #pragma warning disable CS8618
 // ReSharper disable UnusedMember.Global

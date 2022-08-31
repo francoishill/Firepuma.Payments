@@ -163,7 +163,7 @@ public static class UpdatePayment
             {
                 await _paymentRepository.UpdateItemAsync(payment, cancellationToken);
             }
-            catch (CosmosException cosmosException) when (cosmosException.StatusCode == System.Net.HttpStatusCode.Conflict)
+            catch (CosmosException cosmosException) when (cosmosException.StatusCode == System.Net.HttpStatusCode.PreconditionFailed)
             {
                 _logger.LogCritical(
                     cosmosException,

@@ -136,7 +136,14 @@ public abstract class CosmosDbRepository<T> : IRepository<T> where T : BaseEntit
         T item,
         CancellationToken cancellationToken)
     {
-        var response = await Container.UpsertItemAsync<T>(item, ResolvePartitionKey(item.Id), cancellationToken: cancellationToken);
+        var response = await Container.UpsertItemAsync<T>(
+            item,
+            ResolvePartitionKey(item.Id),
+            new ItemRequestOptions
+            {
+                IfMatchEtag = item.ETag,
+            },
+            cancellationToken);
 
         Logger.LogInformation(
             "Updating item id {Id} in container {Container} consumed {Charge} RUs",
@@ -147,7 +154,14 @@ public abstract class CosmosDbRepository<T> : IRepository<T> where T : BaseEntit
         T item,
         CancellationToken cancellationToken)
     {
-        var response = await Container.DeleteItemAsync<T>(item.Id, ResolvePartitionKey(item.Id), cancellationToken: cancellationToken);
+        var response = await Container.DeleteItemAsync<T>(
+            item.Id,
+            ResolvePartitionKey(item.Id),
+            new ItemRequestOptions
+            {
+                IfMatchEtag = item.ETag,
+            },
+            cancellationToken);
 
         Logger.LogInformation(
             "Deleting item id {Id} from container {Container} consumed {Charge} RUs",

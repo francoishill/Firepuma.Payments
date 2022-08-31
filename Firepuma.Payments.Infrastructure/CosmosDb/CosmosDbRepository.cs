@@ -127,6 +127,8 @@ public abstract class CosmosDbRepository<T> : IRepository<T> where T : BaseEntit
 
         var response = await Container.CreateItemAsync<T>(item, ResolvePartitionKey(item.Id), cancellationToken: cancellationToken);
 
+        item.ETag = response.ETag;
+
         Logger.LogInformation(
             "Adding item id {Id} to container {Container} consumed {Charge} RUs",
             item.Id, Container.Id, response.RequestCharge);
@@ -144,6 +146,7 @@ public abstract class CosmosDbRepository<T> : IRepository<T> where T : BaseEntit
                 IfMatchEtag = item.ETag,
             },
             cancellationToken);
+        item.ETag = response.ETag;
 
         Logger.LogInformation(
             "Updating item id {Id} in container {Container} consumed {Charge} RUs",

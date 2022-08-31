@@ -1,7 +1,7 @@
 ﻿using Azure.Messaging.EventGrid;
 using Azure.Messaging.ServiceBus;
-using Firepuma.Payments.Abstractions.Events;
-using Firepuma.Payments.Abstractions.Events.EventGridMessages;
+using Firepuma.Payments.Core.Infrastructure.Events;
+using Firepuma.Payments.Core.Infrastructure.Events.EventGridMessages;
 using Microsoft.Extensions.Options;
 using Sample.PaymentsClientApp.Simple.Config;
 
@@ -80,9 +80,9 @@ internal class ServiceBusBackgroundProcessor : BackgroundService
             {
                 if (PaymentEventMappings.TryGetPaymentEventData(eventGridEvent, out var paymentEvent))
                 {
-                    if (paymentEvent is PayFastPaymentUpdatedEvent payFastPaymentUpdatedEvent)
+                    if (paymentEvent is PaymentUpdatedEvent paymentUpdatedEvent)
                     {
-                        await _paymentUpdatedMessageHandler.HandlePaymentUpdated(payFastPaymentUpdatedEvent, cancellationToken);
+                        await _paymentUpdatedMessageHandler.HandlePaymentUpdated(paymentUpdatedEvent, cancellationToken);
                     }
                     else
                     {

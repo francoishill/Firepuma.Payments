@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Firepuma.Payments.Abstractions.DTOs.Requests;
-using Firepuma.Payments.Abstractions.DTOs.Responses;
-using Firepuma.Payments.Abstractions.Infrastructure.Validation;
 using Firepuma.Payments.Client.Configuration;
+using Firepuma.Payments.Core.ClientDtos.ClientRequests;
+using Firepuma.Payments.Core.ClientDtos.ClientRequests.ExtraValues;
+using Firepuma.Payments.Core.ClientDtos.ClientResponses;
+using Firepuma.Payments.Core.Payments.ValueObjects;
+using Firepuma.Payments.Core.Validation;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -25,69 +27,79 @@ internal class PaymentsServiceClient : IPaymentsServiceClient
         _httpClient = httpClientFactory.CreateClient(HttpClientConstants.PAYMENTS_SERVICE_HTTP_CLIENT_NAME);
     }
 
-    public async Task<PreparePayFastOnceOffPaymentResponse> PreparePayFastOnceOffPayment(
-        PreparePayFastOnceOffPaymentRequest requestDTO,
+    public async Task<PreparePaymentResponse> PreparePayment(
+        PaymentGatewayTypeId gatewayTypeId,
+        PaymentId paymentId,
+        IPreparePaymentExtraValues extraValues,
         CancellationToken cancellationToken)
     {
-        if (!ValidationHelpers.ValidateDataAnnotations(requestDTO, out var validationResultsForDTO))
+        if (!ValidationHelpers.ValidateDataAnnotations(extraValues, out var validationResultsForExtraValues))
         {
-            throw new ValidationException(string.Join(". ", new[] { "Request DTO is invalid" }.Concat(validationResultsForDTO.Select(s => s.ErrorMessage))));
+            throw new ValidationException(string.Join(". ", new[] { "ExtraValues is invalid" }.Concat(validationResultsForExtraValues.Select(s => s.ErrorMessage))));
         }
 
-        var postBody = new StringContent(JsonConvert.SerializeObject(requestDTO, new Newtonsoft.Json.Converters.StringEnumConverter()));
+        var extraValuesCasted = PreparePaymentRequest.CastToExtraValues(extraValues);
+
+        var prepareRequest = new PreparePaymentRequest
+        {
+            PaymentId = paymentId,
+            ExtraValues = extraValuesCasted,
+        };
+
+        var postBody = new StringContent(JsonConvert.SerializeObject(prepareRequest, new Newtonsoft.Json.Converters.StringEnumConverter()));
 
         var applicationId = _options.Value.ApplicationId;
 
-        var responseMessage = await _httpClient.PostAsync($"PreparePayFastOnceOffPayment/{applicationId}", postBody, cancellationToken);
+        var responseMessage = await _httpClient.PostAsync($"PreparePayment/{gatewayTypeId.Value}/{applicationId}", postBody, cancellationToken);
 
         if (!responseMessage.IsSuccessStatusCode)
         {
             var body = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
-            _logger.LogError("Unable to prepare PayFast once-off payment, status code was {Code}, body: {Body}", (int)responseMessage.StatusCode, body);
+            _logger.LogError("Unable to prepare payment, status code was {Code}, body: {Body}", (int)responseMessage.StatusCode, body);
             responseMessage.EnsureSuccessStatusCode();
         }
 
         var rawBody = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
         if (string.IsNullOrWhiteSpace(rawBody))
         {
-            _logger.LogError("Body is empty, cannot PreparePayFastOnceOffPayment");
-            throw new InvalidOperationException("Body is empty, cannot PreparePayFastOnceOffPayment");
+            _logger.LogError("Body is empty, cannot PreparePayment");
+            throw new InvalidOperationException("Body is empty, cannot PreparePayment");
         }
 
-        var responseDTO = JsonConvert.DeserializeObject<PreparePayFastOnceOffPaymentResponse>(rawBody);
+        var responseDTO = JsonConvert.DeserializeObject<PreparePaymentResponse>(rawBody);
         if (responseDTO == null)
         {
-            _logger.LogError("Json parsed body is null when trying to deserialize body '{RawBody}' as PreparePayFastOnceOffPaymentResponse", rawBody);
-            throw new InvalidOperationException($"Json parsed body is null when trying to deserialize as PreparePayFastOnceOffPaymentResponse");
+            _logger.LogError("Json parsed body is null when trying to deserialize body '{RawBody}' as PreparePaymentResponse", rawBody);
+            throw new InvalidOperationException($"Json parsed body is null when trying to deserialize as PreparePaymentResponse");
         }
 
         return responseDTO;
     }
 
-    public async Task<PayFastOnceOffPaymentResponse> GetPayFastPaymentTransactionDetails(string paymentId, CancellationToken cancellationToken)
+    public async Task<GetPaymentResponse> GetPaymentDetails(string paymentId, CancellationToken cancellationToken)
     {
         var applicationId = _options.Value.ApplicationId;
-        var responseMessage = await _httpClient.GetAsync($"GetPayFastPaymentTransactionDetails/{applicationId}/{paymentId}", cancellationToken);
+        var responseMessage = await _httpClient.GetAsync($"GetPayment/{applicationId}/{paymentId}", cancellationToken);
 
         if (!responseMessage.IsSuccessStatusCode)
         {
             var body = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
-            _logger.LogError("Unable to get PayFast once-off payment, status code was {Code}, body: {Body}", (int)responseMessage.StatusCode, body);
+            _logger.LogError("Unable to get payment, status code was {Code}, body: {Body}", (int)responseMessage.StatusCode, body);
             responseMessage.EnsureSuccessStatusCode();
         }
 
         var rawBody = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
         if (string.IsNullOrWhiteSpace(rawBody))
         {
-            _logger.LogError("Body is empty, cannot PreparePayFastOnceOffPayment");
-            throw new InvalidOperationException("Body is empty, cannot PreparePayFastOnceOffPayment");
+            _logger.LogError("Body is empty, cannot GetPaymentDetails");
+            throw new InvalidOperationException("Body is empty, cannot GetPaymentDetails");
         }
 
-        var responseDTO = JsonConvert.DeserializeObject<PayFastOnceOffPaymentResponse>(rawBody);
+        var responseDTO = JsonConvert.DeserializeObject<GetPaymentResponse>(rawBody);
         if (responseDTO == null)
         {
-            _logger.LogError("Json parsed body is null when trying to deserialize body '{RawBody}' as GetPayFastPaymentTransactionDetails", rawBody);
-            throw new InvalidOperationException($"Json parsed body is null when trying to deserialize as GetPayFastPaymentTransactionDetails");
+            _logger.LogError("Json parsed body is null when trying to deserialize body '{RawBody}' as GetPaymentResponse", rawBody);
+            throw new InvalidOperationException($"Json parsed body is null when trying to deserialize as GetPaymentResponse");
         }
 
         return responseDTO;

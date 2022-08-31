@@ -1,10 +1,11 @@
 ﻿using System;
 using AutoMapper;
+using Firepuma.Payments.Core.Infrastructure.PipelineBehaviors;
 using Firepuma.Payments.FunctionAppManager;
+using Firepuma.Payments.FunctionAppManager.Gateways.PayFast;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Config;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Constants;
-using Firepuma.Payments.FunctionAppManager.Infrastructure.Helpers;
-using Firepuma.Payments.FunctionAppManager.Infrastructure.PipelineBehaviors;
+using Firepuma.Payments.Infrastructure.Config;
 using MediatR;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,12 +41,26 @@ public class Startup : FunctionsStartup
                 client.DefaultRequestHeaders.Add("x-functions-key", paymentsServiceFunctionsKey);
             });
 
+        AddCosmosDb(services);
         AddMediator(services);
+
+        services.AddPaymentsManagementFeature();
+        services.AddPayFastManagerFeature();
     }
 
     private static void AddMediator(IServiceCollection services)
     {
         services.AddMediatR(typeof(Startup));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceLogBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionLogBehavior<,>));
+    }
+
+    private static void AddCosmosDb(IServiceCollection services)
+    {
+        var connectionString = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("CosmosConnectionString");
+        var databaseId = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("CosmosDatabaseId");
+        var client = new Microsoft.Azure.Cosmos.CosmosClient(connectionString);
+        var database = client.GetDatabase(databaseId);
+        services.AddSingleton(_ => database);
     }
 }

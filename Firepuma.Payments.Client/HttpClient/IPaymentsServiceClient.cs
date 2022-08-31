@@ -1,5 +1,6 @@
-using Firepuma.Payments.Abstractions.DTOs.Requests;
-using Firepuma.Payments.Abstractions.DTOs.Responses;
+using Firepuma.Payments.Core.ClientDtos.ClientRequests.ExtraValues;
+using Firepuma.Payments.Core.ClientDtos.ClientResponses;
+using Firepuma.Payments.Core.Payments.ValueObjects;
 
 // ReSharper disable UnusedMember.Global
 
@@ -7,11 +8,13 @@ namespace Firepuma.Payments.Client.HttpClient;
 
 public interface IPaymentsServiceClient
 {
-    Task<PreparePayFastOnceOffPaymentResponse> PreparePayFastOnceOffPayment(
-        PreparePayFastOnceOffPaymentRequest requestDTO,
+    Task<PreparePaymentResponse> PreparePayment(
+        PaymentGatewayTypeId gatewayTypeId,
+        PaymentId paymentId,
+        IPreparePaymentExtraValues extraValues,
         CancellationToken cancellationToken);
     
-    Task<PayFastOnceOffPaymentResponse> GetPayFastPaymentTransactionDetails(
+    Task<GetPaymentResponse> GetPaymentDetails(
         string paymentId,
         CancellationToken cancellationToken);
 }

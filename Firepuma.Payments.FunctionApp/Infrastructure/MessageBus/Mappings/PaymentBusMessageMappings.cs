@@ -14,17 +14,17 @@ public static class PaymentBusMessageMappings
 
     private static class MessageTypeNames
     {
-        public const string PayFastPaymentItnValidatedMessage = "Firepuma.Payments.FunctionApp.PayFastPaymentItnValidatedMessage";
+        public const string PaymentNotificationValidatedMessage = "Firepuma.Payments.FunctionApp.PaymentNotificationValidatedMessage";
     }
 
     private static readonly IReadOnlyDictionary<Type, string> _messageTypeNameMap = new Dictionary<Type, string>
     {
-        [typeof(PayFastPaymentItnValidatedMessage)] = MessageTypeNames.PayFastPaymentItnValidatedMessage,
+        [typeof(PaymentNotificationValidatedMessage)] = MessageTypeNames.PaymentNotificationValidatedMessage,
     };
 
     private static readonly IReadOnlyDictionary<string, Func<BinaryData, object>> _messageDeserializers = new Dictionary<string, Func<BinaryData, object>>
     {
-        [MessageTypeNames.PayFastPaymentItnValidatedMessage] = messageData => JsonConvert.DeserializeObject<PayFastPaymentItnValidatedMessage>(messageData.ToString()),
+        [MessageTypeNames.PaymentNotificationValidatedMessage] = messageData => JsonConvert.DeserializeObject<PaymentNotificationValidatedMessage>(messageData.ToString()),
     };
 
     public static string GetMessageTypeName<T>(T eventData) where T : IPaymentBusMessage

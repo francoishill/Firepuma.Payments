@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
-using Firepuma.Payments.Abstractions.DTOs.Requests;
 using Firepuma.Payments.Client.HttpClient;
+using Firepuma.Payments.Core.ClientDtos.ClientRequests.ExtraValues;
+using Firepuma.Payments.Core.Constants;
+using Firepuma.Payments.Core.Payments.ValueObjects;
 using Sample.PaymentsClientApp.Simple.Services.Results;
 
 namespace Sample.PaymentsClientApp.Simple.Services;
@@ -22,7 +24,7 @@ public class PaymentsService
     }
 
     public async Task<PreparePayfastOnceOffPaymentResult> PreparePayfastOnceOffPayment(
-        string newPaymentId,
+        PaymentId newPaymentId,
         string returnUrl,
         string cancelUrl,
         CancellationToken cancellationToken)
@@ -37,10 +39,8 @@ public class PaymentsService
         const string itemName = "Purchased item name";
         const string itemDescription = "Purchased item description";
 
-        var requestDTO = new PreparePayFastOnceOffPaymentRequest
+        var extraValues = new PreparePayFastOnceOffPaymentExtraValues
         {
-            PaymentId = newPaymentId, // $"{(long)DateTime.UtcNow.Subtract(DateTime.UnixEpoch).TotalSeconds}-{Guid.NewGuid().ToString()}",
-
             BuyerEmailAddress = buyerEmail,
             BuyerFirstName = buyerName,
 
@@ -53,24 +53,28 @@ public class PaymentsService
             CancelUrl = cancelUrl,
 
             //TODO: remove SplitPayment or use it to split payment between main merchant and another merchant
-            // SplitPayment = new PreparePayFastOnceOffPaymentRequest.SplitPaymentConfig
+            // SplitPayment = new PreparePayFastOnceOffPaymentExtraValues.SplitPaymentConfig
             // {
             //     MerchantId = anotherMerchantId,
             //     AmountInCents = amountInRandsToPayForAnotherMerchant * 100,
             // },
         };
 
-        var preparedPayment = await _paymentsServiceClient.PreparePayFastOnceOffPayment(requestDTO, cancellationToken);
+        var preparedPayment = await _paymentsServiceClient.PreparePayment(
+            PaymentGatewayIds.PayFast,
+            newPaymentId,
+            extraValues,
+            cancellationToken);
         var redirectUri = new Uri(preparedPayment.RedirectUrl);
 
         return new PreparePayfastOnceOffPaymentResult(redirectUri, preparedPayment.PaymentId);
     }
 
-    public async Task<PayfastOnceOffPaymentResult> GetPayfastOnceOffPayment(string paymentId, CancellationToken cancellationToken)
+    public async Task<SamplePaymentResponse> GetPaymentDetails(string paymentId, CancellationToken cancellationToken)
     {
-        var payment = await _paymentsServiceClient.GetPayFastPaymentTransactionDetails(paymentId, cancellationToken);
+        var payment = await _paymentsServiceClient.GetPaymentDetails(paymentId, cancellationToken);
 
-        var mappedPayment = _mapper.Map<PayfastOnceOffPaymentResult>(payment);
+        var mappedPayment = _mapper.Map<SamplePaymentResponse>(payment);
 
         return mappedPayment;
     }

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.Payments.Implementations.Config;
+using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
+using Firepuma.Payments.Core.PaymentAppConfiguration.Repositories;
+using Firepuma.Payments.Core.PaymentAppConfiguration.Specifications;
 using MediatR;
-using Microsoft.Azure.Cosmos.Table;
 
 // ReSharper disable UnusedType.Global
 // ReSharper disable MemberCanBePrivate.Global
@@ -12,35 +13,32 @@ namespace Firepuma.Payments.FunctionAppManager.Queries;
 
 public static class GetAllClientApps
 {
-    public class Query : IRequest<IEnumerable<PayFastClientAppConfig>>
+    public class Query : IRequest<IEnumerable<PaymentApplicationConfig>>
     {
-        public CloudTable CloudTable { get; set; }
-
-        public Query(CloudTable cloudTable)
-        {
-            CloudTable = cloudTable;
-        }
     }
 
-    public class Handler : IRequestHandler<Query, IEnumerable<PayFastClientAppConfig>>
+    public class Handler : IRequestHandler<Query, IEnumerable<PaymentApplicationConfig>>
     {
-        public async Task<IEnumerable<PayFastClientAppConfig>> Handle(
+        private readonly IPaymentApplicationConfigRepository _applicationConfigRepository;
+
+        public Handler(
+            IPaymentApplicationConfigRepository applicationConfigRepository)
+        {
+            _applicationConfigRepository = applicationConfigRepository;
+        }
+
+        public async Task<IEnumerable<PaymentApplicationConfig>> Handle(
             Query query,
             CancellationToken cancellationToken)
         {
-            var table = query.CloudTable;
+            var specification = new ClientAppsGetAllSpecification();
+            var tableQuery = await _applicationConfigRepository.GetItemsAsync(specification, cancellationToken);
 
-            var rows = new List<PayFastClientAppConfig>();
-            TableContinuationToken token = null;
-            var tableFilter = new TableQuery<PayFastClientAppConfig>();
-
-            do
+            var rows = new List<PaymentApplicationConfig>();
+            foreach (var row in tableQuery)
             {
-                var queryResult = await table.ExecuteQuerySegmentedAsync(tableFilter, token, cancellationToken);
-                rows.AddRange(queryResult.Results);
-
-                token = queryResult.ContinuationToken;
-            } while (token != null);
+                rows.Add(row);
+            }
 
             return rows;
         }

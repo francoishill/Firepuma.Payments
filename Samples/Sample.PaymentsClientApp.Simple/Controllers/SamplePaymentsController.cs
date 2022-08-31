@@ -1,5 +1,6 @@
 using System.Net;
 using AutoMapper;
+using Firepuma.Payments.Core.Payments.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Sample.PaymentsClientApp.Simple.Controllers.Responses;
@@ -28,7 +29,7 @@ public class SamplePaymentsController : ControllerBase
     public async Task<ActionResult<PreparePayfastOnceOffPaymentResponse>> PreparePayfastPayment(
         CancellationToken cancellationToken)
     {
-        var newPaymentId = Guid.NewGuid().ToString();
+        var newPaymentId = PaymentId.GenerateNew();
 
         _logger.LogInformation("Preparing payment for new payment id '{Id}'", newPaymentId);
 
@@ -61,7 +62,7 @@ public class SamplePaymentsController : ControllerBase
         string paymentId,
         CancellationToken cancellationToken)
     {
-        var paymentResult = await _paymentsService.GetPayfastOnceOffPayment(paymentId, cancellationToken);
+        var paymentResult = await _paymentsService.GetPaymentDetails(paymentId, cancellationToken);
         return new OkObjectResult($"Thank you, your payment ID {paymentId} is being processed in the background. {JsonConvert.SerializeObject(paymentResult, new Newtonsoft.Json.Converters.StringEnumConverter())}");
     }
 
@@ -70,7 +71,7 @@ public class SamplePaymentsController : ControllerBase
         string paymentId,
         CancellationToken cancellationToken)
     {
-        var paymentResult = await _paymentsService.GetPayfastOnceOffPayment(paymentId, cancellationToken);
+        var paymentResult = await _paymentsService.GetPaymentDetails(paymentId, cancellationToken);
         return new OkObjectResult($"Your payment ID {paymentId} has been cancelled. {JsonConvert.SerializeObject(paymentResult, new Newtonsoft.Json.Converters.StringEnumConverter())}");
     }
 }

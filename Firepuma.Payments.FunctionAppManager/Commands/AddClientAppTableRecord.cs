@@ -1,9 +1,12 @@
-﻿using System.Net;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.Payments.Implementations.Config;
+using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
+using Firepuma.Payments.Core.PaymentAppConfiguration.Repositories;
+using Firepuma.Payments.FunctionAppManager.Gateways;
 using MediatR;
-using Microsoft.Azure.Cosmos.Table;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -16,86 +19,80 @@ public static class AddClientAppTableRecord
 {
     public class Command : IRequest<Result>
     {
-        public CloudTable CloudTable { get; set; }
-        public PayFastClientAppConfig TableRow { get; set; }
+        public PaymentApplicationConfig TableRow { get; set; }
 
         public Command(
-            CloudTable cloudTable,
-            PayFastClientAppConfig tableRow)
+            PaymentApplicationConfig tableRow)
         {
-            CloudTable = cloudTable;
             TableRow = tableRow;
         }
     }
 
     public class Result
     {
-        public string TableName { get; set; }
         public bool IsNew { get; set; }
-        public PayFastClientAppConfig TableRow { get; set; }
+        public PaymentApplicationConfig TableRow { get; set; }
     }
 
 
     public class Handler : IRequestHandler<Command, Result>
     {
         private readonly ILogger<Handler> _logger;
+        private readonly IEnumerable<IPaymentGatewayManager> _gatewayManagers;
+        private readonly IPaymentApplicationConfigRepository _applicationConfigRepository;
 
         public Handler(
-            ILogger<Handler> logger)
+            ILogger<Handler> logger,
+            IEnumerable<IPaymentGatewayManager> gatewayManagers,
+            IPaymentApplicationConfigRepository applicationConfigRepository)
         {
             _logger = logger;
+            _gatewayManagers = gatewayManagers;
+            _applicationConfigRepository = applicationConfigRepository;
         }
 
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
         {
-            var table = command.CloudTable;
             var newRow = command.TableRow;
+            var gatewayTypeId = newRow.GatewayTypeId;
 
-            var result = new Result
+            var gatewayManager = _gatewayManagers.GetFromTypeIdOrNull(gatewayTypeId);
+
+            if (gatewayManager == null)
             {
-                TableName = table.Name,
-            };
+                //FIX: consider rather making this a Result.Fail and checking for it in the HttpTrigger
+                throw new Exception($"The payment gateway type '{gatewayTypeId.Value}' is not supported");
+            }
+
+            var result = new Result();
 
             try
             {
-                await table.ExecuteAsync(TableOperation.Insert(newRow), cancellationToken);
+                await _applicationConfigRepository.AddItemAsync(newRow, cancellationToken);
 
                 result.IsNew = true;
                 result.TableRow = newRow;
             }
-            catch (Microsoft.Azure.Cosmos.Table.StorageException storageException) when (storageException.RequestInformation.HttpStatusCode == (int)HttpStatusCode.Conflict)
+            catch (CosmosException cosmosException) when (cosmosException.StatusCode == System.Net.HttpStatusCode.Conflict)
             {
-                var existingTableRow = await LoadClientAppConfig(
-                    table,
-                    newRow.PaymentProviderName,
+                var existingTableRow = await _applicationConfigRepository.GetItemOrDefaultAsync(
                     newRow.ApplicationId,
+                    gatewayTypeId,
                     cancellationToken);
+
+                if (existingTableRow == null)
+                {
+                    _logger.LogError(
+                        cosmosException,
+                        "ClientAppConfig does not exist for applicationId: {ApplicationId} and gatewayTypeId: {GatewayTypeId}",
+                        gatewayManager.TypeId.Value, newRow.ApplicationId);
+                }
 
                 result.IsNew = false;
                 result.TableRow = existingTableRow;
             }
 
             return result;
-        }
-
-        private async Task<PayFastClientAppConfig> LoadClientAppConfig(
-            CloudTable table,
-            string paymentProviderName,
-            string applicationId,
-            CancellationToken cancellationToken)
-        {
-            var retrieveOperation = PayFastClientAppConfig.GetRetrieveOperation(paymentProviderName, applicationId);
-            var loadResult = await table.ExecuteAsync(retrieveOperation, cancellationToken);
-
-            if (loadResult.Result == null)
-            {
-                _logger.LogError(
-                    "loadResult.Result was null for paymentProviderName: {ProviderName} and applicationId: {ApplicationId}",
-                    paymentProviderName, applicationId);
-                return null;
-            }
-
-            return loadResult.Result as PayFastClientAppConfig;
         }
     }
 }

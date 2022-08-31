@@ -21,6 +21,7 @@ using Firepuma.Payments.FunctionApp.Gateways.Results;
 using Firepuma.Payments.Infrastructure.Gateways.PayFast;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PayFast;
 
@@ -149,11 +150,15 @@ public class PayFastPaymentGateway : IPaymentGateway
 
         var mappedCommandSplitPaymentConfig = _mapper.Map<PayFastRedirectFactory.SplitPaymentConfig>(extraValues.SplitPayment);
 
+        _logger.LogDebug("PayFast request passed into CreateRedirectUrl for payment id '{Id}': {Request}", paymentId, JsonConvert.SerializeObject(payfastRequest));
+
         var redirectUrl = PayFastRedirectFactory.CreateRedirectUrl(
             _logger,
             payFastSettings,
             payfastRequest,
             mappedCommandSplitPaymentConfig);
+
+        _logger.LogDebug("RedirectUrl after CreateRedirectUrl for payment id '{Id}' is: {Uri}", paymentId, redirectUrl.AbsoluteUri);
 
         await Task.CompletedTask;
         return redirectUrl;

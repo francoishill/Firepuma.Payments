@@ -148,6 +148,14 @@ public class PayFastPaymentGateway : IPaymentGateway
             extraValues.ItemName,
             extraValues.ItemDescription);
 
+        var signatureBefore = payfastRequest.signature;
+        payfastRequest.SetPassPhrase(applicationConfig.PassPhrase);
+        var signatureAfter = payfastRequest.signature;
+        _logger.LogDebug(
+            "Signature before and after explicitly calling SetPassPhrase: before: {Before}, after: {After}",
+            signatureBefore, signatureAfter);
+
+
         var mappedCommandSplitPaymentConfig = _mapper.Map<PayFastRedirectFactory.SplitPaymentConfig>(extraValues.SplitPayment);
 
         _logger.LogDebug(

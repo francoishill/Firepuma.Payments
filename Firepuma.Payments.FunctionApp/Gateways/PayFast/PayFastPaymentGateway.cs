@@ -21,7 +21,6 @@ using Firepuma.Payments.FunctionApp.Gateways.Results;
 using Firepuma.Payments.Infrastructure.Gateways.PayFast;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PayFast;
 
@@ -148,37 +147,13 @@ public class PayFastPaymentGateway : IPaymentGateway
             extraValues.ItemName,
             extraValues.ItemDescription);
 
-        var signatureBefore = payfastRequest.signature;
-        payfastRequest.SetPassPhrase(applicationConfig.PassPhrase);
-        var signatureAfter = payfastRequest.signature;
-        _logger.LogDebug(
-            "Signature before and after explicitly calling SetPassPhrase: before: {Before}, after: {After}",
-            signatureBefore, signatureAfter);
-
-
         var mappedCommandSplitPaymentConfig = _mapper.Map<PayFastRedirectFactory.SplitPaymentConfig>(extraValues.SplitPayment);
-
-        _logger.LogDebug(
-            "Info passed to CreateRedirectUrl for payment id '{Id}': settings: {Settings}, request: {Request}, splitPayment: {Split}",
-            paymentId,
-            new Dictionary<string, object>
-            {
-                ["MerchantId"] = payFastSettings.MerchantId,
-                ["MerchantKey"] = payFastSettings.MerchantKey[..3] + "********************",
-                ["PassPhrase"] = payFastSettings.PassPhrase[..3] + "********************",
-                ["ProcessUrl"] = payFastSettings.ProcessUrl,
-                ["ValidateUrl"] = payFastSettings.ValidateUrl,
-            },
-            JsonConvert.SerializeObject(payfastRequest),
-            JsonConvert.SerializeObject(mappedCommandSplitPaymentConfig));
 
         var redirectUrl = PayFastRedirectFactory.CreateRedirectUrl(
             _logger,
             payFastSettings,
             payfastRequest,
             mappedCommandSplitPaymentConfig);
-
-        _logger.LogDebug("RedirectUrl after CreateRedirectUrl for payment id '{Id}' is: {Uri}", paymentId, redirectUrl.AbsoluteUri);
 
         await Task.CompletedTask;
         return redirectUrl;

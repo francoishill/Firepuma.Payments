@@ -136,16 +136,18 @@ public abstract class CosmosDbRepository<T> : IRepository<T> where T : BaseEntit
 
     public async Task UpdateItemAsync(
         T item,
+        bool ignoreETag,
         CancellationToken cancellationToken)
     {
-        var response = await Container.UpsertItemAsync<T>(
-            item,
-            ResolvePartitionKey(item.Id),
-            new ItemRequestOptions
-            {
-                IfMatchEtag = item.ETag,
-            },
-            cancellationToken);
+        var options = new ItemRequestOptions();
+
+        if (!ignoreETag)
+        {
+            options.IfMatchEtag = item.ETag;
+        }
+
+        var response = await Container.UpsertItemAsync<T>(item, ResolvePartitionKey(item.Id), options, cancellationToken);
+
         item.ETag = response.ETag;
 
         Logger.LogInformation(
@@ -155,16 +157,17 @@ public abstract class CosmosDbRepository<T> : IRepository<T> where T : BaseEntit
 
     public async Task DeleteItemAsync(
         T item,
+        bool ignoreETag,
         CancellationToken cancellationToken)
     {
-        var response = await Container.DeleteItemAsync<T>(
-            item.Id,
-            ResolvePartitionKey(item.Id),
-            new ItemRequestOptions
-            {
-                IfMatchEtag = item.ETag,
-            },
-            cancellationToken);
+        var options = new ItemRequestOptions();
+
+        if (!ignoreETag)
+        {
+            options.IfMatchEtag = item.ETag;
+        }
+
+        var response = await Container.DeleteItemAsync<T>(item.Id, ResolvePartitionKey(item.Id), options, cancellationToken);
 
         Logger.LogInformation(
             "Deleting item id {Id} from container {Container} consumed {Charge} RUs",

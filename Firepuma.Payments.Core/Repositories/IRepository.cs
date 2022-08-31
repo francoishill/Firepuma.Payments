@@ -7,29 +7,31 @@ public interface IRepository<T> where T : BaseEntity, new()
 {
     Task<IEnumerable<T>> GetItemsAsync(
         ISpecification<T> specification,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken = default);
 
     Task<IEnumerable<T>> GetItemsAsync(
         string queryString,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken = default);
 
     Task<int> GetItemsCountAsync(
         ISpecification<T> specification,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken = default);
 
     Task<T> GetItemOrDefaultAsync(
         string id,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken = default);
 
     Task AddItemAsync(
         T item,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken = default);
 
     Task UpdateItemAsync(
         T item,
-        CancellationToken cancellationToken);
+        bool ignoreETag = false,
+        CancellationToken cancellationToken = default);
 
     Task DeleteItemAsync(
         T item,
-        CancellationToken cancellationToken);
+        bool ignoreETag = false,
+        CancellationToken cancellationToken = default);
 }

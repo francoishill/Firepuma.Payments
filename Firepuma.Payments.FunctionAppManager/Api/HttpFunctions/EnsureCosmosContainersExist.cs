@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.Payments.Infrastructure.CosmosDb;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable RedundantAnonymousTypePropertyName
 
-namespace Firepuma.Payments.FunctionApp.Api.HttpFunctions.Admin;
+namespace Firepuma.Payments.FunctionAppManager.Api.HttpFunctions;
 
 public class EnsureCosmosContainersExist
 {
@@ -26,7 +26,7 @@ public class EnsureCosmosContainersExist
 
     [FunctionName("EnsureCosmosContainersExist")]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Admin, "post", Route = null)] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
         ILogger log,
         CancellationToken cancellationToken)
     {

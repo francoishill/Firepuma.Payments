@@ -1,7 +1,6 @@
 ﻿using System;
 using AutoMapper;
 using Azure;
-using Azure.Data.Tables;
 using Azure.Messaging.EventGrid;
 using Azure.Messaging.ServiceBus;
 using Firepuma.Payments.Core.Infrastructure.PipelineBehaviors;
@@ -31,7 +30,6 @@ public class Startup : FunctionsStartup
 
         AddAutoMapper(services);
         AddMediator(services);
-        AddCloudStorageAccount(services);
         AddCosmosDb(services);
         AddServiceBusPaymentsMessageSender(services);
         AddEventPublisher(services);
@@ -55,12 +53,6 @@ public class Startup : FunctionsStartup
     {
         services.AddAutoMapper(typeof(Startup));
         services.BuildServiceProvider().GetRequiredService<IMapper>().ConfigurationProvider.AssertConfigurationIsValid();
-    }
-
-    private static void AddCloudStorageAccount(IServiceCollection services)
-    {
-        var storageConnectionString = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("AzureWebJobsStorage");
-        services.AddSingleton(_ => new TableServiceClient(storageConnectionString));
     }
 
     private static void AddCosmosDb(IServiceCollection services)

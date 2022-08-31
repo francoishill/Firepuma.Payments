@@ -1,6 +1,5 @@
 ﻿using System;
 using AutoMapper;
-using Azure.Data.Tables;
 using Firepuma.Payments.Core.Infrastructure.PipelineBehaviors;
 using Firepuma.Payments.FunctionAppManager;
 using Firepuma.Payments.FunctionAppManager.Gateways.PayFast;
@@ -42,7 +41,6 @@ public class Startup : FunctionsStartup
                 client.DefaultRequestHeaders.Add("x-functions-key", paymentsServiceFunctionsKey);
             });
 
-        AddCloudStorageAccount(services);
         AddCosmosDb(services);
         AddMediator(services);
 
@@ -55,12 +53,6 @@ public class Startup : FunctionsStartup
         services.AddMediatR(typeof(Startup));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceLogBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionLogBehavior<,>));
-    }
-
-    private static void AddCloudStorageAccount(IServiceCollection services)
-    {
-        var storageConnectionString = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("AzureWebJobsStorage");
-        services.AddSingleton(_ => new TableServiceClient(storageConnectionString));
     }
 
     private static void AddCosmosDb(IServiceCollection services)

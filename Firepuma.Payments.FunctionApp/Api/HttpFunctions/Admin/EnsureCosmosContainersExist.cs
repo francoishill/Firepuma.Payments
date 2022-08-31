@@ -9,7 +9,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 // ReSharper disable RedundantAnonymousTypePropertyName
 
@@ -38,25 +37,21 @@ public class EnsureCosmosContainersExist
             new
             {
                 ContainerProperties = new ContainerProperties(CosmosContainerNames.COMMAND_EXECUTIONS, "/TypeName"),
-                ThroughPut = ThroughputProperties.CreateAutoscaleThroughput(4000),
             },
 
             new
             {
                 ContainerProperties = new ContainerProperties(CosmosContainerNames.PAYMENTS, "/ApplicationId"),
-                ThroughPut = ThroughputProperties.CreateAutoscaleThroughput(4000),
             },
 
             new
             {
                 ContainerProperties = new ContainerProperties(CosmosContainerNames.NOTIFICATION_TRACES, "/ApplicationId"),
-                ThroughPut = ThroughputProperties.CreateAutoscaleThroughput(4000),
             },
 
             new
             {
                 ContainerProperties = new ContainerProperties(CosmosContainerNames.APPLICATION_CONFIGS, "/ApplicationId"),
-                ThroughPut = ThroughputProperties.CreateAutoscaleThroughput(4000),
             },
         };
 
@@ -65,20 +60,18 @@ public class EnsureCosmosContainersExist
         foreach (var container in containersToCreate)
         {
             log.LogDebug(
-                "Creating container {Container} with PartitionKeyPath {PartitionKeyPath} and throughput {Throughput}",
-                container.ContainerProperties.Id, container.ContainerProperties.PartitionKeyPath, JsonConvert.SerializeObject(container.ThroughPut.ToString()));
+                "Creating container {Container} with PartitionKeyPath {PartitionKeyPath}",
+                container.ContainerProperties.Id, container.ContainerProperties.PartitionKeyPath);
 
             try
             {
                 await _cosmosDb.CreateContainerIfNotExistsAsync(
                     container.ContainerProperties,
-                    container.ThroughPut,
-                    requestOptions: null,
-                    cancellationToken);
+                    cancellationToken: cancellationToken);
 
                 log.LogInformation(
-                    "Successfully created container {Container} with PartitionKeyPath {PartitionKeyPath} and throughput {Throughput}",
-                    container.ContainerProperties.Id, container.ContainerProperties.PartitionKeyPath, JsonConvert.SerializeObject(container.ThroughPut.ToString()));
+                    "Successfully created container {Container} with PartitionKeyPath {PartitionKeyPath}",
+                    container.ContainerProperties.Id, container.ContainerProperties.PartitionKeyPath);
 
                 successfulContainers.Add(new
                 {
@@ -89,8 +82,8 @@ public class EnsureCosmosContainersExist
             {
                 log.LogError(
                     exception,
-                    "Failed to create container {Container} with PartitionKeyPath {PartitionKeyPath} and throughput {Throughput}, error: {Error}, stack: {Stack}",
-                    container.ContainerProperties.Id, container.ContainerProperties.PartitionKeyPath, JsonConvert.SerializeObject(container.ThroughPut.ToString()),
+                    "Failed to create container {Container} with PartitionKeyPath {PartitionKeyPath}, error: {Error}, stack: {Stack}",
+                    container.ContainerProperties.Id, container.ContainerProperties.PartitionKeyPath,
                     exception.Message, exception.StackTrace);
 
                 failedContainers.Add(new

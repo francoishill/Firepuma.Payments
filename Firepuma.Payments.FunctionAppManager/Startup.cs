@@ -5,6 +5,7 @@ using Firepuma.Payments.FunctionAppManager;
 using Firepuma.Payments.FunctionAppManager.Gateways.PayFast;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Config;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Constants;
+using Firepuma.Payments.Infrastructure.CommandHandling;
 using Firepuma.Payments.Infrastructure.Config;
 using MediatR;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
@@ -43,6 +44,8 @@ public class Startup : FunctionsStartup
 
         AddCosmosDb(services);
         AddMediator(services);
+
+        services.AddCommandHandling();
 
         services.AddPaymentsManagementFeature();
         services.AddPayFastManagerFeature();

@@ -61,7 +61,7 @@ public static class AddClientAppTableRecord
 
             if (gatewayManager == null)
             {
-                //FIX: consider rather making this a Result.Fail and checking for it in the HttpTrigger
+                //TODO: consider rather making this a Result.Fail and checking for it in the HttpTrigger
                 throw new Exception($"The payment gateway type '{gatewayTypeId.Value}' is not supported");
             }
 

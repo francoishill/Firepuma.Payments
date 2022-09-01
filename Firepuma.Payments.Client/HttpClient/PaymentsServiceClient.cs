@@ -28,6 +28,41 @@ internal class PaymentsServiceClient : IPaymentsServiceClient
         _httpClient = httpClientFactory.CreateClient(HttpClientConstants.PAYMENTS_SERVICE_HTTP_CLIENT_NAME);
     }
 
+    public async Task<ResultContainer<GetAvailablePaymentGatewaysResponse[], GetAvailablePaymentGatewaysFailureReasons>> GetAvailablePaymentGateways(CancellationToken cancellationToken)
+    {
+        var responseMessage = await _httpClient.GetAsync($"GetAvailablePaymentGateways", cancellationToken);
+
+        if (!responseMessage.IsSuccessStatusCode)
+        {
+            var body = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
+            _logger.LogError("Prepare payment failed, status code was {Code}, body: {Body}", (int)responseMessage.StatusCode, body);
+
+            return ResultContainer<GetAvailablePaymentGatewaysResponse[], GetAvailablePaymentGatewaysFailureReasons>.Failed(
+                GetAvailablePaymentGatewaysFailureReasons.UnexpectedFailure,
+                $"Prepare payment failed with status code {responseMessage.StatusCode.ToString()}");
+        }
+
+        var rawBody = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
+        if (string.IsNullOrWhiteSpace(rawBody))
+        {
+            _logger.LogError("Body is empty, cannot PreparePayment");
+            return ResultContainer<GetAvailablePaymentGatewaysResponse[], GetAvailablePaymentGatewaysFailureReasons>.Failed(
+                GetAvailablePaymentGatewaysFailureReasons.UnableToDeserializeBody,
+                $"Prepare payment failed, content body is empty although it was successful (status code was {responseMessage.StatusCode.ToString()})");
+        }
+
+        var responseDTO = JsonConvert.DeserializeObject<GetAvailablePaymentGatewaysResponse[]>(rawBody);
+        if (responseDTO == null)
+        {
+            _logger.LogError("Json parsed body is null when trying to deserialize body '{RawBody}' as PreparePaymentResponse", rawBody);
+            return ResultContainer<GetAvailablePaymentGatewaysResponse[], GetAvailablePaymentGatewaysFailureReasons>.Failed(
+                GetAvailablePaymentGatewaysFailureReasons.UnableToDeserializeBody,
+                $"Json parsed body is null when trying to deserialize as PreparePaymentResponse");
+        }
+
+        return ResultContainer<GetAvailablePaymentGatewaysResponse[], GetAvailablePaymentGatewaysFailureReasons>.Success(responseDTO);
+    }
+
     public async Task<ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>> PreparePayment(
         PaymentGatewayTypeId gatewayTypeId,
         PaymentId paymentId,

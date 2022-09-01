@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.Payments.Core.ClientDtos.ClientRequests;
 using Firepuma.Payments.Core.ClientDtos.ClientRequests.ExtraValues;
+using Firepuma.Payments.Core.Gateways.ValueObjects;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.Entities;

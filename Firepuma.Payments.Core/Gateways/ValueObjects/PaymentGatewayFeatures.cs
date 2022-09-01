@@ -1,4 +1,4 @@
-﻿namespace Firepuma.Payments.FunctionApp.Gateways;
+﻿namespace Firepuma.Payments.Core.Gateways.ValueObjects;
 
 public class PaymentGatewayFeatures
 {

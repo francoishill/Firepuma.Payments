@@ -25,6 +25,20 @@ public class SamplePaymentsController : ControllerBase
         _mapper = mapper;
     }
 
+    [HttpGet("available-payment-gateways")]
+    public async Task<IActionResult> GetAvailablePaymentGateways(
+        CancellationToken cancellationToken)
+    {
+        var paymentResult = await _paymentsService.GetAvailablePaymentGateways(cancellationToken);
+
+        if (!paymentResult.IsSuccessful)
+        {
+            return new BadRequestObjectResult($"{paymentResult.FailedReason.ToString()}, {string.Join(", ", paymentResult.FailedErrors)}");
+        }
+
+        return new OkObjectResult(paymentResult.Result);
+    }
+
     [HttpPost("prepare-payfast-payment")]
     public async Task<ActionResult<PreparePayfastOnceOffPaymentResponse>> PreparePayfastPayment(
         CancellationToken cancellationToken)

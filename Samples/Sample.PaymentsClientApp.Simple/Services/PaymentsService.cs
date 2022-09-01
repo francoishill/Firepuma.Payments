@@ -20,6 +20,12 @@ public class PaymentsService
         _paymentsServiceClient = paymentsServiceClient;
     }
 
+    public async Task<ResultContainer<GetAvailablePaymentGatewaysResponse[], GetAvailablePaymentGatewaysFailureReasons>> GetAvailablePaymentGateways(
+        CancellationToken cancellationToken)
+    {
+        return await _paymentsServiceClient.GetAvailablePaymentGateways(cancellationToken);
+    }
+
     public async Task<ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>> PreparePayfastOnceOffPayment(
         PaymentId newPaymentId,
         string returnUrl,

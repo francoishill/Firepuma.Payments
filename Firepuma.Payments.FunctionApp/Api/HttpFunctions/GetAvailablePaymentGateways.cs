@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Firepuma.Payments.Core.ClientDtos.ClientResponses;
 using Firepuma.Payments.FunctionApp.Gateways;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,17 +21,17 @@ public class GetAvailablePaymentGateways
     }
 
     [FunctionName("GetAvailablePaymentGateways")]
-    public IActionResult RunAsync([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req, ILogger log)
+    public IActionResult RunAsync([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req, ILogger log)
     {
         log.LogInformation("C# HTTP trigger function processed a request");
 
-        var gatewayNames = _gateways.Select(g => new
+        var gatewayResponses = _gateways.Select(g => new GetAvailablePaymentGatewaysResponse
         {
-            g.TypeId,
-            g.DisplayName,
-            g.Features,
+            TypeId = g.TypeId,
+            DisplayName = g.DisplayName,
+            Features = g.Features,
         });
 
-        return new OkObjectResult(gatewayNames);
+        return new OkObjectResult(gatewayResponses);
     }
 }

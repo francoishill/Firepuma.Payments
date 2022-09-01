@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Sample.PaymentsClientApp.Simple.Services.Results;
+using Firepuma.Payments.Core.ClientDtos.ClientResponses;
 
 #pragma warning disable CS8618
 
@@ -8,7 +8,7 @@ using Sample.PaymentsClientApp.Simple.Services.Results;
 
 namespace Sample.PaymentsClientApp.Simple.Controllers.Responses;
 
-[AutoMap(typeof(PreparePayfastOnceOffPaymentResult))]
+[AutoMap(typeof(PreparePaymentResponse))]
 public class PreparePayfastOnceOffPaymentResponse
 {
     public Uri RedirectUrl { get; set; }

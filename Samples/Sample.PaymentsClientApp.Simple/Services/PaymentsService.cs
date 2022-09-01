@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Firepuma.Payments.Client.HttpClient;
 using Firepuma.Payments.Core.ClientDtos.ClientRequests.ExtraValues;
+using Firepuma.Payments.Core.ClientDtos.ClientResponses;
 using Firepuma.Payments.Core.Constants;
 using Firepuma.Payments.Core.Payments.ValueObjects;
+using Firepuma.Payments.Core.Results.ValueObjects;
 using Sample.PaymentsClientApp.Simple.Services.Results;
 
 namespace Sample.PaymentsClientApp.Simple.Services;
@@ -23,7 +25,7 @@ public class PaymentsService
         _mapper = mapper;
     }
 
-    public async Task<PreparePayfastOnceOffPaymentResult> PreparePayfastOnceOffPayment(
+    public async Task<ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>> PreparePayfastOnceOffPayment(
         PaymentId newPaymentId,
         string returnUrl,
         string cancelUrl,
@@ -60,14 +62,13 @@ public class PaymentsService
             // },
         };
 
-        var preparedPayment = await _paymentsServiceClient.PreparePayment(
+        var preparedPaymentResult = await _paymentsServiceClient.PreparePayment(
             PaymentGatewayIds.PayFast,
             newPaymentId,
             extraValues,
             cancellationToken);
-        var redirectUri = new Uri(preparedPayment.RedirectUrl);
 
-        return new PreparePayfastOnceOffPaymentResult(redirectUri, preparedPayment.PaymentId);
+        return preparedPaymentResult;
     }
 
     public async Task<SamplePaymentResponse> GetPaymentDetails(string paymentId, CancellationToken cancellationToken)

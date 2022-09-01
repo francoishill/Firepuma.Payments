@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Net;
 using Firepuma.Payments.Client.Configuration;
 using Firepuma.Payments.Core.ClientDtos.ClientRequests;
 using Firepuma.Payments.Core.ClientDtos.ClientRequests.ExtraValues;
 using Firepuma.Payments.Core.ClientDtos.ClientResponses;
 using Firepuma.Payments.Core.Payments.ValueObjects;
+using Firepuma.Payments.Core.Results.ValueObjects;
 using Firepuma.Payments.Core.Validation;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -27,7 +28,7 @@ internal class PaymentsServiceClient : IPaymentsServiceClient
         _httpClient = httpClientFactory.CreateClient(HttpClientConstants.PAYMENTS_SERVICE_HTTP_CLIENT_NAME);
     }
 
-    public async Task<PreparePaymentResponse> PreparePayment(
+    public async Task<ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>> PreparePayment(
         PaymentGatewayTypeId gatewayTypeId,
         PaymentId paymentId,
         IPreparePaymentExtraValues extraValues,
@@ -35,7 +36,9 @@ internal class PaymentsServiceClient : IPaymentsServiceClient
     {
         if (!ValidationHelpers.ValidateDataAnnotations(extraValues, out var validationResultsForExtraValues))
         {
-            throw new ValidationException(string.Join(". ", new[] { "ExtraValues is invalid" }.Concat(validationResultsForExtraValues.Select(s => s.ErrorMessage))));
+            return ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>.Failed(
+                PreparePaymentFailureReason.ValidationFailed,
+                new[] { "ExtraValues is invalid" }.Concat(validationResultsForExtraValues.Select(s => s.ErrorMessage)).ToArray());
         }
 
         var extraValuesCasted = PreparePaymentRequest.CastToExtraValues(extraValues);
@@ -55,25 +58,39 @@ internal class PaymentsServiceClient : IPaymentsServiceClient
         if (!responseMessage.IsSuccessStatusCode)
         {
             var body = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
-            _logger.LogError("Unable to prepare payment, status code was {Code}, body: {Body}", (int)responseMessage.StatusCode, body);
-            responseMessage.EnsureSuccessStatusCode();
+            _logger.LogError("Prepare payment failed, status code was {Code}, body: {Body}", (int)responseMessage.StatusCode, body);
+
+            if (responseMessage.StatusCode == HttpStatusCode.BadRequest)
+            {
+                return ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>.Failed(
+                    PreparePaymentFailureReason.BadRequestResponse,
+                    $"Prepare payment failed with BadRequest, body: {body}");
+            }
+
+            return ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>.Failed(
+                PreparePaymentFailureReason.UnexpectedFailure,
+                $"Prepare payment failed with status code {responseMessage.StatusCode.ToString()}");
         }
 
         var rawBody = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
         if (string.IsNullOrWhiteSpace(rawBody))
         {
             _logger.LogError("Body is empty, cannot PreparePayment");
-            throw new InvalidOperationException("Body is empty, cannot PreparePayment");
+            return ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>.Failed(
+                PreparePaymentFailureReason.UnableToDeserializeBody,
+                $"Prepare payment failed, content body is empty although it was successful (status code was {responseMessage.StatusCode.ToString()})");
         }
 
         var responseDTO = JsonConvert.DeserializeObject<PreparePaymentResponse>(rawBody);
         if (responseDTO == null)
         {
             _logger.LogError("Json parsed body is null when trying to deserialize body '{RawBody}' as PreparePaymentResponse", rawBody);
-            throw new InvalidOperationException($"Json parsed body is null when trying to deserialize as PreparePaymentResponse");
+            return ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>.Failed(
+                PreparePaymentFailureReason.UnableToDeserializeBody,
+                $"Json parsed body is null when trying to deserialize as PreparePaymentResponse");
         }
 
-        return responseDTO;
+        return ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>.Success(responseDTO);
     }
 
     public async Task<GetPaymentResponse> GetPaymentDetails(string paymentId, CancellationToken cancellationToken)

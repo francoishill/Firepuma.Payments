@@ -48,13 +48,18 @@ public class SamplePaymentsController : ControllerBase
             return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
         }
 
-        var result = await _paymentsService.PreparePayfastOnceOffPayment(
+        var preparedPaymentResult = await _paymentsService.PreparePayfastOnceOffPayment(
             newPaymentId,
             returnUrl,
             cancelUrl,
             cancellationToken);
 
-        return _mapper.Map<PreparePayfastOnceOffPaymentResponse>(result);
+        if (!preparedPaymentResult.IsSuccessful)
+        {
+            return new BadRequestObjectResult($"{preparedPaymentResult.FailedReason.ToString()}, {string.Join(", ", preparedPaymentResult.FailedErrors)}");
+        }
+
+        return _mapper.Map<PreparePayfastOnceOffPaymentResponse>(preparedPaymentResult.Result);
     }
 
     [HttpGet("payments-return-callback/{paymentId}")]

@@ -1,11 +1,9 @@
-﻿using AutoMapper;
-using Firepuma.Payments.Client.HttpClient;
+﻿using Firepuma.Payments.Client.HttpClient;
 using Firepuma.Payments.Core.ClientDtos.ClientRequests.ExtraValues;
 using Firepuma.Payments.Core.ClientDtos.ClientResponses;
 using Firepuma.Payments.Core.Constants;
 using Firepuma.Payments.Core.Payments.ValueObjects;
 using Firepuma.Payments.Core.Results.ValueObjects;
-using Sample.PaymentsClientApp.Simple.Services.Results;
 
 namespace Sample.PaymentsClientApp.Simple.Services;
 
@@ -13,16 +11,13 @@ public class PaymentsService
 {
     private readonly ILogger<PaymentsService> _logger;
     private readonly IPaymentsServiceClient _paymentsServiceClient;
-    private readonly IMapper _mapper;
 
     public PaymentsService(
         ILogger<PaymentsService> logger,
-        IPaymentsServiceClient paymentsServiceClient,
-        IMapper mapper)
+        IPaymentsServiceClient paymentsServiceClient)
     {
         _logger = logger;
         _paymentsServiceClient = paymentsServiceClient;
-        _mapper = mapper;
     }
 
     public async Task<ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>> PreparePayfastOnceOffPayment(
@@ -71,12 +66,10 @@ public class PaymentsService
         return preparedPaymentResult;
     }
 
-    public async Task<SamplePaymentResponse> GetPaymentDetails(string paymentId, CancellationToken cancellationToken)
+    public async Task<ResultContainer<GetPaymentResponse, GetPaymentFailureReason>> GetPaymentDetails(string paymentId, CancellationToken cancellationToken)
     {
         var payment = await _paymentsServiceClient.GetPaymentDetails(paymentId, cancellationToken);
 
-        var mappedPayment = _mapper.Map<SamplePaymentResponse>(payment);
-
-        return mappedPayment;
+        return payment;
     }
 }

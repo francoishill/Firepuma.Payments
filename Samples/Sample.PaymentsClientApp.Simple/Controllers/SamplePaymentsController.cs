@@ -68,7 +68,13 @@ public class SamplePaymentsController : ControllerBase
         CancellationToken cancellationToken)
     {
         var paymentResult = await _paymentsService.GetPaymentDetails(paymentId, cancellationToken);
-        return new OkObjectResult($"Thank you, your payment ID {paymentId} is being processed in the background. {JsonConvert.SerializeObject(paymentResult, new Newtonsoft.Json.Converters.StringEnumConverter())}");
+
+        if (!paymentResult.IsSuccessful)
+        {
+            return new BadRequestObjectResult($"{paymentResult.FailedReason.ToString()}, {string.Join(", ", paymentResult.FailedErrors)}");
+        }
+
+        return new OkObjectResult($"Thank you, your payment ID {paymentId} is being processed in the background. {JsonConvert.SerializeObject(paymentResult.Result, new Newtonsoft.Json.Converters.StringEnumConverter())}");
     }
 
     [HttpGet("payments-cancelled-callback/{paymentId}")]
@@ -77,6 +83,12 @@ public class SamplePaymentsController : ControllerBase
         CancellationToken cancellationToken)
     {
         var paymentResult = await _paymentsService.GetPaymentDetails(paymentId, cancellationToken);
-        return new OkObjectResult($"Your payment ID {paymentId} has been cancelled. {JsonConvert.SerializeObject(paymentResult, new Newtonsoft.Json.Converters.StringEnumConverter())}");
+
+        if (!paymentResult.IsSuccessful)
+        {
+            return new BadRequestObjectResult($"{paymentResult.FailedReason.ToString()}, {string.Join(", ", paymentResult.FailedErrors)}");
+        }
+
+        return new OkObjectResult($"Your payment ID {paymentId} has been cancelled. {JsonConvert.SerializeObject(paymentResult.Result, new Newtonsoft.Json.Converters.StringEnumConverter())}");
     }
 }

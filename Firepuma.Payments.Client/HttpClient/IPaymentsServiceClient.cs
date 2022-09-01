@@ -14,8 +14,8 @@ public interface IPaymentsServiceClient
         PaymentId paymentId,
         IPreparePaymentExtraValues extraValues,
         CancellationToken cancellationToken);
-    
-    Task<GetPaymentResponse> GetPaymentDetails(
+
+    Task<ResultContainer<GetPaymentResponse, GetPaymentFailureReason>> GetPaymentDetails(
         string paymentId,
         CancellationToken cancellationToken);
 }

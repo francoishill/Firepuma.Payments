@@ -93,7 +93,7 @@ internal class PaymentsServiceClient : IPaymentsServiceClient
         return ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>.Success(responseDTO);
     }
 
-    public async Task<GetPaymentResponse> GetPaymentDetails(string paymentId, CancellationToken cancellationToken)
+    public async Task<ResultContainer<GetPaymentResponse, GetPaymentFailureReason>> GetPaymentDetails(string paymentId, CancellationToken cancellationToken)
     {
         var applicationId = _options.Value.ApplicationId;
         var responseMessage = await _httpClient.GetAsync($"GetPayment/{applicationId}/{paymentId}", cancellationToken);
@@ -102,23 +102,39 @@ internal class PaymentsServiceClient : IPaymentsServiceClient
         {
             var body = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
             _logger.LogError("Unable to get payment, status code was {Code}, body: {Body}", (int)responseMessage.StatusCode, body);
-            responseMessage.EnsureSuccessStatusCode();
+
+            if (responseMessage.StatusCode == HttpStatusCode.BadRequest)
+            {
+                return ResultContainer<GetPaymentResponse, GetPaymentFailureReason>.Failed(
+                    GetPaymentFailureReason.BadRequestResponse,
+                    $"Get payment failed with BadRequest, body: {body}");
+            }
+
+            return ResultContainer<GetPaymentResponse, GetPaymentFailureReason>.Failed(
+                GetPaymentFailureReason.UnexpectedFailure,
+                $"Get payment failed with status code {responseMessage.StatusCode.ToString()}");
         }
 
         var rawBody = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
         if (string.IsNullOrWhiteSpace(rawBody))
         {
             _logger.LogError("Body is empty, cannot GetPaymentDetails");
-            throw new InvalidOperationException("Body is empty, cannot GetPaymentDetails");
+
+            return ResultContainer<GetPaymentResponse, GetPaymentFailureReason>.Failed(
+                GetPaymentFailureReason.UnableToDeserializeBody,
+                $"Get payment failed, content body is empty although it was successful (status code was {responseMessage.StatusCode.ToString()})");
         }
 
         var responseDTO = JsonConvert.DeserializeObject<GetPaymentResponse>(rawBody);
         if (responseDTO == null)
         {
             _logger.LogError("Json parsed body is null when trying to deserialize body '{RawBody}' as GetPaymentResponse", rawBody);
-            throw new InvalidOperationException($"Json parsed body is null when trying to deserialize as GetPaymentResponse");
+
+            return ResultContainer<GetPaymentResponse, GetPaymentFailureReason>.Failed(
+                GetPaymentFailureReason.UnableToDeserializeBody,
+                $"Json parsed body is null when trying to deserialize as GetPaymentResponse");
         }
 
-        return responseDTO;
+        return ResultContainer<GetPaymentResponse, GetPaymentFailureReason>.Success(responseDTO);
     }
 }

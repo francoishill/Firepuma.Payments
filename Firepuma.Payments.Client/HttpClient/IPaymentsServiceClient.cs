@@ -9,17 +9,17 @@ namespace Firepuma.Payments.Client.HttpClient;
 
 public interface IPaymentsServiceClient
 {
-    Task<ResultContainer<GetAvailablePaymentGatewaysResponse[], GetAvailablePaymentGatewaysFailureReasons>> GetAvailablePaymentGateways(
+    Task<ResultContainer<GetAvailablePaymentGatewaysResponse[], GetAvailablePaymentGatewaysFailureReasons>> GetAvailablePaymentGatewaysAsync(
         CancellationToken cancellationToken
     );
 
-    Task<ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>> PreparePayment(
+    Task<ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>> PreparePaymentAsync(
         PaymentGatewayTypeId gatewayTypeId,
         PaymentId paymentId,
         IPreparePaymentExtraValues extraValues,
         CancellationToken cancellationToken);
 
-    Task<ResultContainer<GetPaymentResponse, GetPaymentFailureReason>> GetPaymentDetails(
+    Task<ResultContainer<GetPaymentResponse, GetPaymentFailureReason>> GetPaymentDetailsAsync(
         string paymentId,
         CancellationToken cancellationToken);
 }

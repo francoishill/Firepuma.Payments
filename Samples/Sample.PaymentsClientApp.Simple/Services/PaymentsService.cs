@@ -23,7 +23,7 @@ public class PaymentsService
     public async Task<ResultContainer<GetAvailablePaymentGatewaysResponse[], GetAvailablePaymentGatewaysFailureReasons>> GetAvailablePaymentGateways(
         CancellationToken cancellationToken)
     {
-        return await _paymentsServiceClient.GetAvailablePaymentGateways(cancellationToken);
+        return await _paymentsServiceClient.GetAvailablePaymentGatewaysAsync(cancellationToken);
     }
 
     public async Task<ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>> PreparePayfastOnceOffPayment(
@@ -63,7 +63,7 @@ public class PaymentsService
             // },
         };
 
-        var preparedPaymentResult = await _paymentsServiceClient.PreparePayment(
+        var preparedPaymentResult = await _paymentsServiceClient.PreparePaymentAsync(
             PaymentGatewayIds.PayFast,
             newPaymentId,
             extraValues,
@@ -74,7 +74,7 @@ public class PaymentsService
 
     public async Task<ResultContainer<GetPaymentResponse, GetPaymentFailureReason>> GetPaymentDetails(string paymentId, CancellationToken cancellationToken)
     {
-        var payment = await _paymentsServiceClient.GetPaymentDetails(paymentId, cancellationToken);
+        var payment = await _paymentsServiceClient.GetPaymentDetailsAsync(paymentId, cancellationToken);
 
         return payment;
     }

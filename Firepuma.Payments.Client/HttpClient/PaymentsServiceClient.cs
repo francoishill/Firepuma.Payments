@@ -28,7 +28,7 @@ internal class PaymentsServiceClient : IPaymentsServiceClient
         _httpClient = httpClientFactory.CreateClient(HttpClientConstants.PAYMENTS_SERVICE_HTTP_CLIENT_NAME);
     }
 
-    public async Task<ResultContainer<GetAvailablePaymentGatewaysResponse[], GetAvailablePaymentGatewaysFailureReasons>> GetAvailablePaymentGateways(CancellationToken cancellationToken)
+    public async Task<ResultContainer<GetAvailablePaymentGatewaysResponse[], GetAvailablePaymentGatewaysFailureReasons>> GetAvailablePaymentGatewaysAsync(CancellationToken cancellationToken)
     {
         var responseMessage = await _httpClient.GetAsync($"GetAvailablePaymentGateways", cancellationToken);
 
@@ -63,7 +63,7 @@ internal class PaymentsServiceClient : IPaymentsServiceClient
         return ResultContainer<GetAvailablePaymentGatewaysResponse[], GetAvailablePaymentGatewaysFailureReasons>.Success(responseDTO);
     }
 
-    public async Task<ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>> PreparePayment(
+    public async Task<ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>> PreparePaymentAsync(
         PaymentGatewayTypeId gatewayTypeId,
         PaymentId paymentId,
         IPreparePaymentExtraValues extraValues,
@@ -128,7 +128,7 @@ internal class PaymentsServiceClient : IPaymentsServiceClient
         return ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>.Success(responseDTO);
     }
 
-    public async Task<ResultContainer<GetPaymentResponse, GetPaymentFailureReason>> GetPaymentDetails(string paymentId, CancellationToken cancellationToken)
+    public async Task<ResultContainer<GetPaymentResponse, GetPaymentFailureReason>> GetPaymentDetailsAsync(string paymentId, CancellationToken cancellationToken)
     {
         var applicationId = _options.Value.ApplicationId;
         var responseMessage = await _httpClient.GetAsync($"GetPayment/{applicationId}/{paymentId}", cancellationToken);

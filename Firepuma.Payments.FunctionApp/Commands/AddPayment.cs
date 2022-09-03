@@ -140,7 +140,7 @@ public static class AddPayment
                 return Result.Failed(Result.FailureReason.PaymentAlreadyExists, $"The payment (id '{paymentId}' and application id '{applicationId}') is already added and cannot be added again");
             }
 
-            var validateAndStorePaymentNotificationBaseUrlWithAppName = AddApplicationIdToItnBaseUrl(
+            var validateAndStorePaymentNotificationBaseUrlWithAppName = AddApplicationIdToPaymentNotificationBaseUrl(
                 _paymentOptions.Value.ValidateAndStorePaymentNotificationBaseUrl,
                 gatewayTypeId,
                 applicationId);
@@ -162,7 +162,7 @@ public static class AddPayment
             return Result.Success(redirectUrl);
         }
 
-        private static string AddApplicationIdToItnBaseUrl(
+        private static string AddApplicationIdToPaymentNotificationBaseUrl(
             string validateAndStorePaymentNotificationBaseUrl,
             PaymentGatewayTypeId gatewayTypeId,
             ClientApplicationId applicationId)

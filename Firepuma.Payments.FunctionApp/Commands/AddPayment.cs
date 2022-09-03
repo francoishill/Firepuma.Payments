@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.Payments.Core.ClientDtos.ClientRequests.ExtraValues;
@@ -24,6 +25,7 @@ using Microsoft.Extensions.Options;
 // ReSharper disable UnusedType.Global
 // ReSharper disable ClassNeverInstantiated.Local
 
+[assembly: InternalsVisibleTo("Firepuma.Payments.Tests")]
 namespace Firepuma.Payments.FunctionApp.Commands;
 
 public static class AddPayment
@@ -162,7 +164,7 @@ public static class AddPayment
             return Result.Success(redirectUrl);
         }
 
-        private static string AddApplicationIdToPaymentNotificationBaseUrl(
+        internal static string AddApplicationIdToPaymentNotificationBaseUrl(
             string validateAndStorePaymentNotificationBaseUrl,
             PaymentGatewayTypeId gatewayTypeId,
             ClientApplicationId applicationId)

@@ -25,7 +25,7 @@ public interface IRepository<T> where T : BaseEntity, new()
         T item,
         CancellationToken cancellationToken = default);
 
-    Task UpdateItemAsync(
+    Task UpsertItemAsync(
         T item,
         bool ignoreETag = false,
         CancellationToken cancellationToken = default);

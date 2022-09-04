@@ -70,7 +70,7 @@ namespace Firepuma.Payments.Core.Infrastructure.CommandHandling.PipelineBehavior
             executionEvent.ExecutionTimeInSeconds = (finishedTime - startTime).TotalSeconds;
             executionEvent.TotalTimeInSeconds = (finishedTime - baseCommand.CreatedOn).TotalSeconds;
 
-            await _commandExecutionEventRepository.UpdateItemAsync(executionEvent, cancellationToken: cancellationToken);
+            await _commandExecutionEventRepository.UpsertItemAsync(executionEvent, cancellationToken: cancellationToken);
 
             if (error != null)
             {

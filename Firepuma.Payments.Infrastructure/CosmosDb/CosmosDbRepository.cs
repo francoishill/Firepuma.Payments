@@ -134,7 +134,7 @@ public abstract class CosmosDbRepository<T> : IRepository<T> where T : BaseEntit
             item.Id, Container.Id, response.RequestCharge);
     }
 
-    public async Task UpdateItemAsync(
+    public async Task UpsertItemAsync(
         T item,
         bool ignoreETag,
         CancellationToken cancellationToken)
@@ -145,6 +145,8 @@ public abstract class CosmosDbRepository<T> : IRepository<T> where T : BaseEntit
         {
             options.IfMatchEtag = item.ETag;
         }
+
+        item.Id ??= GenerateId(item);
 
         var response = await Container.UpsertItemAsync<T>(item, ResolvePartitionKey(item.Id), options, cancellationToken);
 

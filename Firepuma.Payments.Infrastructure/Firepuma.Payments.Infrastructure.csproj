@@ -6,6 +6,7 @@
     </PropertyGroup>
     
     <ItemGroup>
+        <PackageReference Include="Firepuma.Email.Client" Version="1.0.1-build-8" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.0" />

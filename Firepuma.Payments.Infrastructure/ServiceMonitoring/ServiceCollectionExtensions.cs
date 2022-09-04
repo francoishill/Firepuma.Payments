@@ -17,5 +17,12 @@ public static class ServiceCollectionExtensions
             DeadLetteredMessageCosmosDbRepository>(
             CosmosContainerNames.DEAD_LETTERED_MESSAGES,
             (logger, container) => new DeadLetteredMessageCosmosDbRepository(logger, container));
+
+        services.AddCosmosDbRepository<
+            ServiceAlertState,
+            IServiceAlertStateRepository,
+            ServiceAlertStateCosmosDbRepository>(
+            CosmosContainerNames.SERVICE_ALERT_STATE,
+            (logger, container) => new ServiceAlertStateCosmosDbRepository(logger, container));
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using AutoMapper;
+using Firepuma.Email.Client;
+using Firepuma.Email.Client.Services;
 using Firepuma.Payments.Core.Infrastructure.PipelineBehaviors;
 using Firepuma.Payments.FunctionAppManager;
 using Firepuma.Payments.FunctionAppManager.Gateways.PayFast;
@@ -21,6 +23,7 @@ public class Startup : FunctionsStartup
     public override void Configure(IFunctionsHostBuilder builder)
     {
         var services = builder.Services;
+        var configuration = builder.GetContext().Configuration;
 
         services.AddAutoMapper(typeof(Startup));
         services.BuildServiceProvider().GetRequiredService<IMapper>().ConfigurationProvider.AssertConfigurationIsValid();
@@ -47,6 +50,15 @@ public class Startup : FunctionsStartup
         AddMediator(services);
 
         services.AddServiceMonitoring();
+
+        var alertRecipientEmail = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("EmailServiceClient__AlertRecipientEmail");
+        services.Configure<AdditionalEmailServiceClientOptions>(config =>
+        {
+            config.AlertRecipientEmail = alertRecipientEmail;
+        });
+
+        services.AddEmailServiceClient(configuration.GetSection("EmailServiceClient"));
+        services.BuildServiceProvider().GetRequiredService<IEmailEnqueuingClient>(); //FIX: find a better way (consider validating on startup in Email library code)
 
         services.AddCommandHandling();
 

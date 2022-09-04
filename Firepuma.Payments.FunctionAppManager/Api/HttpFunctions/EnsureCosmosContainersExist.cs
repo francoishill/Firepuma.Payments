@@ -53,6 +53,11 @@ public class EnsureCosmosContainersExist
             {
                 ContainerProperties = new ContainerProperties(CosmosContainerNames.APPLICATION_CONFIGS, "/ApplicationId"),
             },
+
+            new
+            {
+                ContainerProperties = new ContainerProperties(CosmosContainerNames.DEAD_LETTERED_MESSAGES, "/EnqueuedYearAndMonth"),
+            },
         };
 
         var successfulContainers = new List<object>();

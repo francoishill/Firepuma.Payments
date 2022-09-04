@@ -7,6 +7,7 @@ using Firepuma.Payments.FunctionAppManager.Infrastructure.Config;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Constants;
 using Firepuma.Payments.Infrastructure.CommandHandling;
 using Firepuma.Payments.Infrastructure.Config;
+using Firepuma.Payments.Infrastructure.ServiceMonitoring;
 using MediatR;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,6 +45,8 @@ public class Startup : FunctionsStartup
 
         AddCosmosDb(services);
         AddMediator(services);
+
+        services.AddServiceMonitoring();
 
         services.AddCommandHandling();
 

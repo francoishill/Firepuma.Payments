@@ -31,7 +31,7 @@ public static class GetAllClientApps
             Query query,
             CancellationToken cancellationToken)
         {
-            var specification = new ClientAppsGetAllSpecification();
+            var specification = new AllClientAppsSpecification();
             var tableQuery = await _applicationConfigRepository.GetItemsAsync(specification, cancellationToken);
 
             var rows = new List<PaymentApplicationConfig>();

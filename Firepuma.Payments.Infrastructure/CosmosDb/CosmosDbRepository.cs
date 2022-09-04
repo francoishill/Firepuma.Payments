@@ -153,7 +153,7 @@ public abstract class CosmosDbRepository<T> : IRepository<T> where T : BaseEntit
         item.ETag = response.ETag;
 
         Logger.LogInformation(
-            "Updating item id {Id} in container {Container} consumed {Charge} RUs",
+            "Upserted item id {Id} in container {Container} consumed {Charge} RUs",
             item.Id, Container.Id, response.RequestCharge);
     }
 

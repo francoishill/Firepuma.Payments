@@ -12,7 +12,7 @@
         <Company>Firepuma</Company>
         <Authors>Francois Hill</Authors>
         <Description>This library contains abstractions shared between PaymentsService Client, FunctionApp, FunctionAppManager and Sample.PaymentsClientApp.Simple.</Description>
-        <VersionPrefix>0.0.2</VersionPrefix>
+        <VersionPrefix>0.0.3</VersionPrefix>
     </PropertyGroup>
 
     <ItemGroup>

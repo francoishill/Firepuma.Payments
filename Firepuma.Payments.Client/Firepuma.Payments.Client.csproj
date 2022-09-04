@@ -13,7 +13,7 @@
         <Company>Firepuma</Company>
         <Authors>Francois Hill</Authors>
         <Description>This library can be used to interact with the PaymentsService function app.</Description>
-        <VersionPrefix>0.0.2</VersionPrefix>
+        <VersionPrefix>0.0.3</VersionPrefix>
     </PropertyGroup>
 
     <ItemGroup>

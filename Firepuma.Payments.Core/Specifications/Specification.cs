@@ -10,7 +10,7 @@ public class Specification<T> : ISpecification<T>
     public IEnumerable<(Expression<Func<T, object>> KeySelector, OrderTypeEnum OrderType)> OrderExpressions { get; }
         = new List<(Expression<Func<T, object>> KeySelector, OrderTypeEnum OrderType)>();
 
-    public int? Take { get; set; } = 100;
+    public int? Take { get; set; } = null;
 
-    public int? Skip { get; set; } = 0;
+    public int? Skip { get; set; } = null;
 }

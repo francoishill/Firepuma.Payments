@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Entities;
-using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Repositories;
+using Firepuma.Payments.FunctionAppManager.Commands;
+using MediatR;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
@@ -12,12 +12,12 @@ namespace Firepuma.Payments.FunctionAppManager.Api.ServiceBusTriggers;
 
 public class ProcessDeadLetterMessage
 {
-    private readonly IDeadLetteredMessageRepository _deadLetteredMessageRepository;
+    private readonly IMediator _mediator;
 
     public ProcessDeadLetterMessage(
-        IDeadLetteredMessageRepository deadLetteredMessageRepository)
+        IMediator mediator)
     {
-        _deadLetteredMessageRepository = deadLetteredMessageRepository;
+        _mediator = mediator;
     }
 
     [FunctionName("ProcessDeadLetterMessage")]
@@ -33,19 +33,11 @@ public class ProcessDeadLetterMessage
 
         try
         {
-            log.LogInformation(
-                "Writing dead lettered message to CosmosDb, message enqueued on {Enqueued} with ID {MessageId}",
-                message.EnqueuedTime.ToString("O"), message.MessageId);
-
-            var deadLetteredMessageEntity = new DeadLetteredMessage
+            var addCommand = new AddDeadLetteredMessage.Command
             {
                 MessageId = message.MessageId,
-
                 EnqueuedTime = message.EnqueuedTime,
-                EnqueuedYearAndMonth = $"{message.EnqueuedTime.Year}{message.EnqueuedTime.Month:D2}",
-
                 MessageBody = message.Body.ToString(),
-
                 Subject = message.Subject,
                 ContentType = message.ContentType,
                 CorrelationId = message.CorrelationId,
@@ -58,9 +50,13 @@ public class ProcessDeadLetterMessage
                 ApplicationProperties = message.ApplicationProperties.ToDictionary(kv => kv.Key, kv => kv.Value),
             };
 
-            await _deadLetteredMessageRepository.AddItemAsync(deadLetteredMessageEntity, cancellationToken);
+            var result = await _mediator.Send(addCommand, cancellationToken);
 
-            log.LogInformation("Successfully wrote message ID {MessageId} to CosmosDb", message.MessageId);
+            if (!result.IsSuccessful)
+            {
+                log.LogError("{Reason}, {Errors}", result.FailedReason.ToString(), string.Join(", ", result.FailedErrors));
+                throw new Exception($"{result.FailedReason.ToString()}, {string.Join(", ", result.FailedErrors)}");
+            }
         }
         catch (Exception exception)
         {

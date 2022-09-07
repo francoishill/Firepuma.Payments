@@ -1,5 +1,5 @@
-﻿using Firepuma.Payments.Core.Entities;
-using Firepuma.Payments.Core.Repositories;
+﻿using Firepuma.Payments.Core.Infrastructure.Entities;
+using Firepuma.Payments.Core.Infrastructure.Repositories;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

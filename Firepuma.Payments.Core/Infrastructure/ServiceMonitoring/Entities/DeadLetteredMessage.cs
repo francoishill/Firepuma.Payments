@@ -1,4 +1,4 @@
-﻿using Firepuma.Payments.Core.Entities;
+﻿using Firepuma.Payments.Core.Infrastructure.Entities;
 
 namespace Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Entities;
 

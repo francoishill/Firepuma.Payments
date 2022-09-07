@@ -2,15 +2,13 @@
 using AutoMapper;
 using Firepuma.Email.Client;
 using Firepuma.Email.Client.Services;
-using Firepuma.Payments.Core.Infrastructure.PipelineBehaviors;
 using Firepuma.Payments.FunctionAppManager;
 using Firepuma.Payments.FunctionAppManager.Gateways.PayFast;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Config;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Constants;
-using Firepuma.Payments.Infrastructure.CommandHandling;
+using Firepuma.Payments.Infrastructure.CommandsAndQueries;
 using Firepuma.Payments.Infrastructure.Config;
 using Firepuma.Payments.Infrastructure.ServiceMonitoring;
-using MediatR;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -47,7 +45,9 @@ public class Startup : FunctionsStartup
             });
 
         AddCosmosDb(services);
-        AddMediator(services);
+
+        var mediationMarkerTypes = new[] { typeof(Startup), typeof(Payments.Infrastructure.CommandsAndQueries.ServiceCollectionExtensions) };
+        services.AddCommandsAndQueries(mediationMarkerTypes);
 
         services.AddServiceMonitoring();
 
@@ -60,17 +60,8 @@ public class Startup : FunctionsStartup
         services.AddEmailServiceClient(configuration.GetSection("EmailServiceClient"));
         services.BuildServiceProvider().GetRequiredService<IEmailEnqueuingClient>(); //FIX: find a better way (consider validating on startup in Email library code)
 
-        services.AddCommandHandling();
-
         services.AddPaymentsManagementFeature();
         services.AddPayFastManagerFeature();
-    }
-
-    private static void AddMediator(IServiceCollection services)
-    {
-        services.AddMediatR(typeof(Startup));
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceLogBehavior<,>));
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionLogBehavior<,>));
     }
 
     private static void AddCosmosDb(IServiceCollection services)

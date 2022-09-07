@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.Payments.Core.Infrastructure.CommandHandling;
+using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Repositories;
 using Firepuma.Payments.FunctionAppManager.Gateways;

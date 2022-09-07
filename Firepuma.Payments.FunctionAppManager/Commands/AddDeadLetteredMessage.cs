@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.Payments.Core.Infrastructure.CommandHandling;
+using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries;
 using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Entities;
 using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Repositories;
 using MediatR;

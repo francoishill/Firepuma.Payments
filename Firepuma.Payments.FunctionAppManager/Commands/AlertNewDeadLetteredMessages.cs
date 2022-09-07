@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.Email.Abstractions.Models.Dtos.ServiceBusMessages;
 using Firepuma.Email.Client.Services;
-using Firepuma.Payments.Core.Infrastructure.CommandHandling;
+using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries;
 using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Entities;
 using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Repositories;
 using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Specifications;

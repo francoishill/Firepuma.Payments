@@ -1,4 +1,4 @@
-﻿using Firepuma.Payments.Core.Specifications;
+﻿using Firepuma.Payments.Core.Infrastructure.Specifications;
 
 namespace Firepuma.Payments.Infrastructure.CosmosDb;
 

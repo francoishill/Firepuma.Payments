@@ -3,15 +3,13 @@ using AutoMapper;
 using Azure;
 using Azure.Messaging.EventGrid;
 using Azure.Messaging.ServiceBus;
-using Firepuma.Payments.Core.Infrastructure.PipelineBehaviors;
 using Firepuma.Payments.FunctionApp;
 using Firepuma.Payments.FunctionApp.Gateways.PayFast;
 using Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Config;
 using Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Services;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Services;
-using Firepuma.Payments.Infrastructure.CommandHandling;
+using Firepuma.Payments.Infrastructure.CommandsAndQueries;
 using Firepuma.Payments.Infrastructure.Config;
-using MediatR;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -29,24 +27,18 @@ public class Startup : FunctionsStartup
         var services = builder.Services;
 
         AddAutoMapper(services);
-        AddMediator(services);
+
+        var mediationMarkerTypes = new[] { typeof(Startup), typeof(Payments.Infrastructure.CommandsAndQueries.ServiceCollectionExtensions) };
+        services.AddCommandsAndQueries(mediationMarkerTypes);
+
         AddCosmosDb(services);
         AddServiceBusPaymentsMessageSender(services);
         AddEventPublisher(services);
-
-        services.AddCommandHandling();
 
         services.AddPayFastFeature();
 
         var validateAndStorePaymentNotificationBaseUrl = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("FirepumaValidateAndStorePaymentNotificationBaseUrl");
         services.AddPaymentsFeature(validateAndStorePaymentNotificationBaseUrl);
-    }
-
-    private static void AddMediator(IServiceCollection services)
-    {
-        services.AddMediatR(typeof(Startup));
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceLogBehavior<,>));
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionLogBehavior<,>));
     }
 
     private static void AddAutoMapper(IServiceCollection services)

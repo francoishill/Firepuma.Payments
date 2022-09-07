@@ -1,5 +1,5 @@
-﻿using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
-using Firepuma.Payments.Core.Specifications;
+﻿using Firepuma.Payments.Core.Infrastructure.Specifications;
+using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
 
 namespace Firepuma.Payments.Core.PaymentAppConfiguration.Specifications;
 

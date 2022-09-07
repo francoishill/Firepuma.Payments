@@ -1,5 +1,5 @@
-﻿using Firepuma.Payments.Core.Payments.Entities;
-using Firepuma.Payments.Core.Repositories;
+﻿using Firepuma.Payments.Core.Infrastructure.Repositories;
+using Firepuma.Payments.Core.Payments.Entities;
 
 namespace Firepuma.Payments.Core.Payments.Repositories;
 

@@ -41,6 +41,11 @@ public class EnsureCosmosContainersExist
 
             new
             {
+                ContainerProperties = new ContainerProperties(CosmosContainerNames.AUTHORIZATION_FAILURES, "/ActionTypeName"),
+            },
+
+            new
+            {
                 ContainerProperties = new ContainerProperties(CosmosContainerNames.PAYMENTS, "/ApplicationId"),
             },
 

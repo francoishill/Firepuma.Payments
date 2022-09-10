@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Exceptions;
+using Microsoft.AspNetCore.Mvc;
+
+// ReSharper disable RedundantAnonymousTypePropertyName
 
 namespace Firepuma.Payments.Infrastructure.HttpResponses;
 
@@ -10,5 +13,16 @@ public static class HttpResponseFactory
         {
             { "Errors", errors }
         });
+    }
+
+    public static IActionResult CreateResponseMessageResult(this WrappedRequestException wrappedRequestException)
+    {
+        return new JsonResult(new
+        {
+            Errors = wrappedRequestException.Errors,
+        })
+        {
+            StatusCode = (int)wrappedRequestException.StatusCode,
+        };
     }
 }

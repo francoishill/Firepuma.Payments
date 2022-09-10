@@ -20,19 +20,19 @@ public static class AddDeadLetteredMessage
 {
     public class Command : BaseCommand, IRequest<Result>
     {
-        public string MessageId { get; set; }
-        public DateTimeOffset EnqueuedTime { get; set; }
-        public string MessageBody { get; set; }
-        public string Subject { get; set; }
-        public string ContentType { get; set; }
-        public string CorrelationId { get; set; }
-        public int DeliveryCount { get; set; }
-        public string PartitionKey { get; set; }
-        public string SessionId { get; set; }
-        public string DeadLetterReason { get; set; }
-        public string DeadLetterSource { get; set; }
-        public string DeadLetterErrorDescription { get; set; }
-        public Dictionary<string, object> ApplicationProperties { get; set; }
+        public string MessageId { get; init; }
+        public DateTimeOffset EnqueuedTime { get; init; }
+        public string MessageBody { get; init; }
+        public string Subject { get; init; }
+        public string ContentType { get; init; }
+        public string CorrelationId { get; init; }
+        public int DeliveryCount { get; init; }
+        public string PartitionKey { get; init; }
+        public string SessionId { get; init; }
+        public string DeadLetterReason { get; init; }
+        public string DeadLetterSource { get; init; }
+        public string DeadLetterErrorDescription { get; init; }
+        public Dictionary<string, object> ApplicationProperties { get; init; }
     }
 
     public class Result

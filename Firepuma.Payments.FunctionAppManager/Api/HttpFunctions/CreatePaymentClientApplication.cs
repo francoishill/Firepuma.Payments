@@ -78,8 +78,14 @@ public class CreatePaymentClientApplication
 
         var commands = new IBaseRequest[]
         {
-            new CreateFunctionHostSecretKey.Command(functionHostKeyName),
-            new AddClientAppTableRecord.Command(newClientAppConfig),
+            new CreateFunctionHostSecretKey.Command
+            {
+                FunctionHostKeyName = functionHostKeyName,
+            },
+            new AddClientAppTableRecord.Command
+            {
+                TableRow = newClientAppConfig,
+            },
         };
 
         var responseObjects = new List<KeyValuePair<string, object>>();

@@ -38,12 +38,12 @@ public static class UpdatePayment
         public PaymentId PaymentId { get; init; }
         public string GatewayInternalTransactionId { get; init; }
 
-        public PaymentStatus PaymentStatus { get; set; }
+        public PaymentStatus PaymentStatus { get; init; }
 
         public BasePaymentNotificationPayload PaymentNotificationPayload { get; init; }
 
         public string IncomingRequestUri { get; init; }
-        public string CorrelationId { get; set; }
+        public string CorrelationId { get; init; }
     }
 
     public class Result

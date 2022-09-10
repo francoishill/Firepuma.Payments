@@ -20,12 +20,7 @@ public static class CreateFunctionHostSecretKey
 {
     public class Command : BaseCommand, IRequest<Result>
     {
-        public string FunctionHostKeyName { get; set; }
-
-        public Command(string functionHostKeyName)
-        {
-            FunctionHostKeyName = functionHostKeyName;
-        }
+        public string FunctionHostKeyName { get; init; }
     }
 
     public class Result

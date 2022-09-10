@@ -20,13 +20,7 @@ public static class AddClientAppTableRecord
 {
     public class Command : BaseCommand, IRequest<Result>
     {
-        public PaymentApplicationConfig TableRow { get; set; }
-
-        public Command(
-            PaymentApplicationConfig tableRow)
-        {
-            TableRow = tableRow;
-        }
+        public PaymentApplicationConfig TableRow { get; init; }
     }
 
     public class Result

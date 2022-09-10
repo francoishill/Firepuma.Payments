@@ -26,8 +26,8 @@ public static class AlertNewDeadLetteredMessages
 {
     public class Command : BaseCommand, IRequest<Result>
     {
-        public string AlertRecipientEmail { get; set; }
-        public string EmailClientApplicationId { get; set; }
+        public string AlertRecipientEmail { get; init; }
+        public string EmailClientApplicationId { get; init; }
     }
 
     public class Result

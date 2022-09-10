@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Firepuma.Payments.Core.ClientDtos.ClientRequests.ExtraValues;
 using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries;
 using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Attributes;
+using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Exceptions;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.Entities;
@@ -14,6 +15,7 @@ using Firepuma.Payments.Core.Payments.Repositories;
 using Firepuma.Payments.Core.Payments.ValueObjects;
 using Firepuma.Payments.FunctionApp.Gateways;
 using Firepuma.Payments.FunctionApp.Infrastructure.Config;
+using FluentValidation;
 using MediatR;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
@@ -23,9 +25,10 @@ using Microsoft.Extensions.Options;
 // ReSharper disable UnusedMember.Local
 // ReSharper disable RedundantAssignment
 // ReSharper disable UnusedType.Global
-// ReSharper disable ClassNeverInstantiated.Local
+// ReSharper disable ClassNeverInstantiated.Global
 
 [assembly: InternalsVisibleTo("Firepuma.Payments.Tests")]
+
 namespace Firepuma.Payments.FunctionApp.Commands;
 
 public static class AddPayment
@@ -45,41 +48,18 @@ public static class AddPayment
 
     public class Result
     {
-        public bool IsSuccessful { get; set; }
+        public Uri RedirectUrl { get; init; }
+    }
 
-        public Uri RedirectUrl { get; set; }
-
-        public FailureReason? FailedReason { get; set; }
-        public string[] FailedErrors { get; set; }
-
-        private Result(
-            bool isSuccessful,
-            Uri redirectUrl,
-            FailureReason? failedReason,
-            string[] failedErrors)
+    public sealed class Validator : AbstractValidator<Command>
+    {
+        public Validator()
         {
-            IsSuccessful = isSuccessful;
+            RuleFor(x => x.GatewayTypeId.Value).NotEmpty();
+            RuleFor(x => x.ApplicationId.Value).NotEmpty();
+            RuleFor(x => x.PaymentId.Value).NotEmpty();
 
-            RedirectUrl = redirectUrl;
-
-            FailedReason = failedReason;
-            FailedErrors = failedErrors;
-        }
-
-        public static Result Success(Uri redirectUrl)
-        {
-            return new Result(true, redirectUrl, null, null);
-        }
-
-        public static Result Failed(FailureReason reason, params string[] errors)
-        {
-            return new Result(false, null, reason, errors);
-        }
-
-        public enum FailureReason
-        {
-            UnknownGatewayTypeId,
-            PaymentAlreadyExists,
+            RuleFor(x => x.ApplicationConfig).NotNull();
         }
     }
 
@@ -113,7 +93,7 @@ public static class AddPayment
 
             if (gateway == null)
             {
-                return Result.Failed(Result.FailureReason.UnknownGatewayTypeId, $"The payment gateway type '{command.GatewayTypeId}' is not supported");
+                throw new PreconditionFailedException($"The payment gateway type '{command.GatewayTypeId}' is not supported");
             }
 
             var paymentEntityExtraValues = await gateway.CreatePaymentEntityExtraValuesAsync(
@@ -139,7 +119,7 @@ public static class AddPayment
                     "The payment (id \'{PaymentId}\' and application id \'{ApplicationId}\') is already added and cannot be added again",
                     paymentId, applicationId);
 
-                return Result.Failed(Result.FailureReason.PaymentAlreadyExists, $"The payment (id '{paymentId}' and application id '{applicationId}') is already added and cannot be added again");
+                throw new PreconditionFailedException($"The payment (id '{paymentId}' and application id '{applicationId}') is already added and cannot be added again");
             }
 
             var validateAndStorePaymentNotificationBaseUrlWithAppName = AddApplicationIdToPaymentNotificationBaseUrl(
@@ -161,7 +141,10 @@ public static class AddPayment
                 backendNotifyUrl,
                 cancellationToken);
 
-            return Result.Success(redirectUrl);
+            return new Result
+            {
+                RedirectUrl = redirectUrl,
+            };
         }
 
         internal static string AddApplicationIdToPaymentNotificationBaseUrl(

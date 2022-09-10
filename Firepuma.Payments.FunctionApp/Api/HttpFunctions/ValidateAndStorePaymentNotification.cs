@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Exceptions;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Repositories;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.ValueObjects;
@@ -96,16 +97,16 @@ public class ValidateAndStorePaymentNotification
             IncomingRequestUri = req.GetDisplayUrl(),
         };
 
-        var result = await _mediator.Send(command, cancellationToken);
-
-        if (!result.IsSuccessful)
+        try
         {
-            log.LogCritical("Command execution was unsuccessful, reason {Reason}, errors {Errors}", result.FailedReason.ToString(), string.Join(", ", result.FailedErrors));
+            await _mediator.Send(command, cancellationToken);
 
-            return HttpResponseFactory.CreateBadRequestResponse($"{result.FailedReason.ToString()}, {string.Join(", ", result.FailedErrors)}");
+            return new OkResult();
         }
-
-        return new OkResult();
+        catch (WrappedRequestException wrappedRequestException)
+        {
+            return wrappedRequestException.CreateResponseMessageResult();
+        }
     }
 
     private static IPAddress GetRemoteIp(ILogger log, HttpRequest req)

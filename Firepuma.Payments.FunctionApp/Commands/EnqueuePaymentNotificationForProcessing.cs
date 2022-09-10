@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using AutoMapper.Internal;
 using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries;
 using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Attributes;
+using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Exceptions;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.ValueObjects;
 using Firepuma.Payments.FunctionApp.Gateways;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.BusMessages;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Services;
+using FluentValidation;
 using MediatR;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -43,35 +45,19 @@ public static class EnqueuePaymentNotificationForProcessing
 
     public class Result
     {
-        public bool IsSuccessful { get; set; }
+    }
 
-        public FailureReason? FailedReason { get; set; }
-        public string[] FailedErrors { get; set; }
-
-        private Result(
-            bool isSuccessful,
-            FailureReason? failedReason,
-            string[] failedErrors)
+    public sealed class Validator : AbstractValidator<Command>
+    {
+        public Validator()
         {
-            IsSuccessful = isSuccessful;
-            FailedReason = failedReason;
-            FailedErrors = failedErrors;
-        }
+            RuleFor(x => x.GatewayTypeId.Value).NotEmpty();
+            RuleFor(x => x.ApplicationId.Value).NotEmpty();
+            RuleFor(x => x.RemoteIp).NotEmpty();
+            RuleFor(x => x.IncomingRequestUri).NotEmpty();
 
-        public static Result Success()
-        {
-            return new Result(true, null, null);
-        }
-
-        public static Result Failed(FailureReason reason, params string[] errors)
-        {
-            return new Result(false, reason, errors);
-        }
-
-        public enum FailureReason
-        {
-            UnknownGatewayTypeId,
-            ValidationFailed,
+            RuleFor(x => x.ApplicationConfig).NotNull();
+            RuleFor(x => x.PaymentNotificationPayload).NotNull();
         }
     }
 
@@ -101,7 +87,7 @@ public static class EnqueuePaymentNotificationForProcessing
 
             if (gateway == null)
             {
-                return Result.Failed(Result.FailureReason.UnknownGatewayTypeId, $"The payment gateway type '{command.GatewayTypeId}' is not supported");
+                throw new PreconditionFailedException($"The payment gateway type '{command.GatewayTypeId}' is not supported");
             }
 
             var validationResult = await gateway.ValidatePaymentNotificationAsync(
@@ -112,7 +98,9 @@ public static class EnqueuePaymentNotificationForProcessing
 
             if (!validationResult.IsSuccessful)
             {
-                return Result.Failed(Result.FailureReason.ValidationFailed, new[] { validationResult.FailedReason.ToString() }.Concat(validationResult.FailedErrors).ToArray());
+                throw new PreconditionFailedException(string.Join(
+                    ", ",
+                    new[] { validationResult.FailedReason.ToString() }.Concat(validationResult.FailedErrors).ToArray()));
             }
 
             var paymentId = validationResult.Result.PaymentId;
@@ -135,7 +123,7 @@ public static class EnqueuePaymentNotificationForProcessing
                 command.CorrelationId,
                 cancellationToken);
 
-            return Result.Success();
+            return new Result();
         }
     }
 }

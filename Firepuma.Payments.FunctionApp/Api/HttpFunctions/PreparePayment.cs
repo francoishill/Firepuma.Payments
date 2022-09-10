@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Firepuma.Payments.Core.ClientDtos.ClientRequests;
 using Firepuma.Payments.Core.ClientDtos.ClientResponses;
 using Firepuma.Payments.Core.Constants;
+using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Exceptions;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Repositories;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.ValueObjects;
@@ -117,15 +118,16 @@ public class PreparePayment
             ExtraValues = extraValues,
         };
 
-        var result = await _mediator.Send(addCommand, cancellationToken);
-
-        if (!result.IsSuccessful)
+        try
         {
-            _logger.LogError("{Reason}, {Errors}", result.FailedReason.ToString(), string.Join(", ", result.FailedErrors));
-            return HttpResponseFactory.CreateBadRequestResponse($"{result.FailedReason.ToString()}, {string.Join(", ", result.FailedErrors)}");
-        }
+            var result = await _mediator.Send(addCommand, cancellationToken);
 
-        var response = new PreparePaymentResponse(paymentId, result.RedirectUrl);
-        return new OkObjectResult(response);
+            var response = new PreparePaymentResponse(paymentId, result.RedirectUrl);
+            return new OkObjectResult(response);
+        }
+        catch (WrappedRequestException wrappedRequestException)
+        {
+            return wrappedRequestException.CreateResponseMessageResult();
+        }
     }
 }

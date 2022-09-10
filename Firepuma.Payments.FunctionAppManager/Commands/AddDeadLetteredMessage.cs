@@ -37,36 +37,6 @@ public static class AddDeadLetteredMessage
 
     public class Result
     {
-        public bool IsSuccessful { get; set; }
-
-        public FailureReason? FailedReason { get; set; }
-        public string[] FailedErrors { get; set; }
-
-        private Result(
-            bool isSuccessful,
-            FailureReason? failedReason,
-            string[] failedErrors)
-        {
-            IsSuccessful = isSuccessful;
-
-            FailedReason = failedReason;
-            FailedErrors = failedErrors;
-        }
-
-        public static Result Success()
-        {
-            return new Result(true, null, null);
-        }
-
-        public static Result Failed(FailureReason reason, params string[] errors)
-        {
-            return new Result(false, reason, errors);
-        }
-
-        public enum FailureReason
-        {
-            Unknown,
-        }
     }
 
     public class Handler : IRequestHandler<Command, Result>
@@ -113,7 +83,7 @@ public static class AddDeadLetteredMessage
 
             _logger.LogInformation("Successfully wrote message ID {MessageId} to CosmosDb", message.MessageId);
 
-            return Result.Success();
+            return new Result();
         }
     }
 }

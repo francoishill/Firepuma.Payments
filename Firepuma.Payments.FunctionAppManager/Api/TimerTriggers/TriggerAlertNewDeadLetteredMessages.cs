@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Exceptions;
 using Firepuma.Payments.FunctionAppManager.Commands;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Config;
 using MediatR;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 // ReSharper disable ConvertIfStatementToNullCoalescingAssignment
 
@@ -39,12 +41,17 @@ public class TriggerAlertNewDeadLetteredMessages
             EmailClientApplicationId = "payments-service",
         };
 
-        var result = await _mediator.Send(alertCommand, cancellationToken);
-
-        if (!result.IsSuccessful)
+        try
         {
-            log.LogError("{Reason}, {Errors}", result.FailedReason.ToString(), string.Join(", ", result.FailedErrors));
-            throw new Exception($"{result.FailedReason.ToString()}, {string.Join(", ", result.FailedErrors)}");
+            await _mediator.Send(alertCommand, cancellationToken);
+        }
+        catch (WrappedRequestException wrappedRequestException)
+        {
+            log.LogCritical(
+                "Failed to alert dead lettered message, status {Status}, errors {Errors}",
+                wrappedRequestException.StatusCode.ToString(), JsonConvert.SerializeObject(wrappedRequestException.Errors));
+
+            throw;
         }
     }
 }

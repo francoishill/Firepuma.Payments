@@ -8,6 +8,7 @@ using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Entities;
 using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Repositories;
 using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Specifications;
 using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.ValueObjects;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -31,35 +32,14 @@ public static class AlertNewDeadLetteredMessages
 
     public class Result
     {
-        public bool IsSuccessful { get; set; }
+    }
 
-        public FailureReason? FailedReason { get; set; }
-        public string[] FailedErrors { get; set; }
-
-        private Result(
-            bool isSuccessful,
-            FailureReason? failedReason,
-            string[] failedErrors)
+    public sealed class Validator : AbstractValidator<Command>
+    {
+        public Validator()
         {
-            IsSuccessful = isSuccessful;
-
-            FailedReason = failedReason;
-            FailedErrors = failedErrors;
-        }
-
-        public static Result Success()
-        {
-            return new Result(true, null, null);
-        }
-
-        public static Result Failed(FailureReason reason, params string[] errors)
-        {
-            return new Result(false, reason, errors);
-        }
-
-        public enum FailureReason
-        {
-            Unknown,
+            RuleFor(x => x.AlertRecipientEmail).NotEmpty();
+            RuleFor(x => x.EmailClientApplicationId).NotEmpty();
         }
     }
 
@@ -150,7 +130,7 @@ public static class AlertNewDeadLetteredMessages
                     lastAlertState.NextCheckTime.ToString("O"));
             }
 
-            return Result.Success();
+            return new Result();
         }
 
         private class NewDeadLetteredMessagesExtraValues

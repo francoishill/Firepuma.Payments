@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries;
+using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Exceptions;
 using Firepuma.Payments.Core.Infrastructure.Events.EventGridMessages;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.Entities;
@@ -12,6 +13,7 @@ using Firepuma.Payments.Core.Payments.ValueObjects;
 using Firepuma.Payments.FunctionApp.Gateways;
 using Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Services;
 using Firepuma.Payments.FunctionApp.Queries;
+using FluentValidation;
 using MediatR;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
@@ -46,37 +48,18 @@ public static class UpdatePayment
 
     public class Result
     {
-        public bool IsSuccessful { get; set; }
+    }
 
-        public FailureReason? FailedReason { get; set; }
-        public string[] FailedErrors { get; set; }
-
-        private Result(
-            bool isSuccessful,
-            FailureReason? failedReason,
-            string[] failedErrors)
+    public sealed class Validator : AbstractValidator<Command>
+    {
+        public Validator()
         {
-            IsSuccessful = isSuccessful;
+            RuleFor(x => x.GatewayTypeId.Value).NotEmpty();
+            RuleFor(x => x.ApplicationId.Value).NotEmpty();
+            RuleFor(x => x.PaymentId.Value).NotEmpty();
+            RuleFor(x => x.IncomingRequestUri).NotEmpty();
 
-            FailedReason = failedReason;
-            FailedErrors = failedErrors;
-        }
-
-        public static Result Success()
-        {
-            return new Result(true, null, null);
-        }
-
-        public static Result Failed(FailureReason reason, params string[] errors)
-        {
-            return new Result(false, reason, errors);
-        }
-
-        public enum FailureReason
-        {
-            UnknownGatewayTypeId,
-            UnableToLoadPayment,
-            ConflictUpdatingTableEntity,
+            RuleFor(x => x.PaymentNotificationPayload).NotNull();
         }
     }
 
@@ -120,7 +103,7 @@ public static class UpdatePayment
 
             if (gateway == null)
             {
-                return Result.Failed(Result.FailureReason.UnknownGatewayTypeId, $"The payment gateway type '{command.GatewayTypeId}' is not supported");
+                throw new PreconditionFailedException($"The payment gateway type '{command.GatewayTypeId}' is not supported");
             }
 
             try
@@ -151,7 +134,7 @@ public static class UpdatePayment
 
             if (!getPaymentResult.IsSuccessful)
             {
-                return Result.Failed(Result.FailureReason.UnableToLoadPayment, $"Unable to load payment with gatewayTypeId {gatewayTypeId}, applicationId {applicationId} and paymentId {paymentId}");
+                throw new PreconditionFailedException($"Unable to load payment with gatewayTypeId {gatewayTypeId}, applicationId {applicationId} and paymentId {paymentId}");
             }
 
             var payment = getPaymentResult.PaymentEntity;
@@ -170,14 +153,13 @@ public static class UpdatePayment
                     "Unable to update payments table for applicationId: {ApplicationId}, paymentId: {PaymentId}, due to ETag mismatch, exception message is: {Exception}",
                     applicationId, paymentId, cosmosException.Message);
 
-                return Result.Failed(
-                    Result.FailureReason.ConflictUpdatingTableEntity,
+                throw new PreconditionFailedException(
                     $"Unable to update payments table for applicationId: {applicationId}, paymentId: {paymentId}, due to ETag mismatch, exception message is: {cosmosException.Message}");
             }
 
             await PublishEvent(command, payment, cancellationToken);
 
-            return Result.Success();
+            return new Result();
         }
 
         private async Task PublishEvent(

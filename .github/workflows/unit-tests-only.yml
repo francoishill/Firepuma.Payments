@@ -7,7 +7,6 @@ on:
 
 env:
   DOTNET_VERSION: '6.0'
-  VERSION_SUFFIX: "build-${{ github.run_number }}"
 
 jobs:
   unit-tests:

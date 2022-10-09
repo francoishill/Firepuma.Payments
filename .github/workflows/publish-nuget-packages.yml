@@ -7,7 +7,7 @@ on:
 
 env:
   DOTNET_VERSION: '6.0'
-  PACKAGE_VERSION: "0.1.${{ github.run_number }}"
+  PACKAGE_VERSION: "0.2.${{ github.run_number }}"
 
 jobs:
   build-and-deploy:

@@ -16,7 +16,7 @@
 
     <ItemGroup>
       <PackageReference Include="Azure.Messaging.EventGrid" Version="4.11.0" />
-      <PackageReference Include="Firepuma.CommandsAndQueries.Abstractions" Version="0.5.7" />
+      <PackageReference Include="Firepuma.CommandsAndQueries.Abstractions" Version="0.6.8" />
       <PackageReference Include="Firepuma.DatabaseRepositories.Abstractions" Version="0.6.7" />
       <PackageReference Include="FluentValidation" Version="11.2.2" />
       <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.2.2" />

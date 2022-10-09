@@ -14,6 +14,8 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         Assembly[] assembliesWithCommandHandlers)
     {
+        assembliesWithCommandHandlers = assembliesWithCommandHandlers.Distinct().ToArray();
+
         services
             .AddCommandHandlingWithCosmosDbStorage(
                 new CosmosDbCommandHandlingOptions

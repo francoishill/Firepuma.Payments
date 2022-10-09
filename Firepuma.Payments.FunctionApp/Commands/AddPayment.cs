@@ -4,10 +4,10 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.CommandsAndQueries.Abstractions.Commands;
+using Firepuma.CommandsAndQueries.Abstractions.Entities.Attributes;
+using Firepuma.CommandsAndQueries.Abstractions.Exceptions;
 using Firepuma.Payments.Core.ClientDtos.ClientRequests.ExtraValues;
-using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries;
-using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Attributes;
-using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Exceptions;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.Entities;
@@ -33,13 +33,13 @@ namespace Firepuma.Payments.FunctionApp.Commands;
 
 public static class AddPayment
 {
-    public class Command : BaseCommand, IRequest<Result>
+    public class Command : BaseCommand<Result>
     {
         public PaymentGatewayTypeId GatewayTypeId { get; init; }
 
         public ClientApplicationId ApplicationId { get; init; }
 
-        [IgnoreCommandAudit]
+        [IgnoreCommandExecution]
         public PaymentApplicationConfig ApplicationConfig { get; init; }
 
         public PaymentId PaymentId { get; init; }

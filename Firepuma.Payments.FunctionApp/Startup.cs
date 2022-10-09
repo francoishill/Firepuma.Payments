@@ -8,8 +8,9 @@ using Firepuma.Payments.FunctionApp.Gateways.PayFast;
 using Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Config;
 using Firepuma.Payments.FunctionApp.Infrastructure.EventPublishing.Services;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.Services;
-using Firepuma.Payments.Infrastructure.CommandsAndQueries;
+using Firepuma.Payments.Infrastructure.CommandHandling;
 using Firepuma.Payments.Infrastructure.Config;
+using Firepuma.Payments.Infrastructure.CosmosDb;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -28,10 +29,19 @@ public class Startup : FunctionsStartup
 
         AddAutoMapper(services);
 
-        var mediationMarkerTypes = new[] { typeof(Startup), typeof(Payments.Infrastructure.CommandsAndQueries.ServiceCollectionExtensions) };
-        services.AddCommandsAndQueries(mediationMarkerTypes);
+        var cosmosConnectionString = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("CosmosConnectionString");
+        var cosmosDatabaseId = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("CosmosDatabaseId");
+        services.AddCosmosDbRepositoriesForFunction(
+            cosmosConnectionString,
+            cosmosDatabaseId);
 
-        AddCosmosDb(services);
+        var assembliesWithCommandHandlers = new[]
+        {
+            typeof(Startup).Assembly,
+            typeof(Firepuma.Payments.Infrastructure.ServiceMonitoring.ServiceCollectionExtensions).Assembly,
+        };
+        services.AddCommandHandlingAndMediatR(assembliesWithCommandHandlers);
+
         AddServiceBusPaymentsMessageSender(services);
         AddEventPublisher(services);
 
@@ -45,15 +55,6 @@ public class Startup : FunctionsStartup
     {
         services.AddAutoMapper(typeof(Startup));
         services.BuildServiceProvider().GetRequiredService<IMapper>().ConfigurationProvider.AssertConfigurationIsValid();
-    }
-
-    private static void AddCosmosDb(IServiceCollection services)
-    {
-        var connectionString = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("CosmosConnectionString");
-        var databaseId = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("CosmosDatabaseId");
-        var client = new Microsoft.Azure.Cosmos.CosmosClient(connectionString);
-        var database = client.GetDatabase(databaseId);
-        services.AddSingleton(_ => database);
     }
 
     private static void AddServiceBusPaymentsMessageSender(IServiceCollection services)

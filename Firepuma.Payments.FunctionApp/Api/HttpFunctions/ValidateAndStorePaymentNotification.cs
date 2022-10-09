@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Exceptions;
+using Firepuma.CommandsAndQueries.Abstractions.Exceptions;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Repositories;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.ValueObjects;
@@ -103,9 +103,9 @@ public class ValidateAndStorePaymentNotification
 
             return new OkResult();
         }
-        catch (WrappedRequestException wrappedRequestException)
+        catch (CommandException commandException)
         {
-            return wrappedRequestException.CreateResponseMessageResult();
+            return commandException.CreateResponseMessageResult();
         }
     }
 

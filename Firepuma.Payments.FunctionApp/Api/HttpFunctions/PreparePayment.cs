@@ -3,10 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.CommandsAndQueries.Abstractions.Exceptions;
 using Firepuma.Payments.Core.ClientDtos.ClientRequests;
 using Firepuma.Payments.Core.ClientDtos.ClientResponses;
 using Firepuma.Payments.Core.Constants;
-using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Exceptions;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Repositories;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.ValueObjects;
@@ -125,7 +125,7 @@ public class PreparePayment
             var response = new PreparePaymentResponse(paymentId, result.RedirectUrl);
             return new OkObjectResult(response);
         }
-        catch (WrappedRequestException wrappedRequestException)
+        catch (CommandException wrappedRequestException)
         {
             return wrappedRequestException.CreateResponseMessageResult();
         }

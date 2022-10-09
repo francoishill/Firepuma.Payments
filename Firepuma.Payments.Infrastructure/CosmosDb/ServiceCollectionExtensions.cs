@@ -1,29 +1,23 @@
-﻿using Firepuma.Payments.Core.Infrastructure.Entities;
-using Firepuma.Payments.Core.Infrastructure.Repositories;
-using Microsoft.Azure.Cosmos;
+﻿using Firepuma.DatabaseRepositories.CosmosDb;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Firepuma.Payments.Infrastructure.CosmosDb;
 
 public static class ServiceCollectionExtensions
 {
-    public static void AddCosmosDbRepository<TEntity, TInterface, TClass>(
+    public static void AddCosmosDbRepositoriesForFunction(
         this IServiceCollection services,
-        string containerName,
-        Func<ILogger<TClass>, Container, TClass> classFactory)
-        where TEntity : BaseEntity, new()
-        where TInterface : class, IRepository<TEntity>
-        where TClass : class, TInterface
+        string connectionString,
+        string databaseId)
     {
-        services.AddSingleton<TInterface, TClass>(s =>
-        {
-            var logger = s.GetRequiredService<ILogger<TClass>>();
+        if (string.IsNullOrWhiteSpace(connectionString)) throw new ArgumentNullException(nameof(connectionString));
+        if (string.IsNullOrWhiteSpace(databaseId)) throw new ArgumentNullException(nameof(databaseId));
 
-            var database = s.GetRequiredService<Database>();
-            var container = database.GetContainer(containerName);
-
-            return classFactory(logger, container);
-        });
+        services.AddCosmosDbRepositories(options =>
+            {
+                options.ConnectionString = connectionString;
+                options.DatabaseId = databaseId;
+            },
+            validateOnStart: false);
     }
 }

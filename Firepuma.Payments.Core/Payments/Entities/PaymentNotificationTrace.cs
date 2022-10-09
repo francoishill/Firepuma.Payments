@@ -1,4 +1,4 @@
-﻿using Firepuma.Payments.Core.Infrastructure.Entities;
+﻿using Firepuma.DatabaseRepositories.Abstractions.Entities;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.ValueObjects;
 
@@ -14,6 +14,8 @@ public class PaymentNotificationTrace : BaseEntity
     public string GatewayInternalTransactionId { get; set; }
     public string PaymentNotificationJson { get; set; }
     public string IncomingRequestUri { get; set; }
+
+    public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
     // ReSharper disable once UnusedMember.Global
     public PaymentNotificationTrace()

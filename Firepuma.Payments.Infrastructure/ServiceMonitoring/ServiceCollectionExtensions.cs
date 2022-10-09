@@ -1,6 +1,7 @@
-﻿using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Entities;
+﻿using Firepuma.DatabaseRepositories.CosmosDb;
+using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Entities;
 using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Repositories;
-using Firepuma.Payments.Infrastructure.CosmosDb;
+using Firepuma.Payments.Infrastructure.Config;
 using Firepuma.Payments.Infrastructure.ServiceMonitoring.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,14 +16,20 @@ public static class ServiceCollectionExtensions
             DeadLetteredMessage,
             IDeadLetteredMessageRepository,
             DeadLetteredMessageCosmosDbRepository>(
-            CosmosContainerNames.DEAD_LETTERED_MESSAGES,
-            (logger, container) => new DeadLetteredMessageCosmosDbRepository(logger, container));
+            CosmosContainerConfiguration.DeadLetteredMessages.ContainerProperties.Id,
+            (
+                logger,
+                container,
+                _) => new DeadLetteredMessageCosmosDbRepository(logger, container));
 
         services.AddCosmosDbRepository<
             ServiceAlertState,
             IServiceAlertStateRepository,
             ServiceAlertStateCosmosDbRepository>(
-            CosmosContainerNames.SERVICE_ALERT_STATE,
-            (logger, container) => new ServiceAlertStateCosmosDbRepository(logger, container));
+            CosmosContainerConfiguration.ServiceAlertStates.ContainerProperties.Id,
+            (
+                logger,
+                container,
+                _) => new ServiceAlertStateCosmosDbRepository(logger, container));
     }
 }

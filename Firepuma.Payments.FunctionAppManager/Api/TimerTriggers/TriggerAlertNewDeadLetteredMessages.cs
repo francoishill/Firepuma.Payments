@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Exceptions;
+using Firepuma.CommandsAndQueries.Abstractions.Exceptions;
 using Firepuma.Payments.FunctionAppManager.Commands;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Config;
 using MediatR;
@@ -45,11 +45,11 @@ public class TriggerAlertNewDeadLetteredMessages
         {
             await _mediator.Send(alertCommand, cancellationToken);
         }
-        catch (WrappedRequestException wrappedRequestException)
+        catch (CommandException commandException)
         {
             log.LogCritical(
                 "Failed to alert dead lettered message, status {Status}, errors {Errors}",
-                wrappedRequestException.StatusCode.ToString(), JsonConvert.SerializeObject(wrappedRequestException.Errors));
+                commandException.StatusCode.ToString(), JsonConvert.SerializeObject(commandException.Errors));
 
             throw;
         }

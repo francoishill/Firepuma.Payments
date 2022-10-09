@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries;
+using Firepuma.CommandsAndQueries.Abstractions.Commands;
 using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Entities;
 using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Repositories;
 using MediatR;
@@ -18,7 +18,7 @@ namespace Firepuma.Payments.FunctionAppManager.Commands;
 
 public static class AddDeadLetteredMessage
 {
-    public class Command : BaseCommand, IRequest<Result>
+    public class Command : BaseCommand<Result>
     {
         public string MessageId { get; init; }
         public DateTimeOffset EnqueuedTime { get; init; }

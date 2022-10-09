@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.CommandsAndQueries.Abstractions.Commands;
 using Firepuma.Email.Abstractions.Models.Dtos.ServiceBusMessages;
 using Firepuma.Email.Client.Services;
-using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries;
 using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Entities;
 using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Repositories;
 using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Specifications;
@@ -24,7 +24,7 @@ namespace Firepuma.Payments.FunctionAppManager.Commands;
 
 public static class AlertNewDeadLetteredMessages
 {
-    public class Command : BaseCommand, IRequest<Result>
+    public class Command : BaseCommand<Result>
     {
         public string AlertRecipientEmail { get; init; }
         public string EmailClientApplicationId { get; init; }

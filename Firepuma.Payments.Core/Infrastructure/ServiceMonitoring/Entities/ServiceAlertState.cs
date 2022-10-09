@@ -1,4 +1,4 @@
-﻿using Firepuma.Payments.Core.Infrastructure.Entities;
+﻿using Firepuma.DatabaseRepositories.Abstractions.Entities;
 using Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.ValueObjects;
 using Newtonsoft.Json.Linq;
 

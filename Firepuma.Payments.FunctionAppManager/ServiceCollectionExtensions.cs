@@ -1,6 +1,7 @@
-﻿using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
+﻿using Firepuma.DatabaseRepositories.CosmosDb;
+using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Repositories;
-using Firepuma.Payments.Infrastructure.CosmosDb;
+using Firepuma.Payments.Infrastructure.Config;
 using Firepuma.Payments.Infrastructure.PaymentAppConfiguration.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,7 +16,10 @@ public static class ServiceCollectionExtensions
             PaymentApplicationConfig,
             IPaymentApplicationConfigRepository,
             PaymentApplicationConfigCosmosDbRepository>(
-            CosmosContainerNames.APPLICATION_CONFIGS,
-            (logger, container) => new PaymentApplicationConfigCosmosDbRepository(logger, container));
+            CosmosContainerConfiguration.ApplicationConfigs.ContainerProperties.Id,
+            (
+                logger,
+                container,
+                _) => new PaymentApplicationConfigCosmosDbRepository(logger, container));
     }
 }

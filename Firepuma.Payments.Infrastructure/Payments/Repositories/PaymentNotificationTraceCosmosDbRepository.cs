@@ -1,6 +1,6 @@
+using Firepuma.DatabaseRepositories.CosmosDb.Repositories;
 using Firepuma.Payments.Core.Payments.Entities;
 using Firepuma.Payments.Core.Payments.Repositories;
-using Firepuma.Payments.Infrastructure.CosmosDb;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 

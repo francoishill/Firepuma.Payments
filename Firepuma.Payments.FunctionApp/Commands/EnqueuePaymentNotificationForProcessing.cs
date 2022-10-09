@@ -4,9 +4,9 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper.Internal;
-using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries;
-using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Attributes;
-using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Exceptions;
+using Firepuma.CommandsAndQueries.Abstractions.Commands;
+using Firepuma.CommandsAndQueries.Abstractions.Entities.Attributes;
+using Firepuma.CommandsAndQueries.Abstractions.Exceptions;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.ValueObjects;
@@ -26,7 +26,7 @@ namespace Firepuma.Payments.FunctionApp.Commands;
 
 public static class EnqueuePaymentNotificationForProcessing
 {
-    public class Command : BaseCommand, IRequest<Result>
+    public class Command : BaseCommand<Result>
     {
         public string CorrelationId { get; init; }
 
@@ -34,7 +34,7 @@ public static class EnqueuePaymentNotificationForProcessing
 
         public ClientApplicationId ApplicationId { get; init; }
 
-        [IgnoreCommandAudit]
+        [IgnoreCommandExecution]
         public PaymentApplicationConfig ApplicationConfig { get; init; }
 
         public BasePaymentNotificationPayload PaymentNotificationPayload { get; init; }

@@ -1,8 +1,8 @@
-﻿using Firepuma.Payments.Core.Infrastructure.Specifications;
+﻿using Firepuma.DatabaseRepositories.Abstractions.QuerySpecifications;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
 
 namespace Firepuma.Payments.Core.PaymentAppConfiguration.Specifications;
 
-public class AllClientAppsSpecification : Specification<PaymentApplicationConfig>
+public class AllClientAppsSpecification : QuerySpecification<PaymentApplicationConfig>
 {
 }

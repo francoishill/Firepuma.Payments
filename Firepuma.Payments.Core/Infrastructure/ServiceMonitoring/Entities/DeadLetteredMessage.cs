@@ -1,4 +1,4 @@
-﻿using Firepuma.Payments.Core.Infrastructure.Entities;
+﻿using Firepuma.DatabaseRepositories.Abstractions.Entities;
 
 namespace Firepuma.Payments.Core.Infrastructure.ServiceMonitoring.Entities;
 

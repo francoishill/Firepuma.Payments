@@ -1,9 +1,10 @@
-﻿using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
+﻿using Firepuma.DatabaseRepositories.CosmosDb;
+using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Repositories;
 using Firepuma.Payments.Core.Payments.Entities;
 using Firepuma.Payments.Core.Payments.Repositories;
 using Firepuma.Payments.FunctionApp.Infrastructure.Config;
-using Firepuma.Payments.Infrastructure.CosmosDb;
+using Firepuma.Payments.Infrastructure.Config;
 using Firepuma.Payments.Infrastructure.PaymentAppConfiguration.Repositories;
 using Firepuma.Payments.Infrastructure.Payments.Repositories;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,21 +26,30 @@ public static class ServiceCollectionExtensions
             PaymentEntity,
             IPaymentRepository,
             PaymentCosmosDbRepository>(
-            CosmosContainerNames.PAYMENTS,
-            (logger, container) => new PaymentCosmosDbRepository(logger, container));
+            CosmosContainerConfiguration.Payments.ContainerProperties.Id,
+            (
+                logger,
+                container,
+                _) => new PaymentCosmosDbRepository(logger, container));
 
         services.AddCosmosDbRepository<
             PaymentNotificationTrace,
             IPaymentNotificationTraceRepository,
             PaymentNotificationTraceCosmosDbRepository>(
-            CosmosContainerNames.NOTIFICATION_TRACES,
-            (logger, container) => new PaymentNotificationTraceCosmosDbRepository(logger, container));
+            CosmosContainerConfiguration.NotificationTraces.ContainerProperties.Id,
+            (
+                logger,
+                container,
+                _) => new PaymentNotificationTraceCosmosDbRepository(logger, container));
 
         services.AddCosmosDbRepository<
             PaymentApplicationConfig,
             IPaymentApplicationConfigRepository,
             PaymentApplicationConfigCosmosDbRepository>(
-            CosmosContainerNames.APPLICATION_CONFIGS,
-            (logger, container) => new PaymentApplicationConfigCosmosDbRepository(logger, container));
+            CosmosContainerConfiguration.ApplicationConfigs.ContainerProperties.Id,
+            (
+                logger,
+                container,
+                _) => new PaymentApplicationConfigCosmosDbRepository(logger, container));
     }
 }

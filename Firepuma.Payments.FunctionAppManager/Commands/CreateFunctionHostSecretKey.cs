@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries;
+using Firepuma.CommandsAndQueries.Abstractions.Commands;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Config;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Constants;
 using MediatR;
@@ -18,7 +18,7 @@ namespace Firepuma.Payments.FunctionAppManager.Commands;
 
 public static class CreateFunctionHostSecretKey
 {
-    public class Command : BaseCommand, IRequest<Result>
+    public class Command : BaseCommand<Result>
     {
         public string FunctionHostKeyName { get; init; }
     }

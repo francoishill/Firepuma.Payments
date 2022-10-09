@@ -1,4 +1,4 @@
-﻿using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Exceptions;
+﻿using Firepuma.CommandsAndQueries.Abstractions.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 // ReSharper disable RedundantAnonymousTypePropertyName
@@ -15,14 +15,14 @@ public static class HttpResponseFactory
         });
     }
 
-    public static IActionResult CreateResponseMessageResult(this WrappedRequestException wrappedRequestException)
+    public static IActionResult CreateResponseMessageResult(this CommandException commandException)
     {
         return new JsonResult(new
         {
-            Errors = wrappedRequestException.Errors,
+            Errors = commandException.Errors,
         })
         {
-            StatusCode = (int)wrappedRequestException.StatusCode,
+            StatusCode = (int)commandException.StatusCode,
         };
     }
 }

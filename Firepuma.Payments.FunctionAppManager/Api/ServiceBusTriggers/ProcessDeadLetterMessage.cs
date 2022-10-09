@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Exceptions;
+using Firepuma.CommandsAndQueries.Abstractions.Exceptions;
 using Firepuma.Payments.FunctionAppManager.Commands;
 using MediatR;
 using Microsoft.Azure.WebJobs;
@@ -56,11 +56,11 @@ public class ProcessDeadLetterMessage
             {
                 await _mediator.Send(addCommand, cancellationToken);
             }
-            catch (WrappedRequestException wrappedRequestException)
+            catch (CommandException commandException)
             {
                 log.LogCritical(
                     "Failed to process dead letter message, status {Status}, errors {Errors}",
-                    wrappedRequestException.StatusCode.ToString(), JsonConvert.SerializeObject(wrappedRequestException.Errors));
+                    commandException.StatusCode.ToString(), JsonConvert.SerializeObject(commandException.Errors));
 
                 throw;
             }

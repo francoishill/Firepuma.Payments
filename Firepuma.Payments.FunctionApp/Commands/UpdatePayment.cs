@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries;
-using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Exceptions;
+using Firepuma.CommandsAndQueries.Abstractions.Commands;
+using Firepuma.CommandsAndQueries.Abstractions.Exceptions;
 using Firepuma.Payments.Core.Infrastructure.Events.EventGridMessages;
 using Firepuma.Payments.Core.PaymentAppConfiguration.ValueObjects;
 using Firepuma.Payments.Core.Payments.Entities;
@@ -29,7 +29,7 @@ namespace Firepuma.Payments.FunctionApp.Commands;
 
 public static class UpdatePayment
 {
-    public class Command : BaseCommand, IRequest<Result>
+    public class Command : BaseCommand<Result>
     {
         public PaymentGatewayTypeId GatewayTypeId { get; init; }
 

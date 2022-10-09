@@ -6,8 +6,9 @@ using Firepuma.Payments.FunctionAppManager;
 using Firepuma.Payments.FunctionAppManager.Gateways.PayFast;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Config;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Constants;
-using Firepuma.Payments.Infrastructure.CommandsAndQueries;
+using Firepuma.Payments.Infrastructure.CommandHandling;
 using Firepuma.Payments.Infrastructure.Config;
+using Firepuma.Payments.Infrastructure.CosmosDb;
 using Firepuma.Payments.Infrastructure.ServiceMonitoring;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,10 +45,18 @@ public class Startup : FunctionsStartup
                 client.DefaultRequestHeaders.Add("x-functions-key", paymentsServiceFunctionsKey);
             });
 
-        AddCosmosDb(services);
+        var cosmosConnectionString = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("CosmosConnectionString");
+        var cosmosDatabaseId = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("CosmosDatabaseId");
+        services.AddCosmosDbRepositoriesForFunction(
+            cosmosConnectionString,
+            cosmosDatabaseId);
 
-        var mediationMarkerTypes = new[] { typeof(Startup), typeof(Payments.Infrastructure.CommandsAndQueries.ServiceCollectionExtensions) };
-        services.AddCommandsAndQueries(mediationMarkerTypes);
+        var assembliesWithCommandHandlers = new[]
+        {
+            typeof(Startup).Assembly,
+            typeof(Firepuma.Payments.Infrastructure.ServiceMonitoring.ServiceCollectionExtensions).Assembly,
+        };
+        services.AddCommandHandlingAndMediatR(assembliesWithCommandHandlers);
 
         services.AddServiceMonitoring();
 
@@ -62,14 +71,5 @@ public class Startup : FunctionsStartup
 
         services.AddPaymentsManagementFeature();
         services.AddPayFastManagerFeature();
-    }
-
-    private static void AddCosmosDb(IServiceCollection services)
-    {
-        var connectionString = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("CosmosConnectionString");
-        var databaseId = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("CosmosDatabaseId");
-        var client = new Microsoft.Azure.Cosmos.CosmosClient(connectionString);
-        var database = client.GetDatabase(databaseId);
-        services.AddSingleton(_ => database);
     }
 }

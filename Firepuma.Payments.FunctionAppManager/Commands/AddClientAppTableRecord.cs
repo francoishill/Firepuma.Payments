@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries;
+using Firepuma.CommandsAndQueries.Abstractions.Commands;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Entities;
 using Firepuma.Payments.Core.PaymentAppConfiguration.Repositories;
 using Firepuma.Payments.FunctionAppManager.Gateways;
@@ -18,7 +18,7 @@ namespace Firepuma.Payments.FunctionAppManager.Commands;
 
 public static class AddClientAppTableRecord
 {
-    public class Command : BaseCommand, IRequest<Result>
+    public class Command : BaseCommand<Result>
     {
         public PaymentApplicationConfig TableRow { get; init; }
     }

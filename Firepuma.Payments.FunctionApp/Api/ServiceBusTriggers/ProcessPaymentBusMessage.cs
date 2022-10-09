@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using Firepuma.Payments.Core.Infrastructure.CommandsAndQueries.Exceptions;
+using Firepuma.CommandsAndQueries.Abstractions.Exceptions;
 using Firepuma.Payments.FunctionApp.Commands;
 using Firepuma.Payments.FunctionApp.Gateways;
 using Firepuma.Payments.FunctionApp.Infrastructure.MessageBus.BusMessages;
@@ -67,11 +67,11 @@ public class ProcessPaymentBusMessage
 
                     await _mediator.Send(updateCommand, cancellationToken);
                 }
-                catch (WrappedRequestException wrappedRequestException)
+                catch (CommandException commandException)
                 {
                     log.LogCritical(
                         "UpdatePayment command execution was unsuccessful, status {Status}, errors {Errors}",
-                        wrappedRequestException.StatusCode.ToString(), JsonConvert.SerializeObject(wrappedRequestException.Errors));
+                        commandException.StatusCode.ToString(), JsonConvert.SerializeObject(commandException.Errors));
 
                     throw;
                 }

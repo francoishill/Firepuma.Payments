@@ -10,7 +10,7 @@ namespace Firepuma.Payments.Infrastructure.CommandHandling;
 
 public static class ServiceCollectionExtensions
 {
-    public static void AddCommandHandlingAndMediatR(
+    public static void AddCommandsAndQueriesFunctionalityForFunction(
         this IServiceCollection services,
         Assembly[] assembliesWithCommandHandlers)
     {

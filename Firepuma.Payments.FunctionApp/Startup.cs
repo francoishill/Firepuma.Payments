@@ -40,7 +40,7 @@ public class Startup : FunctionsStartup
             typeof(Startup).Assembly,
             typeof(Firepuma.Payments.Infrastructure.ServiceMonitoring.ServiceCollectionExtensions).Assembly,
         };
-        services.AddCommandHandlingAndMediatR(assembliesWithCommandHandlers);
+        services.AddCommandsAndQueriesFunctionalityForFunction(assembliesWithCommandHandlers);
 
         AddServiceBusPaymentsMessageSender(services);
         AddEventPublisher(services);

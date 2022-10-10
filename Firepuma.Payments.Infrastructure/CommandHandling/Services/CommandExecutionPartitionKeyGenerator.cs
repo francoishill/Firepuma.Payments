@@ -5,7 +5,7 @@ using Firepuma.CommandsAndQueries.CosmosDb.Services;
 
 namespace Firepuma.Payments.Infrastructure.CommandHandling.Services;
 
-public class CommandExecutionPartitionKeyGenerator : ICommandExecutionPartitionKeyGenerator
+internal class CommandExecutionPartitionKeyGenerator : ICommandExecutionPartitionKeyGenerator
 {
     public string GeneratePartitionKey(CommandExecutionEvent entity)
     {

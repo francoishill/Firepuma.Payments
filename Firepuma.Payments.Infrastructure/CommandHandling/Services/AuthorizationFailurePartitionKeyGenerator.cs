@@ -3,7 +3,7 @@ using Firepuma.CommandsAndQueries.CosmosDb.Services;
 
 namespace Firepuma.Payments.Infrastructure.CommandHandling.Services;
 
-public class AuthorizationFailurePartitionKeyGenerator : IAuthorizationFailurePartitionKeyGenerator
+internal class AuthorizationFailurePartitionKeyGenerator : IAuthorizationFailurePartitionKeyGenerator
 {
     public string GeneratePartitionKey(AuthorizationFailureEvent entity)
     {

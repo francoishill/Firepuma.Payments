@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Firepuma.CommandsAndQueries.Abstractions.Exceptions;
 using Firepuma.Payments.FunctionAppManager.Commands;
 using Firepuma.Payments.FunctionAppManager.Infrastructure.Config;
+using Firepuma.Payments.FunctionAppManager.Queries;
 using MediatR;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -35,10 +36,32 @@ public class TriggerAlertNewDeadLetteredMessages
     {
         log.LogInformation("C# Timer trigger function executed at: {Time}", DateTime.UtcNow.ToString("O"));
 
+        var query = new CheckDeadMessageCountsQuery.Query
+        {
+            NowDateTimeOffset = DateTimeOffset.UtcNow,
+        };
+
+        var queryResult = await _mediator.Send(query, cancellationToken);
+
+        if (!queryResult.IsDue)
+        {
+            log.LogInformation("Nothing to do now, next check time is {Time}", queryResult.LastAlertState.NextCheckTime.ToString("O"));
+            return;
+        }
+
+        if (!queryResult.CountIsDifferent)
+        {
+            log.LogInformation("There are no new dead lettered messages, previously and current alerted count of dead letter messages is {Count}", queryResult.CurrentDeadMessageCount);
+            return;
+        }
+
         var alertCommand = new AlertNewDeadLetteredMessages.Command
         {
             AlertRecipientEmail = _emailOptions.Value.AlertRecipientEmail,
             EmailClientApplicationId = "payments-service",
+            LastAlertState = queryResult.LastAlertState,
+            CurrentDeadMessageCount = queryResult.CurrentDeadMessageCount,
+            PreviousDeadMessageCount = queryResult.PreviousDeadMessageCount,
         };
 
         try

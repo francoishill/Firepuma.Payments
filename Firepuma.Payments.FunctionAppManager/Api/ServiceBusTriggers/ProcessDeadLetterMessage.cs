@@ -67,7 +67,18 @@ public class ProcessDeadLetterMessage
         }
         catch (Exception exception)
         {
-            log.LogError(exception, "Unable to process deadlettered message, exception: {Message}, stack trace: {Stack}", exception.Message, exception.StackTrace);
+            const int pauseDurationInSeconds = 60;
+
+            log.LogError(
+                exception,
+                "Unable to process deadlettered message, pausing for {PauseDuration} seconds to avoid infinite loop, exception: {Message}, stack trace: {Stack}",
+                pauseDurationInSeconds, exception.Message, exception.StackTrace);
+
+            //TODO: figure out how to achieve a circuit breaker
+            //  We need a circuit breaker here instead because CosmosDb is a failure point and we try to
+            //  also write dead lettered messages to Cosmos. So if it initially ends up dead lettered due to a CosmosDb
+            //  failure and CosmosDb is down, it will fail to process the dead letter message and keep on retrying
+            await Task.Delay(TimeSpan.FromSeconds(pauseDurationInSeconds), cancellationToken);
 
             throw;
         }

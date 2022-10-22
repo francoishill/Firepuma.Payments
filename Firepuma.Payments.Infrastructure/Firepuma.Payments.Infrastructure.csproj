@@ -7,8 +7,8 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <PackageReference Include="Firepuma.CommandsAndQueries.CosmosDb" Version="0.6.10" />
-        <PackageReference Include="Firepuma.DatabaseRepositories.Abstractions" Version="0.6.9" />
+        <PackageReference Include="Firepuma.CommandsAndQueries.CosmosDb" Version="0.7.0" />
+        <PackageReference Include="Firepuma.DatabaseRepositories.Abstractions" Version="0.7.0" />
         <PackageReference Include="Firepuma.Email.Client" Version="1.1.9" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.1.0" />

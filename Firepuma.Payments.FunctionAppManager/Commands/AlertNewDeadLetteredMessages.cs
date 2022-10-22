@@ -25,9 +25,9 @@ public static class AlertNewDeadLetteredMessages
 {
     public class Command : BaseCommand<Result>
     {
-        public string AlertRecipientEmail { get; init; }
-        public string EmailClientApplicationId { get; init; }
-        public ServiceAlertState LastAlertState { get; init; }
+        public string AlertRecipientEmail { get; init; } = null!;
+        public string EmailClientApplicationId { get; init; } = null!;
+        public ServiceAlertState? LastAlertState { get; init; }
         public int CurrentDeadMessageCount { get; init; }
         public int PreviousDeadMessageCount { get; init; }
     }

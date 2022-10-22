@@ -5,27 +5,27 @@ namespace Firepuma.Payments.Core.ClientDtos.ClientRequests.ExtraValues;
 public class PreparePayFastOnceOffPaymentExtraValues : IPreparePaymentExtraValues
 {
     [Required]
-    public string BuyerEmailAddress { get; set; }
+    public string BuyerEmailAddress { get; set; } = null!;
 
     [Required]
-    public string BuyerFirstName { get; set; }
+    public string BuyerFirstName { get; set; } = null!;
 
     [Required]
     public double? ImmediateAmountInRands { get; set; }
 
     [Required]
-    public string ItemName { get; set; }
+    public string ItemName { get; set; } = null!;
 
     [Required]
-    public string ItemDescription { get; set; }
+    public string ItemDescription { get; set; } = null!;
 
     [Required]
-    public string ReturnUrl { get; set; }
+    public string ReturnUrl { get; set; } = null!;
 
     [Required]
-    public string CancelUrl { get; set; }
+    public string CancelUrl { get; set; } = null!;
 
-    public SplitPaymentConfig SplitPayment { get; set; }
+    public SplitPaymentConfig? SplitPayment { get; set; }
 
     public class SplitPaymentConfig : IValidatableObject
     {

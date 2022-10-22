@@ -15,7 +15,7 @@ public class PaymentEntity : BaseEntity
     public PaymentStatus Status { get; set; }
     public DateTime? StatusChangedOn { get; set; }
 
-    public JObject ExtraValues { get; set; }
+    public JObject ExtraValues { get; set; } = null!;
 
     // ReSharper disable once UnusedMember.Global
     public PaymentEntity()
@@ -37,17 +37,23 @@ public class PaymentEntity : BaseEntity
         Status = PaymentStatus.New;
     }
 
-    public bool TryCastExtraValuesToType<T>(out T extraValues, out string error) where T : class
+    public bool TryCastExtraValuesToType<T>(out T extraValues, out string? error) where T : class
     {
         try
         {
-            extraValues = ExtraValues.ToObject<T>();
+            extraValues = ExtraValues.ToObject<T>()!;
+
+            if (extraValues == null)
+            {
+                throw new InvalidCastException($"Unable to cast ExtraValues to type {typeof(T).FullName}");
+            }
+
             error = null;
             return true;
         }
         catch (Exception exception)
         {
-            extraValues = null;
+            extraValues = null!;
             error = exception.Message;
             return false;
         }

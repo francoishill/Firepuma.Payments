@@ -40,7 +40,7 @@ public class PaymentEventMappingsTests
         AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(assembly => assembly.GetTypes())
             .Where(type => _paymentEventGridMessageInterface.IsAssignableFrom(type) && type.IsClass)
-            .Select(gateway => Activator.CreateInstance(gateway) as IPaymentEventGridMessage);
+            .Select(gateway => Activator.CreateInstance(gateway) as IPaymentEventGridMessage)!;
 
     public static IEnumerable<object[]> PaymentEventGridMessagesMemberData => PaymentEventGridMessageInstances.Select(instance => new object[] { instance });
 }

@@ -7,7 +7,7 @@ namespace Firepuma.Payments.Core.PaymentAppConfiguration.Repositories;
 
 public interface IPaymentApplicationConfigRepository : IRepository<PaymentApplicationConfig>
 {
-    Task<PaymentApplicationConfig> GetItemOrDefaultAsync(
+    Task<PaymentApplicationConfig?> GetItemOrDefaultAsync(
         ClientApplicationId applicationId,
         PaymentGatewayTypeId gatewayTypeId,
         CancellationToken cancellationToken);

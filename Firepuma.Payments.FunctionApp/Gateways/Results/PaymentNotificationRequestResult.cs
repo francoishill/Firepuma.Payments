@@ -4,5 +4,5 @@ namespace Firepuma.Payments.FunctionApp.Gateways.Results;
 
 public class PaymentNotificationRequestResult
 {
-    public BasePaymentNotificationPayload PaymentNotificationPayload { get; init; }
+    public BasePaymentNotificationPayload PaymentNotificationPayload { get; init; } = null!;
 }

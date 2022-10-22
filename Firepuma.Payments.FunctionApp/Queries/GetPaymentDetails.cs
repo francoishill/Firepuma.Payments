@@ -28,16 +28,16 @@ public static class GetPaymentDetails
     {
         public bool IsSuccessful { get; set; }
 
-        public PaymentEntity PaymentEntity { get; set; }
+        public PaymentEntity? PaymentEntity { get; set; }
 
         public FailureReason? FailedReason { get; set; }
-        public string[] FailedErrors { get; set; }
+        public string[]? FailedErrors { get; set; }
 
         private Result(
             bool isSuccessful,
-            PaymentEntity paymentEntity,
+            PaymentEntity? paymentEntity,
             FailureReason? failedReason,
-            string[] failedErrors)
+            string[]? failedErrors)
         {
             IsSuccessful = isSuccessful;
 

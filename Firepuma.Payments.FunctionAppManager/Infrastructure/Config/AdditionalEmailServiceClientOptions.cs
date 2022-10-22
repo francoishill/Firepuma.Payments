@@ -2,5 +2,5 @@
 
 public class AdditionalEmailServiceClientOptions
 {
-    public string AlertRecipientEmail { get; set; }
+    public string AlertRecipientEmail { get; set; } = null!;
 }

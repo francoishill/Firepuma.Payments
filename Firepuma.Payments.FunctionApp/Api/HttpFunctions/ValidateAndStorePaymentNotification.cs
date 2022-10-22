@@ -80,11 +80,11 @@ public class ValidateAndStorePaymentNotification
         var paymentNotificationRequest = await gateway.DeserializePaymentNotificationRequestAsync(req, cancellationToken);
         if (!paymentNotificationRequest.IsSuccessful)
         {
-            _logger.LogError("{Reason}, {Errors}", paymentNotificationRequest.FailedReason.ToString(), string.Join(", ", paymentNotificationRequest.FailedErrors));
-            return HttpResponseFactory.CreateBadRequestResponse($"{paymentNotificationRequest.FailedReason.ToString()}, {string.Join(", ", paymentNotificationRequest.FailedErrors)}");
+            _logger.LogError("{Reason}, {Errors}", paymentNotificationRequest.FailedReason.ToString(), string.Join(", ", paymentNotificationRequest.FailedErrors!));
+            return HttpResponseFactory.CreateBadRequestResponse($"{paymentNotificationRequest.FailedReason.ToString()}, {string.Join(", ", paymentNotificationRequest.FailedErrors!)}");
         }
 
-        _logger.LogInformation("Validating PaymentNotification with payload {Payload}", JsonConvert.SerializeObject(paymentNotificationRequest.Result.PaymentNotificationPayload));
+        _logger.LogInformation("Validating PaymentNotification with payload {Payload}", JsonConvert.SerializeObject(paymentNotificationRequest.Result!.PaymentNotificationPayload));
 
         var command = new EnqueuePaymentNotificationForProcessing.Command
         {
@@ -109,7 +109,7 @@ public class ValidateAndStorePaymentNotification
         }
     }
 
-    private static IPAddress GetRemoteIp(ILogger log, HttpRequest req)
+    private static IPAddress? GetRemoteIp(ILogger log, HttpRequest req)
     {
         if (req.Headers.TryGetValue("X-Forwarded-For", out var forwardedForIpString)
             && forwardedForIpString.Any())

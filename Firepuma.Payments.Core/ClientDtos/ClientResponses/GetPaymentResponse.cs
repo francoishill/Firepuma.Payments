@@ -15,5 +15,5 @@ public class GetPaymentResponse
     public PaymentStatus Status { get; set; }
     public DateTime? StatusChangedOn { get; set; }
 
-    public object ExtraValues { get; set; }
+    public object? ExtraValues { get; set; }
 }

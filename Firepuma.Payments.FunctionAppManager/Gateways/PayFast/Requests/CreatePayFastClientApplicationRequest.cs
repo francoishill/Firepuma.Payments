@@ -7,10 +7,10 @@ public class CreatePayFastClientApplicationRequest
     public bool IsSandbox { get; set; }
 
     [Required]
-    public string MerchantId { get; set; }
+    public string MerchantId { get; set; } = null!;
 
     [Required]
-    public string MerchantKey { get; set; }
+    public string MerchantKey { get; set; } = null!;
 
-    public string PassPhrase { get; set; }
+    public string PassPhrase { get; set; } = null!;
 }

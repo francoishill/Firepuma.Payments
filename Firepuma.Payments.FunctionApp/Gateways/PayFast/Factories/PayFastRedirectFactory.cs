@@ -16,7 +16,7 @@ public static class PayFastRedirectFactory
         ILogger logger,
         PayFastPaymentSettings payFastSettings,
         PayFastRequest payfastRequest,
-        SplitPaymentConfig splitPaymentConfig)
+        SplitPaymentConfig? splitPaymentConfig)
     {
         var fullQuery = payfastRequest.ToString();
 

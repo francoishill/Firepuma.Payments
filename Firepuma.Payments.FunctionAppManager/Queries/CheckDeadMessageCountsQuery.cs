@@ -24,7 +24,7 @@ public static class CheckDeadMessageCountsQuery
     public class Result
     {
         public bool IsDue { get; init; }
-        public ServiceAlertState LastAlertState { get; init; } //TODO: required
+        public ServiceAlertState? LastAlertState { get; init; } //TODO: required
 
         public bool CountIsDifferent { get; init; }
         public int PreviousDeadMessageCount { get; init; }

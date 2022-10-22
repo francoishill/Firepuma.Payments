@@ -33,7 +33,7 @@ public class SamplePaymentsController : ControllerBase
 
         if (!paymentResult.IsSuccessful)
         {
-            return new BadRequestObjectResult($"{paymentResult.FailedReason.ToString()}, {string.Join(", ", paymentResult.FailedErrors)}");
+            return new BadRequestObjectResult($"{paymentResult.FailedReason.ToString()}, {string.Join(", ", paymentResult.FailedErrors!)}");
         }
 
         return new OkObjectResult(paymentResult.Result);
@@ -70,7 +70,7 @@ public class SamplePaymentsController : ControllerBase
 
         if (!preparedPaymentResult.IsSuccessful)
         {
-            return new BadRequestObjectResult($"{preparedPaymentResult.FailedReason.ToString()}, {string.Join(", ", preparedPaymentResult.FailedErrors)}");
+            return new BadRequestObjectResult($"{preparedPaymentResult.FailedReason.ToString()}, {string.Join(", ", preparedPaymentResult.FailedErrors!)}");
         }
 
         return _mapper.Map<PreparePayfastOnceOffPaymentResponse>(preparedPaymentResult.Result);
@@ -85,7 +85,7 @@ public class SamplePaymentsController : ControllerBase
 
         if (!paymentResult.IsSuccessful)
         {
-            return new BadRequestObjectResult($"{paymentResult.FailedReason.ToString()}, {string.Join(", ", paymentResult.FailedErrors)}");
+            return new BadRequestObjectResult($"{paymentResult.FailedReason.ToString()}, {string.Join(", ", paymentResult.FailedErrors!)}");
         }
 
         return new OkObjectResult($"Thank you, your payment ID {paymentId} is being processed in the background. {JsonConvert.SerializeObject(paymentResult.Result, new Newtonsoft.Json.Converters.StringEnumConverter())}");
@@ -100,7 +100,7 @@ public class SamplePaymentsController : ControllerBase
 
         if (!paymentResult.IsSuccessful)
         {
-            return new BadRequestObjectResult($"{paymentResult.FailedReason.ToString()}, {string.Join(", ", paymentResult.FailedErrors)}");
+            return new BadRequestObjectResult($"{paymentResult.FailedReason.ToString()}, {string.Join(", ", paymentResult.FailedErrors!)}");
         }
 
         return new OkObjectResult($"Your payment ID {paymentId} has been cancelled. {JsonConvert.SerializeObject(paymentResult.Result, new Newtonsoft.Json.Converters.StringEnumConverter())}");

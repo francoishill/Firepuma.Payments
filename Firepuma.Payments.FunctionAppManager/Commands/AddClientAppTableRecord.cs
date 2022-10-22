@@ -20,13 +20,13 @@ public static class AddClientAppTableRecord
 {
     public class Command : BaseCommand<Result>
     {
-        public PaymentApplicationConfig TableRow { get; init; }
+        public PaymentApplicationConfig TableRow { get; init; } = null!;
     }
 
     public class Result
     {
         public bool IsNew { get; set; }
-        public PaymentApplicationConfig TableRow { get; set; }
+        public PaymentApplicationConfig TableRow { get; set; } = null!;
     }
 
 
@@ -84,7 +84,7 @@ public static class AddClientAppTableRecord
                 }
 
                 result.IsNew = false;
-                result.TableRow = existingTableRow;
+                result.TableRow = existingTableRow!;
             }
 
             return result;

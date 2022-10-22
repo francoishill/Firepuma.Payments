@@ -24,7 +24,7 @@ public class PaymentApplicationConfigCosmosDbRepository : CosmosDbRepository<Pay
 
     private static string GenerateId(ClientApplicationId applicationId, PaymentGatewayTypeId gatewayTypeId) => $"{gatewayTypeId.Value}:{applicationId.Value}";
 
-    public async Task<PaymentApplicationConfig> GetItemOrDefaultAsync(
+    public async Task<PaymentApplicationConfig?> GetItemOrDefaultAsync(
         ClientApplicationId applicationId,
         PaymentGatewayTypeId gatewayTypeId,
         CancellationToken cancellationToken)

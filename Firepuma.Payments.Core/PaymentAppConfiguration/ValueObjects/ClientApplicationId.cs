@@ -18,7 +18,7 @@ public readonly struct ClientApplicationId : IComparable<ClientApplicationId>, I
     public bool Equals(ClientApplicationId other) => Value?.Equals(other.Value) == true;
     public int CompareTo(ClientApplicationId other) => string.Compare(Value, other.Value, StringComparison.Ordinal);
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         return obj is ClientApplicationId other && Equals(other);
@@ -36,7 +36,7 @@ public readonly struct ClientApplicationId : IComparable<ClientApplicationId>, I
             ref System.Text.Json.Utf8JsonReader reader,
             Type typeToConvert,
             System.Text.Json.JsonSerializerOptions options) =>
-            new ClientApplicationId(reader.GetString());
+            new ClientApplicationId(reader.GetString()!);
 
         public override void Write(
             System.Text.Json.Utf8JsonWriter writer,
@@ -54,34 +54,34 @@ public readonly struct ClientApplicationId : IComparable<ClientApplicationId>, I
 
         public override void WriteJson(
             Newtonsoft.Json.JsonWriter writer,
-            object value,
+            object? value,
             Newtonsoft.Json.JsonSerializer serializer)
         {
-            var id = (ClientApplicationId)value;
-            serializer.Serialize(writer, id.Value);
+            var id = (ClientApplicationId?)value;
+            serializer.Serialize(writer, id?.Value);
         }
 
         public override object ReadJson(
             Newtonsoft.Json.JsonReader reader,
             Type objectType,
-            object existingValue,
+            object? existingValue,
             Newtonsoft.Json.JsonSerializer serializer)
         {
             var str = serializer.Deserialize<string>(reader);
-            return new ClientApplicationId(str);
+            return new ClientApplicationId(str!);
         }
     }
 
     private class ClientApplicationIdTypeConverter : TypeConverter
     {
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
         {
             return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
         }
 
-        public override object ConvertFrom(
-            ITypeDescriptorContext context,
-            CultureInfo culture,
+        public override object? ConvertFrom(
+            ITypeDescriptorContext? context,
+            CultureInfo? culture,
             object value)
         {
             var stringValue = value as string;

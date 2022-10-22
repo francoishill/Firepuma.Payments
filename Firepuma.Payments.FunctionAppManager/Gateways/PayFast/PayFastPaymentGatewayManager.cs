@@ -40,7 +40,7 @@ public class PayFastPaymentGatewayManager : IPaymentGatewayManager
         {
             return ResultContainer<CreateClientApplicationRequestResult, CreateClientApplicationRequestFailureReason>.Failed(
                 CreateClientApplicationRequestFailureReason.ValidationFailed,
-                new[] { "Request body is invalid" }.Concat(validationResultsForRequest.Select(s => s.ErrorMessage)).ToArray());
+                new[] { "Request body is invalid" }.Concat(validationResultsForRequest.Select(s => s.ErrorMessage ?? "[NULL error]")).ToArray());
         }
 
         var successfulValue = new CreateClientApplicationRequestResult

@@ -22,7 +22,7 @@ public static class PaymentBusMessageMappings
         [typeof(PaymentNotificationValidatedMessage)] = MessageTypeNames.PaymentNotificationValidatedMessage,
     };
 
-    private static readonly IReadOnlyDictionary<string, Func<BinaryData, object>> _messageDeserializers = new Dictionary<string, Func<BinaryData, object>>
+    private static readonly IReadOnlyDictionary<string, Func<BinaryData, object?>> _messageDeserializers = new Dictionary<string, Func<BinaryData, object?>>
     {
         [MessageTypeNames.PaymentNotificationValidatedMessage] = messageData => JsonConvert.DeserializeObject<PaymentNotificationValidatedMessage>(messageData.ToString()),
     };
@@ -32,7 +32,7 @@ public static class PaymentBusMessageMappings
         return _messageTypeNameMap[eventData.GetType()];
     }
 
-    public static bool TryGetPaymentMessage(ServiceBusReceivedMessage busMessage, out object eventData)
+    public static bool TryGetPaymentMessage(ServiceBusReceivedMessage busMessage, out object? eventData)
     {
         try
         {

@@ -28,19 +28,19 @@ public static class EnqueuePaymentNotificationForProcessing
 {
     public class Command : BaseCommand<Result>
     {
-        public string CorrelationId { get; init; }
+        public string CorrelationId { get; init; } = null!;
 
         public PaymentGatewayTypeId GatewayTypeId { get; init; }
 
         public ClientApplicationId ApplicationId { get; init; }
 
         [IgnoreCommandExecution]
-        public PaymentApplicationConfig ApplicationConfig { get; init; }
+        public PaymentApplicationConfig ApplicationConfig { get; init; } = null!;
 
-        public BasePaymentNotificationPayload PaymentNotificationPayload { get; init; }
+        public BasePaymentNotificationPayload PaymentNotificationPayload { get; init; } = null!;
 
-        public string RemoteIp { get; init; }
-        public string IncomingRequestUri { get; init; }
+        public string RemoteIp { get; init; } = null!;
+        public string IncomingRequestUri { get; init; } = null!;
     }
 
     public class Result
@@ -103,7 +103,7 @@ public static class EnqueuePaymentNotificationForProcessing
                     new[] { validationResult.FailedReason.ToString() }.Concat(validationResult.FailedErrors).ToArray()));
             }
 
-            var paymentId = validationResult.Result.PaymentId;
+            var paymentId = validationResult.Result!.PaymentId;
             var paymentStatus = validationResult.Result.PaymentStatus;
             var gatewayInternalTransactionId = validationResult.Result.GatewayInternalTransactionId;
 

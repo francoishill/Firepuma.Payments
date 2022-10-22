@@ -5,7 +5,7 @@ namespace Firepuma.Payments.Core.Infrastructure.Events.EventGridMessages;
 
 public class PaymentUpdatedEvent : IPaymentEventGridMessage
 {
-    public string CorrelationId { get; set; }
+    public string CorrelationId { get; set; } = null!;
     public ClientApplicationId ApplicationId { get; set; }
     public PaymentId PaymentId { get; set; }
     public PaymentStatus Status { get; set; }

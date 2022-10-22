@@ -88,7 +88,7 @@ internal class ServiceBusBackgroundProcessor : BackgroundService
                     {
                         //TODO: do something with other event type
                         _logger.LogError("Unknown payment event type {EventType} with object type {ObjectType} for event ID {Id}",
-                            eventGridEvent.EventType, paymentEvent.GetType().FullName, eventGridEvent.Id);
+                            eventGridEvent.EventType, paymentEvent?.GetType().FullName, eventGridEvent.Id);
                     }
                 }
                 else

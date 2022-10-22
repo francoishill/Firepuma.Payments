@@ -2,5 +2,5 @@
 
 public class PaymentGeneralOptions
 {
-    public string ValidateAndStorePaymentNotificationBaseUrl { get; set; }
+    public string ValidateAndStorePaymentNotificationBaseUrl { get; set; } = null!;
 }

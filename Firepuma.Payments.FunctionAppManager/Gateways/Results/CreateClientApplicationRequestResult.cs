@@ -2,5 +2,5 @@
 
 public class CreateClientApplicationRequestResult
 {
-    public object RequestDto { get; set; }
+    public object RequestDto { get; set; } = null!;
 }

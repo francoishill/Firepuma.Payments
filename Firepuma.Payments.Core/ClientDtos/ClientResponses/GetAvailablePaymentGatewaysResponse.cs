@@ -6,6 +6,6 @@ namespace Firepuma.Payments.Core.ClientDtos.ClientResponses;
 public class GetAvailablePaymentGatewaysResponse
 {
     public PaymentGatewayTypeId TypeId { get; set; }
-    public string DisplayName { get; set; }
-    public PaymentGatewayFeatures Features { get; set; }
+    public string DisplayName { get; set; } = null!;
+    public PaymentGatewayFeatures Features { get; set; } = null!;
 }

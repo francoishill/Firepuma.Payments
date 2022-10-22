@@ -20,19 +20,19 @@ public static class AddDeadLetteredMessage
 {
     public class Command : BaseCommand<Result>
     {
-        public string MessageId { get; init; }
+        public string MessageId { get; init; } = null!;
         public DateTimeOffset EnqueuedTime { get; init; }
-        public string MessageBody { get; init; }
-        public string Subject { get; init; }
-        public string ContentType { get; init; }
-        public string CorrelationId { get; init; }
+        public string MessageBody { get; init; } = null!;
+        public string Subject { get; init; } = null!;
+        public string ContentType { get; init; } = null!;
+        public string CorrelationId { get; init; } = null!;
         public int DeliveryCount { get; init; }
-        public string PartitionKey { get; init; }
-        public string SessionId { get; init; }
-        public string DeadLetterReason { get; init; }
-        public string DeadLetterSource { get; init; }
-        public string DeadLetterErrorDescription { get; init; }
-        public Dictionary<string, object> ApplicationProperties { get; init; }
+        public string PartitionKey { get; init; } = null!;
+        public string SessionId { get; init; } = null!;
+        public string DeadLetterReason { get; init; } = null!;
+        public string DeadLetterSource { get; init; } = null!;
+        public string DeadLetterErrorDescription { get; init; } = null!;
+        public Dictionary<string, object> ApplicationProperties { get; init; } = null!;
     }
 
     public class Result

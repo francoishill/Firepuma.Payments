@@ -4,5 +4,5 @@ namespace Firepuma.Payments.FunctionApp.Gateways.Results;
 
 public class ValidatePrepareRequestResult
 {
-    public IPreparePaymentExtraValues ExtraValues { get; set; }
+    public IPreparePaymentExtraValues ExtraValues { get; set; } = null!;
 }

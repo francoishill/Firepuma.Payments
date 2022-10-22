@@ -25,6 +25,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PayFast;
 
+#pragma warning disable CS8618
+
 namespace Firepuma.Payments.FunctionApp.Gateways.PayFast;
 
 public class PayFastPaymentGateway : IPaymentGateway
@@ -69,7 +71,7 @@ public class PayFastPaymentGateway : IPaymentGateway
         {
             return ResultContainer<ValidatePrepareRequestResult, ValidatePrepareRequestFailureReason>.Failed(
                 ValidatePrepareRequestFailureReason.ValidationFailed,
-                new[] { "ExtraValues is invalid" }.Concat(validationResultsForRequest.Select(s => s.ErrorMessage)).ToArray());
+                new[] { "ExtraValues is invalid" }.Concat(validationResultsForRequest.Select(s => s.ErrorMessage ?? "[NULL error]")).ToArray());
         }
 
         if (extraValues.SplitPayment != null)
@@ -78,7 +80,7 @@ public class PayFastPaymentGateway : IPaymentGateway
             {
                 return ResultContainer<ValidatePrepareRequestResult, ValidatePrepareRequestFailureReason>.Failed(
                     ValidatePrepareRequestFailureReason.ValidationFailed,
-                    new[] { "ExtraValues is invalid" }.Concat(validationResultsForSplitPayment.Select(s => s.ErrorMessage)).ToArray());
+                    new[] { "ExtraValues is invalid" }.Concat(validationResultsForSplitPayment.Select(s => s.ErrorMessage ?? "[NULL error]")).ToArray());
             }
         }
 
@@ -335,7 +337,7 @@ public class PayFastPaymentGateway : IPaymentGateway
         };
     }
 
-    private static PayFastNotificationPayload ExtractPayFastNotifyOrNull(IFormCollection formCollection)
+    private static PayFastNotificationPayload? ExtractPayFastNotifyOrNull(IFormCollection? formCollection)
     {
         // https://github.com/louislewis2/payfast/blob/master/src/PayFast.AspNetCore/PayFastNotifyModelBinder.cs
         if (formCollection == null || formCollection.Count < 1)

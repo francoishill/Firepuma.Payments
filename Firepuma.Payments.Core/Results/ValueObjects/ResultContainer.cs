@@ -6,16 +6,16 @@ public class ResultContainer<TSuccess, TFailureReasons>
 {
     public bool IsSuccessful { get; set; }
 
-    public TSuccess Result { get; set; }
+    public TSuccess? Result { get; set; }
 
     public TFailureReasons? FailedReason { get; set; }
-    public string[] FailedErrors { get; set; }
+    public string[]? FailedErrors { get; set; }
 
     private ResultContainer(
         bool isSuccessful,
-        TSuccess result,
+        TSuccess? result,
         TFailureReasons? failedReason,
-        string[] failedErrors)
+        string[]? failedErrors)
     {
         IsSuccessful = isSuccessful;
 

@@ -18,7 +18,7 @@ public readonly struct PaymentGatewayTypeId : IComparable<PaymentGatewayTypeId>,
     public bool Equals(PaymentGatewayTypeId other) => Value?.Equals(other.Value) == true;
     public int CompareTo(PaymentGatewayTypeId other) => string.Compare(Value, other.Value, StringComparison.Ordinal);
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         return obj is PaymentGatewayTypeId other && Equals(other);
@@ -36,7 +36,7 @@ public readonly struct PaymentGatewayTypeId : IComparable<PaymentGatewayTypeId>,
             ref System.Text.Json.Utf8JsonReader reader,
             Type typeToConvert,
             System.Text.Json.JsonSerializerOptions options) =>
-            new PaymentGatewayTypeId(reader.GetString());
+            new PaymentGatewayTypeId(reader.GetString()!);
 
         public override void Write(
             System.Text.Json.Utf8JsonWriter writer,
@@ -54,36 +54,38 @@ public readonly struct PaymentGatewayTypeId : IComparable<PaymentGatewayTypeId>,
 
         public override void WriteJson(
             Newtonsoft.Json.JsonWriter writer,
-            object value,
+            object? value,
             Newtonsoft.Json.JsonSerializer serializer)
         {
-            var id = (PaymentGatewayTypeId)value;
-            serializer.Serialize(writer, id.Value);
+            var id = (PaymentGatewayTypeId?)value;
+            serializer.Serialize(writer, id?.Value);
         }
 
         public override object ReadJson(
             Newtonsoft.Json.JsonReader reader,
             Type objectType,
-            object existingValue,
+            object? existingValue,
             Newtonsoft.Json.JsonSerializer serializer)
         {
             var str = serializer.Deserialize<string>(reader);
-            return new PaymentGatewayTypeId(str);
+            return new PaymentGatewayTypeId(str!);
         }
     }
 
     private class PaymentGatewayTypeIdTypeConverter : TypeConverter
     {
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
         {
             return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
         }
 
-        public override object ConvertFrom(
-            ITypeDescriptorContext context,
-            CultureInfo culture,
+        public override object? ConvertFrom(
+            ITypeDescriptorContext? context,
+            CultureInfo? culture,
             object value)
         {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+            if (culture == null) throw new ArgumentNullException(nameof(culture));
             var stringValue = value as string;
             if (!string.IsNullOrEmpty(stringValue))
             {

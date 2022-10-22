@@ -64,7 +64,7 @@ public class PaymentGatewaysTests
         AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(assembly => assembly.GetTypes())
             .Where(type => _paymentGatewayInterface.IsAssignableFrom(type) && type.IsClass)
-            .Select(gateway => Activator.CreateInstance(gateway) as IPaymentGateway);
+            .Select(gateway => Activator.CreateInstance(gateway) as IPaymentGateway)!;
 
     public static IEnumerable<object[]> PaymentGatewayInstancesMemberData => PaymentGatewayInstances.Select(instance => new object[] { instance });
 }

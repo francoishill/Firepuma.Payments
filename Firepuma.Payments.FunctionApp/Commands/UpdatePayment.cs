@@ -36,14 +36,14 @@ public static class UpdatePayment
         public ClientApplicationId ApplicationId { get; init; }
 
         public PaymentId PaymentId { get; init; }
-        public string GatewayInternalTransactionId { get; init; }
+        public string GatewayInternalTransactionId { get; init; } = null!;
 
         public PaymentStatus PaymentStatus { get; init; }
 
-        public BasePaymentNotificationPayload PaymentNotificationPayload { get; init; }
+        public BasePaymentNotificationPayload PaymentNotificationPayload { get; init; } = null!;
 
-        public string IncomingRequestUri { get; init; }
-        public string CorrelationId { get; init; }
+        public string IncomingRequestUri { get; init; } = null!;
+        public string CorrelationId { get; init; } = null!;
     }
 
     public class Result
@@ -137,7 +137,7 @@ public static class UpdatePayment
                 throw new PreconditionFailedException($"Unable to load payment with gatewayTypeId {gatewayTypeId}, applicationId {applicationId} and paymentId {paymentId}");
             }
 
-            var payment = getPaymentResult.PaymentEntity;
+            var payment = getPaymentResult.PaymentEntity!;
 
             gateway.SetPaymentPropertiesFromNotification(payment, command.PaymentNotificationPayload);
             payment.SetStatus(paymentStatus);

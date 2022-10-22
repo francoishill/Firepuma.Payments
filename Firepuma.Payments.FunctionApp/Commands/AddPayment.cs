@@ -40,15 +40,15 @@ public static class AddPayment
         public ClientApplicationId ApplicationId { get; init; }
 
         [IgnoreCommandExecution]
-        public PaymentApplicationConfig ApplicationConfig { get; init; }
+        public PaymentApplicationConfig ApplicationConfig { get; init; } = null!;
 
         public PaymentId PaymentId { get; init; }
-        public IPreparePaymentExtraValues ExtraValues { get; init; }
+        public IPreparePaymentExtraValues ExtraValues { get; init; } = null!;
     }
 
     public class Result
     {
-        public Uri RedirectUrl { get; init; }
+        public Uri RedirectUrl { get; init; } = null!;
     }
 
     public sealed class Validator : AbstractValidator<Command>

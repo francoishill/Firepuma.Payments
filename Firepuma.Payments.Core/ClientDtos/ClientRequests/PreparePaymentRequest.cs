@@ -1,6 +1,8 @@
 ﻿using Firepuma.Payments.Core.Payments.ValueObjects;
 using Newtonsoft.Json.Linq;
 
+#pragma warning disable CS8618
+
 namespace Firepuma.Payments.Core.ClientDtos.ClientRequests;
 
 public class PreparePaymentRequest
@@ -8,17 +10,23 @@ public class PreparePaymentRequest
     public PaymentId PaymentId { get; set; }
     public JObject ExtraValues { get; set; }
 
-    public bool TryCastExtraValuesToType<T>(out T extraValues, out string error) where T : class
+    public bool TryCastExtraValuesToType<T>(out T extraValues, out string? error) where T : class
     {
         try
         {
-            extraValues = ExtraValues.ToObject<T>();
+            extraValues = ExtraValues.ToObject<T>()!;
+
+            if (extraValues == null)
+            {
+                throw new InvalidCastException($"Unable to cast ExtraValues to type {typeof(T).FullName}");
+            }
+
             error = null;
             return true;
         }
         catch (Exception exception)
         {
-            extraValues = null;
+            extraValues = null!;
             error = exception.Message;
             return false;
         }

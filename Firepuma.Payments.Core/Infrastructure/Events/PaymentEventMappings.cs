@@ -11,7 +11,7 @@ public static class PaymentEventMappings
         [typeof(PaymentUpdatedEvent)] = "Firepuma.Payments.PaymentUpdatedEvent",
     };
 
-    private static readonly IReadOnlyDictionary<string, Func<BinaryData, object>> _eventDeserializers = new Dictionary<string, Func<BinaryData, object>>
+    private static readonly IReadOnlyDictionary<string, Func<BinaryData, object?>> _eventDeserializers = new Dictionary<string, Func<BinaryData, object?>>
     {
         ["Firepuma.Payments.PaymentUpdatedEvent"] = eventBinaryData => JsonConvert.DeserializeObject<PaymentUpdatedEvent>(eventBinaryData.ToString()),
     };
@@ -21,7 +21,7 @@ public static class PaymentEventMappings
         return _eventTypeNameMap[eventData.GetType()];
     }
 
-    public static bool TryGetPaymentEventData(EventGridEvent eventGridEvent, out object eventData)
+    public static bool TryGetPaymentEventData(EventGridEvent eventGridEvent, out object? eventData)
     {
         try
         {

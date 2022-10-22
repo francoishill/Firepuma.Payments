@@ -73,7 +73,7 @@ internal class PaymentsServiceClient : IPaymentsServiceClient
         {
             return ResultContainer<PreparePaymentResponse, PreparePaymentFailureReason>.Failed(
                 PreparePaymentFailureReason.ValidationFailed,
-                new[] { "ExtraValues is invalid" }.Concat(validationResultsForExtraValues.Select(s => s.ErrorMessage)).ToArray());
+                new[] { "ExtraValues is invalid" }.Concat(validationResultsForExtraValues.Select(s => s.ErrorMessage ?? "[NULL error]")).ToArray());
         }
 
         var extraValuesCasted = PreparePaymentRequest.CastToExtraValues(extraValues);

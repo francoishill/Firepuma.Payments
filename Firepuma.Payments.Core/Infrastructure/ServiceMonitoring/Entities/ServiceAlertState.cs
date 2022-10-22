@@ -9,19 +9,25 @@ public class ServiceAlertState : BaseEntity
     public ServiceAlertType AlertType { get; set; }
     public DateTimeOffset NextCheckTime { get; set; } = DateTimeOffset.MinValue;
 
-    public JObject AlertContext { get; set; }
+    public JObject AlertContext { get; set; } = null!;
 
-    public bool TryCastAlertContextToType<T>(out T alertContext, out string castError) where T : class
+    public bool TryCastAlertContextToType<T>(out T alertContext, out string? castError) where T : class
     {
         try
         {
-            alertContext = AlertContext.ToObject<T>();
+            alertContext = AlertContext.ToObject<T>()!;
+
+            if (alertContext == null)
+            {
+                throw new InvalidCastException($"Unable to cast AlertContext to type {typeof(T).FullName}");
+            }
+
             castError = null;
             return true;
         }
         catch (Exception exception)
         {
-            alertContext = null;
+            alertContext = null!;
             castError = exception.Message;
             return false;
         }

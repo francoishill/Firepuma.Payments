@@ -7,7 +7,7 @@ namespace Firepuma.Payments.FunctionApp.Gateways;
 
 public static class PaymentGatewaysCollectionExtensions
 {
-    public static IPaymentGateway GetFromTypeIdOrNull(
+    public static IPaymentGateway? GetFromTypeIdOrNull(
         this IEnumerable<IPaymentGateway> gateways,
         PaymentGatewayTypeId gatewayTypeId)
     {

@@ -9,12 +9,12 @@ public class PayFastAppConfigExtraValues
     public bool IsSandbox { get; set; }
 
     [Required]
-    public string MerchantId { get; set; }
+    public string MerchantId { get; set; } = null!;
 
     [Required]
-    public string MerchantKey { get; set; }
+    public string MerchantKey { get; set; } = null!;
 
-    public string PassPhrase { get; set; }
+    public string PassPhrase { get; set; } = null!;
 
     // ReSharper disable once UnusedMember.Global
     public PayFastAppConfigExtraValues()

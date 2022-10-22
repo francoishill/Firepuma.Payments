@@ -12,21 +12,27 @@ public class PaymentApplicationConfig : BaseEntity
     public ClientApplicationId ApplicationId { get; set; }
     public PaymentGatewayTypeId GatewayTypeId { get; set; }
 
-    public string ApplicationSecret { get; set; }
+    public string ApplicationSecret { get; set; } = null!;
 
-    public JObject ExtraValues { get; set; } // can be used to store extra values specific to each payment gateway
+    public JObject ExtraValues { get; set; } = null!; // can be used to store extra values specific to each payment gateway
 
-    public bool TryCastExtraValuesToType<T>(out T extraValues, out string error) where T : class
+    public bool TryCastExtraValuesToType<T>(out T extraValues, out string? error) where T : class
     {
         try
         {
-            extraValues = ExtraValues.ToObject<T>();
+            extraValues = ExtraValues.ToObject<T>()!;
+
+            if (extraValues == null)
+            {
+                throw new InvalidCastException($"Unable to cast ExtraValues to type {typeof(T).FullName}");
+            }
+
             error = null;
             return true;
         }
         catch (Exception exception)
         {
-            extraValues = null;
+            extraValues = null!;
             error = exception.Message;
             return false;
         }

@@ -45,7 +45,7 @@ public class TriggerAlertNewDeadLetteredMessages
 
         if (!queryResult.IsDue)
         {
-            log.LogInformation("Nothing to do now, next check time is {Time}", queryResult.LastAlertState.NextCheckTime.ToString("O"));
+            log.LogInformation("Nothing to do now, next check time is {Time}", queryResult.LastAlertState!.NextCheckTime.ToString("O"));
             return;
         }
 

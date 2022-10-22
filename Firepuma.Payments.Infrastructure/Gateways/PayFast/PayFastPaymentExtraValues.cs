@@ -8,7 +8,7 @@ public class PayFastPaymentExtraValues
     public string ItemName { get; set; }
     public string ItemDescription { get; set; }
 
-    public string PayfastPaymentToken { get; set; }
+    public string PayfastPaymentToken { get; set; } = null!;
 
     public PayFastPaymentExtraValues(
         string emailAddress,

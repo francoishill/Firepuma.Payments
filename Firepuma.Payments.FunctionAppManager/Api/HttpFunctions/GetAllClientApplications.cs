@@ -53,8 +53,8 @@ public class GetAllClientApplications
         public ClientApplicationId ApplicationId { get; set; }
         public PaymentGatewayTypeId GatewayTypeId { get; set; }
 
-        public string ApplicationSecret { get; set; }
+        public string ApplicationSecret { get; set; } = null!;
 
-        public object ExtraValues { get; set; }
+        public object ExtraValues { get; set; } = null!;
     }
 }

@@ -102,12 +102,12 @@ public class PreparePayment
         var validationResult = await gateway.ValidatePrepareRequestAsync(prepareRequest, cancellationToken);
         if (!validationResult.IsSuccessful)
         {
-            _logger.LogError("{Reason}, {Errors}", validationResult.FailedReason.ToString(), string.Join(", ", validationResult.FailedErrors));
-            return HttpResponseFactory.CreateBadRequestResponse($"{validationResult.FailedReason.ToString()}, {string.Join(", ", validationResult.FailedErrors)}");
+            _logger.LogError("{Reason}, {Errors}", validationResult.FailedReason.ToString(), string.Join(", ", validationResult.FailedErrors!));
+            return HttpResponseFactory.CreateBadRequestResponse($"{validationResult.FailedReason.ToString()}, {string.Join(", ", validationResult.FailedErrors!)}");
         }
 
         var paymentId = prepareRequest.PaymentId;
-        var extraValues = validationResult.Result.ExtraValues;
+        var extraValues = validationResult.Result!.ExtraValues;
 
         var addCommand = new AddPayment.Command
         {

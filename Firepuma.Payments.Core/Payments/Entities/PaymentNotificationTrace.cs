@@ -9,11 +9,11 @@ public class PaymentNotificationTrace : BaseEntity
     public ClientApplicationId ApplicationId { get; set; }
     public PaymentGatewayTypeId GatewayTypeId { get; set; }
 
-    public string PaymentId { get; set; }
+    public string PaymentId { get; set; } = null!;
 
-    public string GatewayInternalTransactionId { get; set; }
-    public string PaymentNotificationJson { get; set; }
-    public string IncomingRequestUri { get; set; }
+    public string GatewayInternalTransactionId { get; set; } = null!;
+    public string PaymentNotificationJson { get; set; } = null!;
+    public string IncomingRequestUri { get; set; } = null!;
 
     public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 

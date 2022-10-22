@@ -20,15 +20,15 @@ public static class CreateFunctionHostSecretKey
 {
     public class Command : BaseCommand<Result>
     {
-        public string FunctionHostKeyName { get; init; }
+        public string FunctionHostKeyName { get; init; } = null!;
     }
 
     public class Result
     {
-        public string KeyName { get; set; }
+        public string KeyName { get; set; } = null!;
         public bool IsNew { get; set; }
-        public string KeyValue { get; set; }
-        public string FunctionsBaseUrl { get; set; }
+        public string KeyValue { get; set; } = null!;
+        public string FunctionsBaseUrl { get; set; } = null!;
     }
 
 
@@ -98,8 +98,8 @@ public static class CreateFunctionHostSecretKey
 
         private class KeyResponse
         {
-            public string Name { get; set; }
-            public string Value { get; set; }
+            public string Name { get; set; } = null!;
+            public string Value { get; set; } = null!;
         }
     }
 }

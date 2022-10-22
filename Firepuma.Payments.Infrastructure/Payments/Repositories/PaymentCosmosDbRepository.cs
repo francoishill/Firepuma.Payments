@@ -24,7 +24,7 @@ public class PaymentCosmosDbRepository : CosmosDbRepository<PaymentEntity>, IPay
 
     private static string GenerateId(ClientApplicationId applicationId, PaymentId paymentId) => $"{paymentId.Value}:{applicationId}";
 
-    public async Task<PaymentEntity> GetItemOrDefaultAsync(
+    public async Task<PaymentEntity?> GetItemOrDefaultAsync(
         ClientApplicationId applicationId,
         PaymentId paymentId,
         CancellationToken cancellationToken)

@@ -9,5 +9,5 @@ public abstract class BasePaymentNotificationPayload
 {
     [TypeIndicator]
     // ReSharper disable once UnusedMember.Global
-    public string ConcreteType => GetType().FullName;
+    public string? ConcreteType => GetType().FullName;
 }

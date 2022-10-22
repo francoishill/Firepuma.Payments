@@ -78,8 +78,8 @@ public class ProcessPaymentBusMessage
             }
             else
             {
-                log.LogCritical("Unsupported message type {Type} for message ID '{Id}'", paymentEvent.GetType().FullName, busReceivedMessage.MessageId);
-                throw new Exception($"Unsupported message type {paymentEvent.GetType().FullName} for message ID '{busReceivedMessage.MessageId}'");
+                log.LogCritical("Unsupported message type {Type} for message ID '{Id}'", paymentEvent?.GetType().FullName, busReceivedMessage.MessageId);
+                throw new Exception($"Unsupported message type {paymentEvent?.GetType().FullName} for message ID '{busReceivedMessage.MessageId}'");
             }
         }
         else

@@ -65,10 +65,10 @@ public class GetPayment
 
         if (!result.IsSuccessful)
         {
-            return HttpResponseFactory.CreateBadRequestResponse($"{result.FailedReason.ToString()}, {string.Join(", ", result.FailedErrors)}");
+            return HttpResponseFactory.CreateBadRequestResponse($"{result.FailedReason.ToString()}, {string.Join(", ", result.FailedErrors!)}");
         }
 
-        var gatewayTypeId = result.PaymentEntity.GatewayTypeId;
+        var gatewayTypeId = result.PaymentEntity!.GatewayTypeId;
 
         var gateway = _gateways.GetFromTypeIdOrNull(gatewayTypeId);
 

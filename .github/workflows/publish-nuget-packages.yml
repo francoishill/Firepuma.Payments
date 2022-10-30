@@ -7,10 +7,11 @@ on:
 
 env:
   DOTNET_VERSION: '6.0'
-  PACKAGE_VERSION: "0.3.0"
+  PACKAGE_VERSION: "0.3.1"
 
 jobs:
   build-and-deploy:
+    name: Deploy version ${{ env.PACKAGE_VERSION }}
     runs-on: windows-latest
     steps:
       - name: 'Checkout GitHub Action'

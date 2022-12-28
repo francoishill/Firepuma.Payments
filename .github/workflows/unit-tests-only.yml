@@ -6,28 +6,16 @@ on:
       - main
 
 env:
-  DOTNET_VERSION: '6.0'
+  DUMMY_VERSION: 0.0.1-dev-unit-tests
+  WORKER_ENTRY_PROJECT_DIR: Firepuma.Payments.Worker
 
 jobs:
   unit-tests:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
-      - name: 'Checkout GitHub Action'
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: Install dependencies
-        run: |
-          dotnet restore Firepuma.Payments.Core
-          dotnet restore Firepuma.Payments.Client
-          dotnet restore Firepuma.Payments.FunctionApp
-          dotnet restore Firepuma.Payments.FunctionAppManager
-          dotnet restore Firepuma.Payments.Infrastructure
-          dotnet restore Firepuma.Payments.Tests
-
-      - name: Test
-        run: dotnet test --no-restore
+      - name: Build and Test Worker
+        env:
+          VERSION: ${{ env.DUMMY_VERSION }}
+        run: docker build --no-cache --progress plain --file ${{ env.WORKER_ENTRY_PROJECT_DIR }}/Dockerfile --build-arg version=${{ env.VERSION }} ./

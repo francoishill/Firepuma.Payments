@@ -1,0 +1,65 @@
+﻿name: Deploy Google Cloud Run service
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  ENTRY_PROJECT_DIR: Firepuma.Payments.Worker
+  PROJECT_ID: firepuma-microservices
+  ARTIFACT_REGISTRY: europe-west1-docker.pkg.dev
+  IMAGE_REPOSITORY: firepuma-microservices-artifact-repository
+  REGION: europe-west1
+  SERVICE: payments-service
+  PUBSUB_TOPIC_NAME: projects/firepuma-microservices/topics/payments-service
+  BASE_VERSION: 0.1.0
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Google Auth
+        id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CLOUD_SERVICE_ACCOUNT_KEY }}
+
+      - name: Docker Auth
+        id: docker-auth
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.ARTIFACT_REGISTRY }}
+          username: _json_key
+          password: ${{ secrets.GOOGLE_CLOUD_SERVICE_ACCOUNT_KEY }}
+
+      - name: Set env.DOCKER_IMAGE value
+        run: echo "DOCKER_IMAGE=${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.IMAGE_REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}" >> $GITHUB_ENV
+
+      - name: Build and Test
+        env:
+          VERSION: ${{ env.BASE_VERSION }}-rev-${{ github.run_number }}
+        run: docker build --no-cache -t "${{ env.DOCKER_IMAGE }}" --progress plain --file ${{ env.ENTRY_PROJECT_DIR }}/Dockerfile --build-arg version=${{ env.VERSION }} ./
+
+      - name: Push Container
+        run: docker push "${{ env.DOCKER_IMAGE }}"
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v0
+        with:
+          service: ${{ env.SERVICE }}
+          region: ${{ env.REGION }}
+          image: ${{ env.DOCKER_IMAGE }}
+          flags: --service-account=${{ env.SERVICE }}-identity@${{ env.PROJECT_ID }}.iam.gserviceaccount.com
+
+      - name: Show Url
+        run: echo ${{ steps.deploy.outputs.url }}
+
+      - name: Notify deployed via PubSub
+        env:
+          MESSAGE_PAYLOAD: '{ "GithubWorkflowEventName": "NewRevisionDeployed" }'
+        run: |-
+          gcloud pubsub topics publish '${{ env.PUBSUB_TOPIC_NAME }}' --message '${{ env.MESSAGE_PAYLOAD }}'

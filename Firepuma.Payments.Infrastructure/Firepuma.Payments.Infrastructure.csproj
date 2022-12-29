@@ -7,14 +7,20 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="12.0.0" />
       <PackageReference Include="Firepuma.BusMessaging.GooglePubSub" Version="0.9.0" />
       <PackageReference Include="Firepuma.CommandsAndQueries.MongoDb" Version="0.11.1" />
       <PackageReference Include="Firepuma.DatabaseRepositories.MongoDb" Version="0.14.1" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+      <PackageReference Include="PayFast.AspNetCore" Version="1.0.5" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Firepuma.Payments.Domain\Firepuma.Payments.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Gateways" />
     </ItemGroup>
 
 </Project>

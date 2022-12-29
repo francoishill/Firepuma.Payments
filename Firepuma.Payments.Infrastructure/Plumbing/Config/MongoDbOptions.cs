@@ -15,4 +15,10 @@ public class MongoDbOptions
 
     [Required]
     public string CommandExecutionsCollectionName { get; set; } = null!;
+
+    [Required]
+    public string PaymentsCollectionName { get; set; } = null!;
+
+    [Required]
+    public string NotificationTracesCollectionName { get; set; } = null!;
 }

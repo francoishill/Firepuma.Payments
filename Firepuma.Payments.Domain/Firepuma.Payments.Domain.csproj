@@ -14,7 +14,10 @@
       <PackageReference Include="Firepuma.Dtos.Email" Version="0.4.0" />
       <PackageReference Include="Firepuma.EventMediation.IntegrationEvents" Version="0.3.1" />
       <PackageReference Include="Firepuma.EventMediation.IntegrationEvents.CommandExecution" Version="0.3.1" />
+      <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+      <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
       <PackageReference Include="MongoDB.Driver" Version="2.18.0" />
+      <PackageReference Include="TypeIndicatorConverter.NewtonsoftJson" Version="1.0.0" />
     </ItemGroup>
 
 </Project>

@@ -17,6 +17,7 @@ public class PaymentGatewaysController : ControllerBase
     [HttpGet]
     public IActionResult GetPaymentGateways()
     {
+        //TODO: Implement code
         _logger.LogError("TODO: implement GetPaymentGateways");
         return Ok();
     }

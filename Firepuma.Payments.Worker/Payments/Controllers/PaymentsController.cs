@@ -17,8 +17,9 @@ public class PaymentsController : ControllerBase
     [HttpGet("{paymentId}")]
     public IActionResult GetPayment(string paymentId)
     {
-        var TODO = "Cater for the caller having to pass in their ApplicationId";
+        //TODO: Cater for the caller having to pass in their ApplicationId
 
+        //TODO: Implement code
         _logger.LogError("TODO: implement GetPayment");
         return Ok();
     }

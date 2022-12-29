@@ -1,6 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Firepuma.BusMessaging.Abstractions.Services.Results;
 using Firepuma.Dtos.Email.BusMessages;
 using Firepuma.EventMediation.IntegrationEvents.Abstractions;
@@ -58,13 +56,13 @@ public class IntegrationEventsMappingCache :
         return eventPayload != null;
     }
 
-    private static TIntegrationEvent? DeserializePayload<TIntegrationEvent>(string eventPayload)
-    {
-        var deserializeOptions = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-            Converters = { new JsonStringEnumConverter() },
-        };
-        return JsonSerializer.Deserialize<TIntegrationEvent?>(eventPayload, deserializeOptions);
-    }
+    // private static TIntegrationEvent? DeserializePayload<TIntegrationEvent>(string eventPayload)
+    // {
+    //     var deserializeOptions = new JsonSerializerOptions
+    //     {
+    //         PropertyNameCaseInsensitive = true,
+    //         Converters = { new JsonStringEnumConverter() },
+    //     };
+    //     return JsonSerializer.Deserialize<TIntegrationEvent?>(eventPayload, deserializeOptions);
+    // }
 }

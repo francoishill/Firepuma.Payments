@@ -1,5 +1,7 @@
 using AutoMapper;
 using Firepuma.Payments.Domain.Notifications.Commands;
+using Firepuma.Payments.Infrastructure.Gateways.PayFast;
+using Firepuma.Payments.Infrastructure.Payments;
 using Firepuma.Payments.Infrastructure.Plumbing.CommandHandling;
 using Firepuma.Payments.Infrastructure.Plumbing.IntegrationEvents;
 using Firepuma.Payments.Infrastructure.Plumbing.MongoDb;
@@ -34,8 +36,13 @@ builder.Services.AddCommandsAndQueriesFunctionality(
 var integrationEventsConfigSection = builder.Configuration.GetSection("IntegrationEvents");
 builder.Services.AddIntegrationEvents(integrationEventsConfigSection);
 
-// builder.Services.AddPaymentsFeature(
-//     mongoDbOptions.PaymentsCollectionName);
+var paymentsConfigSection = builder.Configuration.GetSection("Payments");
+builder.Services.AddPaymentsFeature(
+    paymentsConfigSection,
+    mongoDbOptions.PaymentsCollectionName,
+    mongoDbOptions.NotificationTracesCollectionName);
+
+builder.Services.AddPayFastFeature();
 
 if (!builder.Environment.IsDevelopment())
 {

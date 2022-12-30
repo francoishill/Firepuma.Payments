@@ -1,5 +1,6 @@
 ﻿using Firepuma.CommandsAndQueries.Abstractions.Commands;
 using Firepuma.CommandsAndQueries.Abstractions.Exceptions;
+using Firepuma.DatabaseRepositories.Abstractions.Exceptions;
 using Firepuma.Payments.Domain.Payments.Abstractions;
 using Firepuma.Payments.Domain.Payments.Entities;
 using Firepuma.Payments.Domain.Payments.Entities.Extensions;
@@ -126,23 +127,20 @@ public static class UpdatePaymentCommand
             gateway.SetPaymentPropertiesFromNotification(payment, payload.PaymentNotificationPayload);
             payment.SetStatus(paymentStatus);
 
-            //TODO: Is the throwing of the commented out PreconditionFailedException below necessary
-            await _paymentRepository.UpsertItemAsync(payment, cancellationToken: cancellationToken);
+            try
+            {
+                await _paymentRepository.UpsertItemAsync(payment, cancellationToken: cancellationToken);
+            }
+            catch (DocumentETagMismatchException documentETagMismatchException)
+            {
+                _logger.LogCritical(
+                    documentETagMismatchException,
+                    "Unable to update payment for applicationId: {ApplicationId}, paymentId: {PaymentId}, due to ETag mismatch",
+                    applicationId, paymentId);
 
-            // try
-            // {
-            //     await _paymentRepository.UpsertItemAsync(payment, cancellationToken: cancellationToken);
-            // }
-            // catch (CosmosException cosmosException) when (cosmosException.StatusCode == System.Net.HttpStatusCode.PreconditionFailed)
-            // {
-            //     _logger.LogCritical(
-            //         cosmosException,
-            //         "Unable to update payments table for applicationId: {ApplicationId}, paymentId: {PaymentId}, due to ETag mismatch, exception message is: {Exception}",
-            //         applicationId, paymentId, cosmosException.Message);
-            //
-            //     throw new PreconditionFailedException(
-            //         $"Unable to update payments table for applicationId: {applicationId}, paymentId: {paymentId}, due to ETag mismatch, exception message is: {cosmosException.Message}");
-            // }
+                throw new PreconditionFailedException(
+                    $"Unable to update payment for applicationId: {applicationId}, paymentId: {paymentId}, due to ETag mismatch, exception message is: {documentETagMismatchException.Message}");
+            }
 
             //TODO: Ensure the Result above inherits from BaseIntegrationEventProducingCommandResponse to cause integration events
             // await PublishEvent(payload, payment, cancellationToken);

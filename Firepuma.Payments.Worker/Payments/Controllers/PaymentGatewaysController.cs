@@ -1,3 +1,5 @@
+using Firepuma.Payments.Domain.Payments.Abstractions;
+using Firepuma.Payments.Worker.Payments.Controllers.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Firepuma.Payments.Worker.Payments.Controllers;
@@ -6,19 +8,26 @@ namespace Firepuma.Payments.Worker.Payments.Controllers;
 [Route("api/[controller]")]
 public class PaymentGatewaysController : ControllerBase
 {
-    private readonly ILogger<PaymentGatewaysController> _logger;
+    private readonly IEnumerable<IPaymentGateway> _gateways;
 
     public PaymentGatewaysController(
-        ILogger<PaymentGatewaysController> logger)
+        IEnumerable<IPaymentGateway> gateways)
     {
-        _logger = logger;
+        _gateways = gateways;
     }
 
     [HttpGet]
-    public IActionResult GetPaymentGateways()
+    public ActionResult<GetAvailablePaymentGatewaysResponse[]> GetPaymentGateways()
     {
-        //TODO: Implement code
-        _logger.LogError("TODO: implement GetPaymentGateways");
-        return Ok();
+        var gatewayResponses = _gateways
+            .Select(g => new GetAvailablePaymentGatewaysResponse
+            {
+                TypeId = g.TypeId,
+                DisplayName = g.DisplayName,
+                Features = g.Features,
+            })
+            .ToArray();
+
+        return gatewayResponses;
     }
 }

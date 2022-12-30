@@ -124,6 +124,15 @@ public static class UpdatePaymentCommand
 
             var payment = getPaymentResult.PaymentEntity;
 
+            if (payment == null)
+            {
+                _logger.LogCritical(
+                    "Unable to load payment for applicationId: {ApplicationId} and paymentId: {PaymentId}, it was null",
+                    applicationId, paymentId);
+
+                throw new Exception($"Unable to load payment for applicationId: {applicationId} and paymentId: {paymentId}, it was null");
+            }
+
             gateway.SetPaymentPropertiesFromNotification(payment, payload.PaymentNotificationPayload);
             payment.SetStatus(paymentStatus);
 

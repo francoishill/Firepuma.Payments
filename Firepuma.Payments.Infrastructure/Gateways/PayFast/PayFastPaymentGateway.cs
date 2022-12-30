@@ -49,8 +49,6 @@ public class PayFastPaymentGateway : IPaymentGateway
         PreparePaymentRequest preparePaymentRequest,
         CancellationToken cancellationToken)
     {
-        //TODO: Be reworking the code below to throw Exceptions, we lost the nice enum "FailureReason" code for each case
-
         if (!preparePaymentRequest.TryCastExtraValuesToType<PreparePayFastOnceOffPaymentExtraValues>(out var extraValues, out var castError))
         {
             throw new Exception($"The ExtraValues of PreparePaymentRequest should be type PreparePayFastOnceOffPaymentExtraValues, error: {castError}");
@@ -150,8 +148,6 @@ public class PayFastPaymentGateway : IPaymentGateway
         HttpRequest req,
         CancellationToken cancellationToken)
     {
-        //TODO: Be reworking the code below to throw Exceptions, we lost the nice enum "FailureReason" code for each case
-
         var transactionIdQueryParam = req.Query[PayFastSettingsFactory.TRANSACTION_ID_QUERY_PARAM_NAME];
         if (!string.IsNullOrWhiteSpace(transactionIdQueryParam))
         {
@@ -188,9 +184,6 @@ public class PayFastPaymentGateway : IPaymentGateway
         object genericPaymentNotificationPayload,
         IPAddress remoteIp)
     {
-        //TODO: Be reworking the code below to throw Exceptions, we lost the nice enum "FailureReason" code for each case
-
-
         if (genericPaymentNotificationPayload is not PayFastNotificationPayload payFastNotificationPayload)
         {
             throw new NotSupportedException($"PaymentNotificationPayload is incorrect type in ValidatePaymentNotificationAsync, it should be PayFastNotificationPayload but it is '{genericPaymentNotificationPayload.GetType().FullName}'");

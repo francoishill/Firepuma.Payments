@@ -1,9 +1,7 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿namespace Firepuma.Payments.Domain.Payments.ValueObjects;
 
-namespace Firepuma.Payments.Domain.Payments.ValueObjects;
-
-[JsonConverter(typeof(StringEnumConverter))]
+[Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+[System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
 public enum PaymentStatus
 {
     New,

@@ -3,7 +3,6 @@ using Firepuma.Payments.Domain.Payments.QuerySpecifications;
 using Firepuma.Payments.Domain.Payments.Repositories;
 using Firepuma.Payments.Domain.Payments.ValueObjects;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Local
@@ -24,20 +23,17 @@ public static class GetPaymentDetailsQuery
 
     public class Result
     {
-        public required PaymentEntity PaymentEntity { get; init; }
+        public required PaymentEntity? PaymentEntity { get; init; }
     }
 
 
     public class Handler : IRequestHandler<Payload, Result>
     {
-        private readonly ILogger<Handler> _logger;
         private readonly IPaymentRepository _paymentRepository;
 
         public Handler(
-            ILogger<Handler> logger,
             IPaymentRepository paymentRepository)
         {
-            _logger = logger;
             _paymentRepository = paymentRepository;
         }
 
@@ -48,15 +44,6 @@ public static class GetPaymentDetailsQuery
 
             var querySpecification = new PaymentByPaymentIdQuerySpecification(applicationId, paymentId);
             var paymentEntity = await _paymentRepository.GetItemOrDefaultAsync(querySpecification, cancellationToken);
-
-            if (paymentEntity == null)
-            {
-                _logger.LogCritical(
-                    "Unable to load payment for applicationId: {AppId} and paymentId: {PaymentId}, it was null",
-                    applicationId, paymentId);
-
-                throw new Exception($"Unable to load payment for applicationId: {applicationId} and paymentId: {paymentId}, it was null");
-            }
 
             return new Result
             {

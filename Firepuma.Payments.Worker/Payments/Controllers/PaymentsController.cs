@@ -1,6 +1,8 @@
-﻿using Firepuma.Payments.Domain.Payments.Abstractions;
+﻿using AutoMapper;
+using Firepuma.Payments.Domain.Payments.Abstractions;
 using Firepuma.Payments.Domain.Payments.Commands;
 using Firepuma.Payments.Domain.Payments.Extensions;
+using Firepuma.Payments.Domain.Payments.Queries;
 using Firepuma.Payments.Domain.Payments.ValueObjects;
 using Firepuma.Payments.Worker.Payments.Controllers.Responses;
 using MediatR;
@@ -15,28 +17,58 @@ public class PaymentsController : ControllerBase
     private readonly ILogger<PaymentsController> _logger;
     private readonly IEnumerable<IPaymentGateway> _gateways;
     private readonly IMediator _mediator;
+    private readonly IMapper _mapper;
     private readonly IApplicationConfigProvider _applicationConfigProvider;
 
     public PaymentsController(
         ILogger<PaymentsController> logger,
         IEnumerable<IPaymentGateway> gateways,
         IMediator mediator,
+        IMapper mapper,
         IApplicationConfigProvider applicationConfigProvider)
     {
         _logger = logger;
         _gateways = gateways;
         _mediator = mediator;
+        _mapper = mapper;
         _applicationConfigProvider = applicationConfigProvider;
     }
 
-    [HttpGet("{paymentId}")]
-    public IActionResult GetPayment(string paymentId)
+    [HttpGet("{applicationId}/{paymentId}")]
+    public async Task<ActionResult<GetPaymentResponse>> GetPayment(
+        ClientApplicationId applicationId,
+        PaymentId paymentId,
+        CancellationToken cancellationToken)
     {
-        //TODO: Cater for the caller having to pass in their ApplicationId
+        var query = new GetPaymentDetailsQuery.Payload
+        {
+            ApplicationId = applicationId,
+            PaymentId = paymentId,
+        };
 
-        //TODO: Implement code
-        _logger.LogError("TODO: implement GetPayment");
-        return Ok();
+        var payment = await _mediator.Send(query, cancellationToken);
+
+        if (payment.PaymentEntity == null)
+        {
+            _logger.LogCritical(
+                "Unable to load payment for applicationId: {ApplicationId} and paymentId: {PaymentId}, it was null",
+                applicationId, paymentId);
+
+            return BadRequest($"Unable to load payment for applicationId: {applicationId} and paymentId: {paymentId}, it was null");
+        }
+
+        var gatewayTypeId = payment.PaymentEntity.GatewayTypeId;
+
+        var gateway = _gateways.GetFromTypeIdOrNull(gatewayTypeId);
+
+        if (gateway == null)
+        {
+            return BadRequest($"The payment gateway type '{gatewayTypeId}' is not supported");
+        }
+
+        var dto = _mapper.Map<GetPaymentResponse>(payment.PaymentEntity);
+
+        return dto;
     }
 
     [HttpPost("{applicationId}/{gatewayTypeId}")]

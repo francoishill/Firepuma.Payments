@@ -66,6 +66,14 @@ public class PaymentEntity : BaseMongoDbEntity
 
     public static IEnumerable<CreateIndexModel<PaymentEntity>> GetSchemaIndexes()
     {
-        return Array.Empty<CreateIndexModel<PaymentEntity>>();
+        return new[]
+        {
+            new CreateIndexModel<PaymentEntity>(Builders<PaymentEntity>.IndexKeys.Combine(
+                    Builders<PaymentEntity>.IndexKeys.Ascending(p => p.ApplicationId),
+                    Builders<PaymentEntity>.IndexKeys.Ascending(p => p.PaymentId)
+                ),
+                new CreateIndexOptions<PaymentEntity> { Unique = true }
+            ),
+        };
     }
 }

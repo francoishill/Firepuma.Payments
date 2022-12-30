@@ -8,6 +8,7 @@ on:
 env:
   DUMMY_VERSION: 0.0.1-dev-unit-tests
   WORKER_ENTRY_PROJECT_DIR: Firepuma.Payments.Worker
+  WEBHOOKS_ENTRY_PROJECT_DIR: Firepuma.Template.GoogleCloudRunService.WebHooks
 
 jobs:
   unit-tests:
@@ -19,3 +20,8 @@ jobs:
         env:
           VERSION: ${{ env.DUMMY_VERSION }}
         run: docker build --no-cache --progress plain --file ${{ env.WORKER_ENTRY_PROJECT_DIR }}/Dockerfile --build-arg version=${{ env.VERSION }} ./
+
+      - name: Build and Test WebHooks
+        env:
+          VERSION: ${{ env.DUMMY_VERSION }}
+        run: docker build --no-cache --progress plain --file ${{ env.WEBHOOKS_ENTRY_PROJECT_DIR }}/Dockerfile --build-arg version=${{ env.VERSION }} ./

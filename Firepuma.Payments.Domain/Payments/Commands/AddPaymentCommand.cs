@@ -12,6 +12,7 @@ using Firepuma.Payments.Domain.Payments.Repositories;
 using Firepuma.Payments.Domain.Payments.ValueObjects;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -57,15 +58,18 @@ public static class AddPaymentCommand
 
     public class Handler : IRequestHandler<Payload, Result>
     {
+        private readonly ILogger<Handler> _logger;
         private readonly IOptions<PaymentWebhookUrlsOptions> _paymentOptions;
         private readonly IEnumerable<IPaymentGateway> _gateways;
         private readonly IPaymentRepository _paymentRepository;
 
         public Handler(
+            ILogger<Handler> logger,
             IOptions<PaymentWebhookUrlsOptions> paymentOptions,
             IEnumerable<IPaymentGateway> gateways,
             IPaymentRepository paymentRepository)
         {
+            _logger = logger;
             _paymentOptions = paymentOptions;
             _gateways = gateways;
             _paymentRepository = paymentRepository;
@@ -97,22 +101,19 @@ public static class AddPaymentCommand
                 paymentId,
                 paymentEntityExtraValues);
 
-            //TODO: Is the throwing of the commented out PreconditionFailedException below necessary
-            await _paymentRepository.AddItemAsync(paymentEntity, cancellationToken);
+            try
+            {
+                await _paymentRepository.AddItemAsync(paymentEntity, cancellationToken);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(
+                    exception,
+                    "Failed to add payment with id \'{PaymentId}\' and application id \'{ApplicationId}\'",
+                    paymentId, applicationId);
 
-            // try
-            // {
-            //     await _paymentRepository.AddItemAsync(paymentEntity, cancellationToken);
-            // }
-            // catch (CosmosException cosmosException) when (cosmosException.StatusCode == HttpStatusCode.Conflict)
-            // {
-            //     _logger.LogCritical(
-            //         cosmosException,
-            //         "The payment (id \'{PaymentId}\' and application id \'{ApplicationId}\') is already added and cannot be added again",
-            //         paymentId, applicationId);
-            //
-            //     throw new PreconditionFailedException($"The payment (id '{paymentId}' and application id '{applicationId}') is already added and cannot be added again");
-            // }
+                throw;
+            }
 
             var incomingPaymentNotificationWebhookBaseUrlWithAppName = AddApplicationIdToPaymentNotificationBaseUrl(
                 _paymentOptions.Value.IncomingPaymentNotificationWebhookBaseUrl,

@@ -2,25 +2,11 @@
 
 public class PayFastPaymentExtraValues
 {
-    public string EmailAddress { get; set; }
-    public string NameFirst { get; set; }
-    public double ImmediateAmountInRands { get; set; }
-    public string ItemName { get; set; }
-    public string ItemDescription { get; set; }
+    public required string EmailAddress { get; init; }
+    public required string NameFirst { get; init; }
+    public required double ImmediateAmountInRands { get; init; }
+    public required string ItemName { get; init; }
+    public required string ItemDescription { get; init; }
 
-    public string PayfastPaymentToken { get; set; } = null!;
-
-    public PayFastPaymentExtraValues(
-        string emailAddress,
-        string nameFirst,
-        double immediateAmountInRands,
-        string itemName,
-        string itemDescription)
-    {
-        EmailAddress = emailAddress;
-        NameFirst = nameFirst;
-        ImmediateAmountInRands = immediateAmountInRands;
-        ItemName = itemName;
-        ItemDescription = itemDescription;
-    }
+    public string? PayfastPaymentToken { get; set; }
 }

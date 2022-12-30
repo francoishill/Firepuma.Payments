@@ -5,7 +5,7 @@ using TypeIndicatorConverter.NewtonsoftJson;
 namespace Firepuma.Payments.Domain.Payments.ValueObjects;
 
 [JsonConverter(typeof(TypeIndicatorConverter<BasePaymentNotificationPayload>))]
-public abstract class BasePaymentNotificationPayload
+public class BasePaymentNotificationPayload
 {
     [TypeIndicator]
     // ReSharper disable once UnusedMember.Global

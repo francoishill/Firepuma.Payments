@@ -12,7 +12,6 @@ using Firepuma.Payments.Infrastructure.Gateways.PayFast.Factories;
 using Firepuma.Payments.Infrastructure.Gateways.PayFast.ValueObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using PayFast;
 
 #pragma warning disable CS8618
@@ -80,7 +79,7 @@ public class PayFastPaymentGateway : IPaymentGateway
         return successResult;
     }
 
-    public async Task<JObject> CreatePaymentEntityExtraValuesAsync(
+    public async Task<string> CreatePaymentEntityExtraValuesAsync(
         ClientApplicationId applicationId,
         PaymentId paymentId,
         IPreparePaymentExtraValues genericExtraValues,
@@ -91,12 +90,14 @@ public class PayFastPaymentGateway : IPaymentGateway
             throw new NotSupportedException($"ExtraValues is incorrect type in CreatePaymentEntityExtraValuesAsync, it should be PreparePayFastOnceOffPaymentExtraValues but it is '{genericExtraValues.GetType().FullName}'");
         }
 
-        var payment = new PayFastPaymentExtraValues(
-            extraValues.BuyerEmailAddress,
-            extraValues.BuyerFirstName,
-            extraValues.ImmediateAmountInRands ?? throw new ArgumentNullException(nameof(extraValues.ImmediateAmountInRands)),
-            extraValues.ItemName,
-            extraValues.ItemDescription);
+        var payment = new PayFastPaymentExtraValues
+        {
+            EmailAddress = extraValues.BuyerEmailAddress,
+            NameFirst = extraValues.BuyerFirstName,
+            ImmediateAmountInRands = extraValues.ImmediateAmountInRands ?? throw new ArgumentNullException(nameof(extraValues.ImmediateAmountInRands)),
+            ItemName = extraValues.ItemName,
+            ItemDescription = extraValues.ItemDescription,
+        };
 
         await Task.CompletedTask;
 

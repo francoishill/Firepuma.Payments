@@ -4,5 +4,5 @@ namespace Firepuma.Payments.Domain.Payments.Abstractions.Results;
 
 public class ValidatePrepareRequestResult
 {
-    public IPreparePaymentExtraValues ExtraValues { get; set; } = null!;
+    public IPreparePaymentExtraValues ExtraValues { get; init; } = null!;
 }

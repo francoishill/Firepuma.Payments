@@ -7,8 +7,8 @@ namespace Firepuma.Payments.Domain.Payments.Abstractions;
 
 public class PreparePaymentRequest
 {
-    public PaymentId PaymentId { get; set; }
-    public JsonDocument ExtraValues { get; set; }
+    public PaymentId PaymentId { get; init; }
+    public JsonDocument ExtraValues { get; init; }
 
     public bool TryCastExtraValuesToType<T>(out T extraValues, out string? error) where T : class
     {
@@ -30,11 +30,5 @@ public class PreparePaymentRequest
             error = exception.Message;
             return false;
         }
-    }
-
-    public static JsonDocument CastToExtraValues<T>(T extraValues) where T : class
-    {
-        //TODO: test this, it is new code
-        return JsonSerializer.SerializeToDocument(extraValues);
     }
 }

@@ -64,7 +64,7 @@ public class PaymentWebhooksController : ControllerBase
 
         _logger.LogInformation("Validating PaymentNotification with payload {Payload}", JsonConvert.SerializeObject(paymentNotificationRequest.PaymentNotificationPayload));
 
-        var enqueuePaymentNotificationCommand = new EnqueuePaymentNotificationForProcessingCommand.Payload
+        var enqueuePaymentNotificationCommand = new ValidatePaymentNotificationCommand.Payload
         {
             CorrelationId = Request.HttpContext.TraceIdentifier,
             GatewayTypeId = gatewayTypeId,

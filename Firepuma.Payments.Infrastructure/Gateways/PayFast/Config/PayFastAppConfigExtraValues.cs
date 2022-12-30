@@ -16,12 +16,6 @@ public class PayFastAppConfigExtraValues
 
     public string PassPhrase { get; init; } = null!;
 
-    // ReSharper disable once EmptyConstructor
-    public PayFastAppConfigExtraValues()
-    {
-        // used by Azure Table deserialization (like in GetEntityAsync method)
-    }
-
     public static PayFastAppConfigExtraValues CreateFromExtraValues(
         Dictionary<string, string> extraValues)
     {
@@ -35,18 +29,27 @@ public class PayFastAppConfigExtraValues
         };
     }
 
-    public static Dictionary<string, string> CreateExtraValuesDictionary(
-        bool isSandbox,
-        string merchantId,
-        string merchantKey,
-        string passPhrase)
+    public class CreateRequestDto
     {
-        return new Dictionary<string, string>
+        public bool IsSandbox { get; set; }
+
+        [Required]
+        public string MerchantId { get; set; } = null!;
+
+        [Required]
+        public string MerchantKey { get; set; } = null!;
+
+        public string PassPhrase { get; set; } = null!;
+
+        public Dictionary<string, string> CreateExtraValuesDictionary()
         {
-            ["IsSandbox"] = isSandbox ? "true" : "false",
-            ["MerchantId"] = merchantId,
-            ["MerchantKey"] = merchantKey,
-            ["PassPhrase"] = passPhrase,
-        };
+            return new Dictionary<string, string>
+            {
+                ["IsSandbox"] = IsSandbox ? "true" : "false",
+                ["MerchantId"] = MerchantId,
+                ["MerchantKey"] = MerchantKey,
+                ["PassPhrase"] = PassPhrase,
+            };
+        }
     }
 }

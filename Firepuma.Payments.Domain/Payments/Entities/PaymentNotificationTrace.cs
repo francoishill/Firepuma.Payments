@@ -20,7 +20,7 @@ public class PaymentNotificationTrace : BaseMongoDbEntity
     // ReSharper disable once UnusedMember.Global
     public PaymentNotificationTrace()
     {
-        // used by Azure Cosmos deserialization (including the Add methods, like repository.AddItemAsync)
+        // used by Mongo deserialization (including the Add methods, like repository.AddItemAsync)
     }
 
     public PaymentNotificationTrace(

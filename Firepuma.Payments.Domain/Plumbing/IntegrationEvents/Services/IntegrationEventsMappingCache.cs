@@ -1,8 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Firepuma.BusMessaging.Abstractions.Services.Results;
 using Firepuma.Dtos.Email.BusMessages;
 using Firepuma.EventMediation.IntegrationEvents.Abstractions;
 using Firepuma.EventMediation.IntegrationEvents.ValueObjects;
+using Firepuma.Payments.Domain.Payments.Commands;
 using Firepuma.Payments.Domain.Plumbing.IntegrationEvents.Abstractions;
 
 namespace Firepuma.Payments.Domain.Plumbing.IntegrationEvents.Services;
@@ -31,7 +34,7 @@ public class IntegrationEventsMappingCache :
     {
         eventType = messagePayload switch
         {
-            // PreparePaymentCommand.Result => "Firepuma/FirepumaPayments/Event/PaymentPrepared",
+            ValidatePaymentNotificationCommand.Result => "Firepuma/FirepumaPayments/Event/PaymentNotificationValidated",
 
             // events handled by external services
             SendEmailRequest => "Firepuma/EmailService/SendEmail",
@@ -48,7 +51,7 @@ public class IntegrationEventsMappingCache :
     {
         eventPayload = envelope.EventType switch
         {
-            // "Firepuma/FirepumaPayments/Event/PaymentPrepared" => DeserializePayload<PreparePaymentCommand.Result>(envelope.EventPayload),
+            "Firepuma/FirepumaPayments/Event/PaymentNotificationValidated" => DeserializePayload<ValidatePaymentNotificationCommand.Result>(envelope.EventPayload),
 
             _ => null,
         };
@@ -56,13 +59,13 @@ public class IntegrationEventsMappingCache :
         return eventPayload != null;
     }
 
-    // private static TIntegrationEvent? DeserializePayload<TIntegrationEvent>(string eventPayload)
-    // {
-    //     var deserializeOptions = new JsonSerializerOptions
-    //     {
-    //         PropertyNameCaseInsensitive = true,
-    //         Converters = { new JsonStringEnumConverter() },
-    //     };
-    //     return JsonSerializer.Deserialize<TIntegrationEvent?>(eventPayload, deserializeOptions);
-    // }
+    private static TIntegrationEvent? DeserializePayload<TIntegrationEvent>(string eventPayload)
+    {
+        var deserializeOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters = { new JsonStringEnumConverter() },
+        };
+        return JsonSerializer.Deserialize<TIntegrationEvent?>(eventPayload, deserializeOptions);
+    }
 }

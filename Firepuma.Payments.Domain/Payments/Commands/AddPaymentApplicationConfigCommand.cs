@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Firepuma.CommandsAndQueries.Abstractions.Commands;
+﻿using Firepuma.CommandsAndQueries.Abstractions.Commands;
 using Firepuma.Payments.Domain.Payments.Entities;
 using Firepuma.Payments.Domain.Payments.Repositories;
 using Firepuma.Payments.Domain.Payments.ValueObjects;

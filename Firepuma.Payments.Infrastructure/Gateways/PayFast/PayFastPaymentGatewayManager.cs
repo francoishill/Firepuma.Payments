@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Firepuma.Payments.Domain.Payments.Abstractions;
 using Firepuma.Payments.Domain.Payments.Config;
@@ -22,7 +21,7 @@ public class PayFastPaymentGatewayManager : IPaymentGatewayManager
         JsonDocument requestBody,
         CancellationToken cancellationToken)
     {
-        var requestDTO = requestBody.Deserialize<CreateRequest>();
+        var requestDTO = requestBody.Deserialize<PayFastAppConfigExtraValues.CreateRequestDto>();
 
         if (requestDTO == null)
         {
@@ -45,30 +44,13 @@ public class PayFastPaymentGatewayManager : IPaymentGatewayManager
 
     public Dictionary<string, string> CreatePaymentApplicationConfigExtraValues(object genericRequestDto)
     {
-        if (genericRequestDto is not CreateRequest requestDTO)
+        if (genericRequestDto is not PayFastAppConfigExtraValues.CreateRequestDto requestDTO)
         {
             throw new NotSupportedException($"RequestDto is incorrect type in CreatePaymentApplicationConfig, it should be CreatePayFastClientApplicationRequest but it is '{genericRequestDto.GetType().FullName}'");
         }
 
-        var extraValues = PayFastAppConfigExtraValues.CreateExtraValuesDictionary(
-            isSandbox: requestDTO.IsSandbox,
-            merchantId: requestDTO.MerchantId,
-            merchantKey: requestDTO.MerchantKey,
-            passPhrase: requestDTO.PassPhrase);
+        var extraValues = requestDTO.CreateExtraValuesDictionary();
 
         return extraValues;
-    }
-
-    private class CreateRequest
-    {
-        public bool IsSandbox { get; set; }
-
-        [Required]
-        public string MerchantId { get; set; } = null!;
-
-        [Required]
-        public string MerchantKey { get; set; } = null!;
-
-        public string PassPhrase { get; set; } = null!;
     }
 }

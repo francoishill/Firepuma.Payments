@@ -4,7 +4,6 @@ using Firepuma.Payments.Domain.Payments.Abstractions.Results;
 using Firepuma.Payments.Domain.Payments.Entities;
 using Firepuma.Payments.Domain.Payments.ValueObjects;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
 
 namespace Firepuma.Payments.Domain.Payments.Abstractions;
 
@@ -26,7 +25,7 @@ public interface IPaymentGateway
         PreparePaymentRequest preparePaymentRequest,
         CancellationToken cancellationToken);
 
-    Task<JObject> CreatePaymentEntityExtraValuesAsync(
+    Task<string> CreatePaymentEntityExtraValuesAsync(
         ClientApplicationId applicationId,
         PaymentId paymentId,
         IPreparePaymentExtraValues genericExtraValues,

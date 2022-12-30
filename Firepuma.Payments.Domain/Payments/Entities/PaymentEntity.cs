@@ -1,7 +1,7 @@
 ﻿using Firepuma.DatabaseRepositories.MongoDb.Abstractions.Entities;
 using Firepuma.Payments.Domain.Payments.ValueObjects;
 using MongoDB.Driver;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Firepuma.Payments.Domain.Payments.Entities;
 
@@ -15,19 +15,19 @@ public class PaymentEntity : BaseMongoDbEntity
     public PaymentStatus Status { get; set; }
     public DateTime? StatusChangedOn { get; set; }
 
-    public JObject ExtraValues { get; set; } = null!;
+    public string ExtraValues { get; set; } = null!;
 
     // ReSharper disable once UnusedMember.Global
     public PaymentEntity()
     {
-        // used by Azure Cosmos deserialization (including the Add methods, like repository.AddItemAsync)
+        // used by Mongo deserialization (including the Add methods, like repository.AddItemAsync)
     }
 
     public PaymentEntity(
         ClientApplicationId applicationId,
         PaymentGatewayTypeId gatewayTypeId,
         PaymentId paymentId,
-        JObject extraValues)
+        string extraValues)
     {
         ApplicationId = applicationId;
         GatewayTypeId = gatewayTypeId;
@@ -41,7 +41,7 @@ public class PaymentEntity : BaseMongoDbEntity
     {
         try
         {
-            extraValues = ExtraValues.ToObject<T>()!;
+            extraValues = JsonConvert.DeserializeObject<T>(ExtraValues)!;
 
             if (extraValues == null)
             {
@@ -59,9 +59,9 @@ public class PaymentEntity : BaseMongoDbEntity
         }
     }
 
-    public static JObject CastToExtraValues<T>(T extraValues) where T : class
+    public static string CastToExtraValues<T>(T extraValues) where T : class
     {
-        return JObject.FromObject(extraValues);
+        return JsonConvert.SerializeObject(extraValues);
     }
 
     public static IEnumerable<CreateIndexModel<PaymentEntity>> GetSchemaIndexes()

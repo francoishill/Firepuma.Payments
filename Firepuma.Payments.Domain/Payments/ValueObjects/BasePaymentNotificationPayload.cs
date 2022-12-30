@@ -1,10 +1,8 @@
-﻿using Newtonsoft.Json;
-using TypeIndicatorConverter.Core.Attribute;
-using TypeIndicatorConverter.NewtonsoftJson;
+﻿using TypeIndicatorConverter.Core.Attribute;
 
 namespace Firepuma.Payments.Domain.Payments.ValueObjects;
 
-[JsonConverter(typeof(TypeIndicatorConverter<BasePaymentNotificationPayload>))]
+[System.Text.Json.Serialization.JsonConverter(typeof(TypeIndicatorConverter.TextJson.TypeIndicatorConverter<BasePaymentNotificationPayload>))]
 public class BasePaymentNotificationPayload
 {
     [TypeIndicator]

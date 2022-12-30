@@ -290,7 +290,7 @@ public class PayFastPaymentGateway : IPaymentGateway
         {
             if (string.IsNullOrWhiteSpace(payFastRequest.token))
             {
-                _logger.LogWarning("PayFast ITN for paymentId '{PaymentId}' does not have a payfastToken", genericPayment.PaymentId);
+                _logger.LogInformation("PayFast ITN for paymentId '{PaymentId}' does not have a payfastToken", genericPayment.PaymentId);
             }
 
             payFastPayment.PayfastPaymentToken = payFastRequest.token;

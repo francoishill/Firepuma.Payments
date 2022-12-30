@@ -35,6 +35,22 @@ public readonly struct PaymentGatewayTypeId : IComparable<PaymentGatewayTypeId>,
     public static bool operator ==(PaymentGatewayTypeId a, PaymentGatewayTypeId b) => a.CompareTo(b) == 0;
     public static bool operator !=(PaymentGatewayTypeId a, PaymentGatewayTypeId b) => !(a == b);
 
+    // ReSharper disable once UnusedMember.Global
+    public static bool TryParse(string? strValue, out PaymentGatewayTypeId parsedValue)
+    {
+        // This method is used in C# minimal API when the type is used a Route parameter
+        // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-7.0
+
+        if (strValue is null)
+        {
+            parsedValue = default!;
+            return false;
+        }
+
+        parsedValue = new PaymentGatewayTypeId(strValue);
+        return true;
+    }
+
     private class PaymentGatewayTypeIdSystemJsonConverter : System.Text.Json.Serialization.JsonConverter<PaymentGatewayTypeId>
     {
         public override PaymentGatewayTypeId Read(

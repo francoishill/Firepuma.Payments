@@ -57,12 +57,12 @@ public static class AddPaymentCommand
 
     public class Handler : IRequestHandler<Payload, Result>
     {
-        private readonly IOptions<PaymentGeneralOptions> _paymentOptions;
+        private readonly IOptions<PaymentWebhookUrlsOptions> _paymentOptions;
         private readonly IEnumerable<IPaymentGateway> _gateways;
         private readonly IPaymentRepository _paymentRepository;
 
         public Handler(
-            IOptions<PaymentGeneralOptions> paymentOptions,
+            IOptions<PaymentWebhookUrlsOptions> paymentOptions,
             IEnumerable<IPaymentGateway> gateways,
             IPaymentRepository paymentRepository)
         {

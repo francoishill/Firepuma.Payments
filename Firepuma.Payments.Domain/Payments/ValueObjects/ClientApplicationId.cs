@@ -35,6 +35,22 @@ public readonly struct ClientApplicationId : IComparable<ClientApplicationId>, I
     public static bool operator ==(ClientApplicationId a, ClientApplicationId b) => a.CompareTo(b) == 0;
     public static bool operator !=(ClientApplicationId a, ClientApplicationId b) => !(a == b);
 
+    // ReSharper disable once UnusedMember.Global
+    public static bool TryParse(string? strValue, out ClientApplicationId parsedValue)
+    {
+        // This method is used in C# minimal API when the type is used a Route parameter
+        // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-7.0
+
+        if (strValue is null)
+        {
+            parsedValue = default!;
+            return false;
+        }
+
+        parsedValue = new ClientApplicationId(strValue);
+        return true;
+    }
+
     private class ClientApplicationIdSystemJsonConverter : System.Text.Json.Serialization.JsonConverter<ClientApplicationId>
     {
         public override ClientApplicationId Read(
@@ -98,7 +114,7 @@ public readonly struct ClientApplicationId : IComparable<ClientApplicationId>, I
             return base.ConvertFrom(context, culture, value);
         }
     }
-    
+
     private class ClientApplicationIdMongoSerializer : SerializerBase<ClientApplicationId>
     {
         public override ClientApplicationId Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)

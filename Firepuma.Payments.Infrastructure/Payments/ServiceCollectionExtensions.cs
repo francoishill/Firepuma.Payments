@@ -16,16 +16,12 @@ public static class ServiceCollectionExtensions
 {
     public static void AddPaymentsFeature(
         this IServiceCollection services,
-        IConfigurationSection paymentsConfigSection,
         string appConfigurationsCollectionName,
         string paymentsCollectionName,
         string notificationTracesCollectionName)
     {
-        if (paymentsConfigSection == null) throw new ArgumentNullException(nameof(paymentsConfigSection));
         if (string.IsNullOrWhiteSpace(paymentsCollectionName)) throw new ArgumentNullException(nameof(paymentsCollectionName));
         if (string.IsNullOrWhiteSpace(notificationTracesCollectionName)) throw new ArgumentNullException(nameof(notificationTracesCollectionName));
-
-        services.AddOptions<PaymentGeneralOptions>().Bind(paymentsConfigSection).ValidateDataAnnotations().ValidateOnStart();
 
         services.AddSingleton<IApplicationConfigProvider, CachedApplicationConfigProvider>();
 
@@ -52,5 +48,14 @@ public static class ServiceCollectionExtensions
             notificationTracesCollectionName,
             (logger, collection, _) => new PaymentNotificationTraceMongoDbRepository(logger, collection),
             indexesFactory: PaymentNotificationTrace.GetSchemaIndexes);
+    }
+
+    public static void AddPaymentWebhookUrlGeneration(
+        this IServiceCollection services,
+        IConfigurationSection paymentWebhookUrlsConfigSection)
+    {
+        if (paymentWebhookUrlsConfigSection == null) throw new ArgumentNullException(nameof(paymentWebhookUrlsConfigSection));
+
+        services.AddOptions<PaymentWebhookUrlsOptions>().Bind(paymentWebhookUrlsConfigSection).ValidateDataAnnotations().ValidateOnStart();
     }
 }

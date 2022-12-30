@@ -39,12 +39,12 @@ builder.Services.AddCommandsAndQueriesFunctionality(
 var integrationEventsConfigSection = builder.Configuration.GetSection("IntegrationEvents");
 builder.Services.AddIntegrationEvents(integrationEventsConfigSection);
 
-var paymentsConfigSection = builder.Configuration.GetSection("Payments");
+var paymentWebhookUrlsConfigSection = builder.Configuration.GetSection("PaymentWebhookUrls");
 builder.Services.AddPaymentsFeature(
-    paymentsConfigSection,
     mongoDbOptions.AppConfigurationsCollectionName,
     mongoDbOptions.PaymentsCollectionName,
     mongoDbOptions.NotificationTracesCollectionName);
+builder.Services.AddPaymentWebhookUrlGeneration(paymentWebhookUrlsConfigSection);
 
 builder.Services.AddPayFastFeature();
 

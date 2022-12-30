@@ -20,8 +20,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{F017EAE8-0A30-49CE-8CBD-DAFEE68CCA0D}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\unit-tests-only.yml = .github\workflows\unit-tests-only.yml
-		.github\workflows\deploy-gcloud-run-service.yml = .github\workflows\deploy-gcloud-run-service.yml
+		.github\workflows\deploy-gcloud-run-webhooks.yml = .github\workflows\deploy-gcloud-run-webhooks.yml
+		.github\workflows\deploy-gcloud-run-worker.yml = .github\workflows\deploy-gcloud-run-worker.yml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firepuma.Payments.WebHooks", "Firepuma.Payments.WebHooks\Firepuma.Payments.WebHooks.csproj", "{785B5E53-3758-45A1-A611-8B274981DEC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +48,10 @@ Global
 		{EC682CD5-BB0D-4CAD-A49D-31EF09C7FA9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC682CD5-BB0D-4CAD-A49D-31EF09C7FA9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC682CD5-BB0D-4CAD-A49D-31EF09C7FA9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{785B5E53-3758-45A1-A611-8B274981DEC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{785B5E53-3758-45A1-A611-8B274981DEC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{785B5E53-3758-45A1-A611-8B274981DEC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{785B5E53-3758-45A1-A611-8B274981DEC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{675C9268-9283-43D7-B440-0CEFAF1ACD30} = {0EC384C4-88D3-4F4A-98A0-44D2C4A04B88}

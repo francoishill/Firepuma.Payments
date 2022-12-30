@@ -19,7 +19,6 @@ public class PayFastAppConfigExtraValues
     public static PayFastAppConfigExtraValues CreateFromExtraValues(
         Dictionary<string, string> extraValues)
     {
-        //TODO: test that this crashes if the dictionary key does not exist
         return new PayFastAppConfigExtraValues
         {
             IsSandbox = extraValues["IsSandbox"] == "true",
@@ -41,7 +40,7 @@ public class PayFastAppConfigExtraValues
 
         public string PassPhrase { get; set; } = null!;
 
-        public Dictionary<string, string> CreateExtraValuesDictionary()
+        public Dictionary<string, string> ToExtraValuesDictionary()
         {
             return new Dictionary<string, string>
             {

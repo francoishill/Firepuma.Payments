@@ -49,7 +49,7 @@ public class PayFastPaymentGatewayManager : IPaymentGatewayManager
             throw new NotSupportedException($"RequestDto is incorrect type in CreatePaymentApplicationConfig, it should be CreatePayFastClientApplicationRequest but it is '{genericRequestDto.GetType().FullName}'");
         }
 
-        var extraValues = requestDTO.CreateExtraValuesDictionary();
+        var extraValues = requestDTO.ToExtraValuesDictionary();
 
         return extraValues;
     }

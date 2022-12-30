@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
 
         services.AddOptions<LocalDevelopmentOptions>().Bind(localDevelopmentOptionsConfigSection).ValidateDataAnnotations().ValidateOnStart();
 
+        services.AddHostedService<LocalDevStartupOnceOffActionsService>();
         services.AddHostedService<LocalDevelopmentPullPubSubBackgroundService>();
     }
 }

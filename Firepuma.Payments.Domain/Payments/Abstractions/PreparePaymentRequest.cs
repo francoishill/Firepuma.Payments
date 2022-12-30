@@ -1,5 +1,5 @@
-﻿using Firepuma.Payments.Domain.Payments.ValueObjects;
-using Newtonsoft.Json.Linq;
+﻿using System.Text.Json;
+using Firepuma.Payments.Domain.Payments.ValueObjects;
 
 #pragma warning disable CS8618
 
@@ -8,13 +8,13 @@ namespace Firepuma.Payments.Domain.Payments.Abstractions;
 public class PreparePaymentRequest
 {
     public PaymentId PaymentId { get; set; }
-    public JObject ExtraValues { get; set; }
+    public JsonDocument ExtraValues { get; set; }
 
     public bool TryCastExtraValuesToType<T>(out T extraValues, out string? error) where T : class
     {
         try
         {
-            extraValues = ExtraValues.ToObject<T>()!;
+            extraValues = ExtraValues.Deserialize<T>()!;
 
             if (extraValues == null)
             {
@@ -32,8 +32,9 @@ public class PreparePaymentRequest
         }
     }
 
-    public static JObject CastToExtraValues<T>(T extraValues) where T : class
+    public static JsonDocument CastToExtraValues<T>(T extraValues) where T : class
     {
-        return JObject.FromObject(extraValues);
+        //TODO: test this, it is new code
+        return JsonSerializer.SerializeToDocument(extraValues);
     }
 }

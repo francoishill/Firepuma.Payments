@@ -1,11 +1,16 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Serializers;
 
 namespace Firepuma.Payments.Domain.Payments.ValueObjects;
 
 [System.Text.Json.Serialization.JsonConverter(typeof(PaymentIdSystemJsonConverter))]
 [Newtonsoft.Json.JsonConverter(typeof(PaymentIdNewtonsoftJsonConverter))]
 [TypeConverter(typeof(PaymentIdTypeConverter))]
+[BsonSerializer(typeof(PaymentIdMongoSerializer))]
 public readonly struct PaymentId : IComparable<PaymentId>, IEquatable<PaymentId>
 {
     public string Value { get; }
@@ -93,6 +98,36 @@ public readonly struct PaymentId : IComparable<PaymentId>, IEquatable<PaymentId>
             }
 
             return base.ConvertFrom(context, culture, value);
+        }
+    }
+
+    private class PaymentIdMongoSerializer : SerializerBase<PaymentId>
+    {
+        public override PaymentId Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+        {
+            return new PaymentId(context.Reader.ReadString());
+        }
+
+        public override void Serialize(
+            BsonSerializationContext context,
+            BsonSerializationArgs args,
+            PaymentId value)
+        {
+            context.Writer.WriteString(value.Value);
+        }
+    }
+
+    static PaymentId()
+    {
+        BsonTypeMapper.RegisterCustomTypeMapper(typeof(PaymentId), new CustomPaymentIdMapper());
+    }
+
+    private class CustomPaymentIdMapper : ICustomBsonTypeMapper
+    {
+        public bool TryMapToBsonValue(object value, out BsonValue bsonValue)
+        {
+            bsonValue = new BsonString(((PaymentId)value).Value);
+            return true;
         }
     }
 }

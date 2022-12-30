@@ -2,6 +2,7 @@
 using Firepuma.CommandsAndQueries.Abstractions.Entities.Attributes;
 using Firepuma.CommandsAndQueries.Abstractions.Exceptions;
 using Firepuma.Payments.Domain.Payments.Abstractions;
+using Firepuma.Payments.Domain.Payments.Entities;
 using Firepuma.Payments.Domain.Payments.Extensions;
 using Firepuma.Payments.Domain.Payments.ValueObjects;
 using FluentValidation;
@@ -16,15 +17,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Firepuma.Payments.Domain.Payments.Commands;
 
-public static class EnqueuePaymentNotificationCommand
+public static class EnqueuePaymentNotificationForProcessingCommand
 {
     public class Payload : BaseCommand<Result>
     {
         public required string CorrelationId { get; init; } = null!;
 
-        public required PaymentGatewayTypeId GatewayTypeId { get; init; }
-
         public required ClientApplicationId ApplicationId { get; init; }
+        public required PaymentGatewayTypeId GatewayTypeId { get; init; }
 
         [IgnoreCommandExecution]
         public required PaymentApplicationConfig ApplicationConfig { get; init; } = null!;

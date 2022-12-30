@@ -17,6 +17,9 @@ public class MongoDbOptions
     public string CommandExecutionsCollectionName { get; set; } = null!;
 
     [Required]
+    public string AppConfigurationsCollectionName { get; set; } = null!;
+
+    [Required]
     public string PaymentsCollectionName { get; set; } = null!;
 
     [Required]

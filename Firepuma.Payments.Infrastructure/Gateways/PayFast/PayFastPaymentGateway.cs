@@ -116,10 +116,7 @@ public class PayFastPaymentGateway : IPaymentGateway
             throw new NotSupportedException($"ExtraValues is incorrect type in CreateRedirectUriAsync, it should be PreparePayFastOnceOffPaymentExtraValues but it is '{genericExtraValues.GetType().FullName}'");
         }
 
-        if (!genericApplicationConfig.TryCastExtraValuesToType<PayFastAppConfigExtraValues>(out var applicationConfig, out var castError))
-        {
-            throw new NotSupportedException($"Unable to cast ExtraValues to type PayFastClientAppConfig in CreateRedirectUriAsync, error: {castError}");
-        }
+        var applicationConfig = PayFastAppConfigExtraValues.CreateFromExtraValues(genericApplicationConfig.ExtraValues);
 
         var payFastSettings = PayFastSettingsFactory.CreatePayFastSettings(
             applicationConfig,
@@ -198,10 +195,7 @@ public class PayFastPaymentGateway : IPaymentGateway
             throw new NotSupportedException($"PaymentNotificationPayload is incorrect type in ValidatePaymentNotificationAsync, it should be PayFastNotificationPayload but it is '{genericPaymentNotificationPayload.GetType().FullName}'");
         }
 
-        if (!genericApplicationConfig.TryCastExtraValuesToType<PayFastAppConfigExtraValues>(out var applicationConfig, out var castError))
-        {
-            throw new NotSupportedException($"Unable to cast ExtraValues to type PayFastClientAppConfig in ValidatePaymentNotificationAsync, error: {castError}");
-        }
+        var applicationConfig = PayFastAppConfigExtraValues.CreateFromExtraValues(genericApplicationConfig.ExtraValues);
 
         var payFastRequest = payFastNotificationPayload.PayFastNotify;
         payFastRequest.SetPassPhrase(applicationConfig.PassPhrase);

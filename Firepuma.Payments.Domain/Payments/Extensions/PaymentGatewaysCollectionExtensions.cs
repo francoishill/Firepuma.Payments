@@ -11,4 +11,11 @@ public static class PaymentGatewaysCollectionExtensions
     {
         return gateways.SingleOrDefault(g => string.Equals(g.TypeId.Value, gatewayTypeId.Value, StringComparison.OrdinalIgnoreCase));
     }
+
+    public static IPaymentGatewayManager? GetFromTypeIdOrNull(
+        this IEnumerable<IPaymentGatewayManager> gatewayManagers,
+        PaymentGatewayTypeId gatewayTypeId)
+    {
+        return gatewayManagers.SingleOrDefault(g => string.Equals(g.TypeId.Value, gatewayTypeId.Value, StringComparison.OrdinalIgnoreCase));
+    }
 }

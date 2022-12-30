@@ -1,11 +1,16 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Serializers;
 
 namespace Firepuma.Payments.Domain.Payments.ValueObjects;
 
 [System.Text.Json.Serialization.JsonConverter(typeof(PaymentGatewayTypeIdSystemJsonConverter))]
 [Newtonsoft.Json.JsonConverter(typeof(PaymentGatewayTypeIdNewtonsoftJsonConverter))]
 [TypeConverter(typeof(PaymentGatewayTypeIdTypeConverter))]
+[BsonSerializer(typeof(PaymentGatewayTypeIdMongoSerializer))]
 public readonly struct PaymentGatewayTypeId : IComparable<PaymentGatewayTypeId>, IEquatable<PaymentGatewayTypeId>
 {
     public string Value { get; }
@@ -84,8 +89,6 @@ public readonly struct PaymentGatewayTypeId : IComparable<PaymentGatewayTypeId>,
             CultureInfo? culture,
             object value)
         {
-            if (context == null) throw new ArgumentNullException(nameof(context));
-            if (culture == null) throw new ArgumentNullException(nameof(culture));
             var stringValue = value as string;
             if (!string.IsNullOrEmpty(stringValue))
             {
@@ -93,6 +96,36 @@ public readonly struct PaymentGatewayTypeId : IComparable<PaymentGatewayTypeId>,
             }
 
             return base.ConvertFrom(context, culture, value);
+        }
+    }
+
+    private class PaymentGatewayTypeIdMongoSerializer : SerializerBase<PaymentGatewayTypeId>
+    {
+        public override PaymentGatewayTypeId Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+        {
+            return new PaymentGatewayTypeId(context.Reader.ReadString());
+        }
+
+        public override void Serialize(
+            BsonSerializationContext context,
+            BsonSerializationArgs args,
+            PaymentGatewayTypeId value)
+        {
+            context.Writer.WriteString(value.Value);
+        }
+    }
+
+    static PaymentGatewayTypeId()
+    {
+        BsonTypeMapper.RegisterCustomTypeMapper(typeof(PaymentGatewayTypeId), new CustomPaymentGatewayTypeIdMapper());
+    }
+
+    private class CustomPaymentGatewayTypeIdMapper : ICustomBsonTypeMapper
+    {
+        public bool TryMapToBsonValue(object value, out BsonValue bsonValue)
+        {
+            bsonValue = new BsonString(((PaymentGatewayTypeId)value).Value);
+            return true;
         }
     }
 }

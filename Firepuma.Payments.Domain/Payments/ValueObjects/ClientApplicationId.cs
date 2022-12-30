@@ -1,11 +1,16 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Serializers;
 
 namespace Firepuma.Payments.Domain.Payments.ValueObjects;
 
 [System.Text.Json.Serialization.JsonConverter(typeof(ClientApplicationIdSystemJsonConverter))]
 [Newtonsoft.Json.JsonConverter(typeof(ClientApplicationIdNewtonsoftJsonConverter))]
 [TypeConverter(typeof(ClientApplicationIdTypeConverter))]
+[BsonSerializer(typeof(ClientApplicationIdMongoSerializer))]
 public readonly struct ClientApplicationId : IComparable<ClientApplicationId>, IEquatable<ClientApplicationId>
 {
     public string Value { get; }
@@ -91,6 +96,36 @@ public readonly struct ClientApplicationId : IComparable<ClientApplicationId>, I
             }
 
             return base.ConvertFrom(context, culture, value);
+        }
+    }
+    
+    private class ClientApplicationIdMongoSerializer : SerializerBase<ClientApplicationId>
+    {
+        public override ClientApplicationId Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+        {
+            return new ClientApplicationId(context.Reader.ReadString());
+        }
+
+        public override void Serialize(
+            BsonSerializationContext context,
+            BsonSerializationArgs args,
+            ClientApplicationId value)
+        {
+            context.Writer.WriteString(value.Value);
+        }
+    }
+
+    static ClientApplicationId()
+    {
+        BsonTypeMapper.RegisterCustomTypeMapper(typeof(ClientApplicationId), new CustomClientApplicationIdMapper());
+    }
+
+    private class CustomClientApplicationIdMapper : ICustomBsonTypeMapper
+    {
+        public bool TryMapToBsonValue(object value, out BsonValue bsonValue)
+        {
+            bsonValue = new BsonString(((ClientApplicationId)value).Value);
+            return true;
         }
     }
 }

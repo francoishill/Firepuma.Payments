@@ -24,9 +24,8 @@ public static class UpdatePaymentCommand
 {
     public class Payload : BaseCommand<Result>
     {
-        public required PaymentGatewayTypeId GatewayTypeId { get; init; }
-
         public required ClientApplicationId ApplicationId { get; init; }
+        public required PaymentGatewayTypeId GatewayTypeId { get; init; }
 
         public required PaymentId PaymentId { get; init; }
         public required string GatewayInternalTransactionId { get; init; } = null!;

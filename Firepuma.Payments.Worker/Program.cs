@@ -18,7 +18,10 @@ builder.Services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAutoMapper(typeof(ManualHealthCheckingController));
+builder.Services.AddAutoMapper(
+    typeof(ManualHealthCheckingController),
+    typeof(Firepuma.Payments.Infrastructure.Payments.ServiceCollectionExtensions),
+    typeof(Firepuma.Payments.Domain.Payments.ValueObjects.PaymentId));
 
 var mongoDbConfigSection = builder.Configuration.GetSection("MongoDb");
 builder.Services.AddMongoDbRepositories(mongoDbConfigSection, builder.Environment.IsDevelopment(), out var mongoDbOptions);
@@ -39,6 +42,7 @@ builder.Services.AddIntegrationEvents(integrationEventsConfigSection);
 var paymentsConfigSection = builder.Configuration.GetSection("Payments");
 builder.Services.AddPaymentsFeature(
     paymentsConfigSection,
+    mongoDbOptions.AppConfigurationsCollectionName,
     mongoDbOptions.PaymentsCollectionName,
     mongoDbOptions.NotificationTracesCollectionName);
 

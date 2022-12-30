@@ -28,9 +28,8 @@ public static class AddPaymentCommand
 {
     public class Payload : BaseCommand<Result>
     {
-        public required PaymentGatewayTypeId GatewayTypeId { get; init; }
-
         public required ClientApplicationId ApplicationId { get; init; }
+        public required PaymentGatewayTypeId GatewayTypeId { get; init; }
 
         [IgnoreCommandExecution]
         public required PaymentApplicationConfig ApplicationConfig { get; init; } = null!;
@@ -115,15 +114,15 @@ public static class AddPaymentCommand
             //     throw new PreconditionFailedException($"The payment (id '{paymentId}' and application id '{applicationId}') is already added and cannot be added again");
             // }
 
-            var validateAndStorePaymentNotificationBaseUrlWithAppName = AddApplicationIdToPaymentNotificationBaseUrl(
-                _paymentOptions.Value.ValidateAndStorePaymentNotificationBaseUrl,
-                gatewayTypeId,
-                applicationId);
+            var incomingPaymentNotificationWebhookBaseUrlWithAppName = AddApplicationIdToPaymentNotificationBaseUrl(
+                _paymentOptions.Value.IncomingPaymentNotificationWebhookBaseUrl,
+                applicationId,
+                gatewayTypeId);
 
             const string transactionIdQueryParamName = "tx";
             var backendNotifyUrl =
-                validateAndStorePaymentNotificationBaseUrlWithAppName
-                + (validateAndStorePaymentNotificationBaseUrlWithAppName.Contains('?') ? "&" : "?")
+                incomingPaymentNotificationWebhookBaseUrlWithAppName
+                + (incomingPaymentNotificationWebhookBaseUrlWithAppName.Contains('?') ? "&" : "?")
                 + $"{transactionIdQueryParamName}={WebUtility.UrlEncode(paymentId.Value)}";
 
             var redirectUrl = await gateway.CreateRedirectUriAsync(
@@ -141,15 +140,15 @@ public static class AddPaymentCommand
         }
 
         internal static string AddApplicationIdToPaymentNotificationBaseUrl(
-            string validateAndStorePaymentNotificationBaseUrl,
-            PaymentGatewayTypeId gatewayTypeId,
-            ClientApplicationId applicationId)
+            string incomingPaymentNotificationWebhookBaseUrlWithAppName,
+            ClientApplicationId applicationId,
+            PaymentGatewayTypeId gatewayTypeId)
         {
-            var questionMarkIndex = validateAndStorePaymentNotificationBaseUrl.IndexOf("?", StringComparison.Ordinal);
+            var questionMarkIndex = incomingPaymentNotificationWebhookBaseUrlWithAppName.IndexOf("?", StringComparison.Ordinal);
 
             return questionMarkIndex >= 0
-                ? validateAndStorePaymentNotificationBaseUrl.Substring(0, questionMarkIndex).TrimEnd('/') + $"/{gatewayTypeId}/{applicationId}?{validateAndStorePaymentNotificationBaseUrl.Substring(questionMarkIndex + 1)}"
-                : validateAndStorePaymentNotificationBaseUrl + $"/{gatewayTypeId}/{applicationId}";
+                ? incomingPaymentNotificationWebhookBaseUrlWithAppName.Substring(0, questionMarkIndex).TrimEnd('/') + $"/{applicationId}/{gatewayTypeId}?{incomingPaymentNotificationWebhookBaseUrlWithAppName.Substring(questionMarkIndex + 1)}"
+                : incomingPaymentNotificationWebhookBaseUrlWithAppName + $"/{applicationId}/{gatewayTypeId}";
         }
     }
 }

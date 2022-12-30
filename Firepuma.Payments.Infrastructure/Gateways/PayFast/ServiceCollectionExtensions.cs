@@ -8,6 +8,8 @@ public static class ServiceCollectionExtensions
     public static void AddPayFastFeature(
         this IServiceCollection services)
     {
-        services.AddScoped<IPaymentGateway, PayFastPaymentGateway>();
+        services.AddTransient<IPaymentGateway, PayFastPaymentGateway>();
+
+        services.AddTransient<IPaymentGatewayManager, PayFastPaymentGatewayManager>();
     }
 }

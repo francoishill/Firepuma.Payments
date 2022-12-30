@@ -4,16 +4,16 @@ using Firepuma.Payments.Domain.Payments.ValueObjects;
 
 namespace Firepuma.Payments.Domain.Payments.QuerySpecifications;
 
-public class PaymentByPaymentIdQuerySpecification : QuerySpecification<PaymentEntity>
+public class PaymentApplicationConfigByGatewayAndClientAppIdQuerySpecification : QuerySpecification<PaymentApplicationConfig>
 {
-    public PaymentByPaymentIdQuerySpecification(
+    public PaymentApplicationConfigByGatewayAndClientAppIdQuerySpecification(
         ClientApplicationId applicationId,
-        PaymentId paymentId)
+        PaymentGatewayTypeId gatewayTypeId)
     {
         WhereExpressions.Add(payment =>
             payment.ApplicationId == applicationId
             &&
-            payment.PaymentId == paymentId
+            payment.GatewayTypeId == gatewayTypeId
         );
     }
 }

@@ -1,7 +1,9 @@
 ﻿using Firepuma.DatabaseRepositories.MongoDb;
+using Firepuma.Payments.Domain.Payments.Abstractions;
 using Firepuma.Payments.Domain.Payments.Config;
 using Firepuma.Payments.Domain.Payments.Entities;
 using Firepuma.Payments.Domain.Payments.Repositories;
+using Firepuma.Payments.Domain.Payments.Services;
 using Firepuma.Payments.Infrastructure.Payments.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +17,7 @@ public static class ServiceCollectionExtensions
     public static void AddPaymentsFeature(
         this IServiceCollection services,
         IConfigurationSection paymentsConfigSection,
+        string appConfigurationsCollectionName,
         string paymentsCollectionName,
         string notificationTracesCollectionName)
     {
@@ -23,6 +26,16 @@ public static class ServiceCollectionExtensions
         if (string.IsNullOrWhiteSpace(notificationTracesCollectionName)) throw new ArgumentNullException(nameof(notificationTracesCollectionName));
 
         services.AddOptions<PaymentGeneralOptions>().Bind(paymentsConfigSection).ValidateDataAnnotations().ValidateOnStart();
+
+        services.AddSingleton<IApplicationConfigProvider, CachedApplicationConfigProvider>();
+
+        services.AddMongoDbRepository<
+            PaymentApplicationConfig,
+            IPaymentApplicationConfigRepository,
+            PaymentApplicationConfigMongoDbRepository>(
+            appConfigurationsCollectionName,
+            (logger, collection, _) => new PaymentApplicationConfigMongoDbRepository(logger, collection),
+            indexesFactory: PaymentApplicationConfig.GetSchemaIndexes);
 
         services.AddMongoDbRepository<
             PaymentEntity,

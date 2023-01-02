@@ -52,7 +52,6 @@ jobs:
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
           image: ${{ env.DOCKER_IMAGE }}
-          flags: --service-account=${{ env.SERVICE }}-identity@${{ env.PROJECT_ID }}.iam.gserviceaccount.com
 
       - name: Show Url
         run: echo ${{ steps.deploy.outputs.url }}

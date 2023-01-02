@@ -8,7 +8,7 @@ on:
 env:
   DUMMY_VERSION: 0.0.1-dev-unit-tests
   WORKER_ENTRY_PROJECT_DIR: Firepuma.Payments.Worker
-  WEBHOOKS_ENTRY_PROJECT_DIR: Firepuma.Template.GoogleCloudRunService.WebHooks
+  WEBHOOKS_ENTRY_PROJECT_DIR: Firepuma.Payments.WebHooks
 
 jobs:
   unit-tests:

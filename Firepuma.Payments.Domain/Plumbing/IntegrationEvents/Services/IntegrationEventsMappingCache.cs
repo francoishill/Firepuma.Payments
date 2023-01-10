@@ -17,7 +17,7 @@ public class IntegrationEventsMappingCache :
 {
     public bool IsIntegrationEventForFirepumaPayments(string messageType)
     {
-        return messageType.StartsWith("Firepuma/FirepumaPayments/", StringComparison.OrdinalIgnoreCase);
+        return messageType.StartsWith("Firepuma/Payments/Request/", StringComparison.OrdinalIgnoreCase);
     }
 
     public bool IsIntegrationEventForFirepumaPayments(BusMessageEnvelope envelope)

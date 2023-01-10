@@ -1,5 +1,6 @@
 using AutoMapper;
 using Firepuma.Payments.Domain.Notifications.Commands;
+using Firepuma.Payments.Infrastructure.Admin;
 using Firepuma.Payments.Infrastructure.Gateways.PayFast;
 using Firepuma.Payments.Infrastructure.Payments;
 using Firepuma.Payments.Infrastructure.Plumbing.CommandHandling;
@@ -38,6 +39,9 @@ builder.Services.AddCommandsAndQueriesFunctionality(
 
 var integrationEventsConfigSection = builder.Configuration.GetSection("IntegrationEvents");
 builder.Services.AddIntegrationEvents(integrationEventsConfigSection);
+
+var adminConfigSection = builder.Configuration.GetSection("Admin");
+builder.Services.AddAdminFeature(adminConfigSection);
 
 var paymentWebhookUrlsConfigSection = builder.Configuration.GetSection("PaymentWebhookUrls");
 builder.Services.AddPaymentsFeature(

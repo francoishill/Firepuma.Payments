@@ -7,5 +7,5 @@ public interface IIntegrationEventsMappingCache
     bool IsIntegrationEventForFirepumaPayments(string messageType);
     bool IsIntegrationEventForFirepumaPayments(BusMessageEnvelope envelope);
 
-    bool IsIntegrationEventForEmailService(string messageType);
+    bool IsIntegrationEventForNotificationsService(string messageType);
 }

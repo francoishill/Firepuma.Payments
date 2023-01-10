@@ -11,7 +11,7 @@
       <PackageReference Include="Firepuma.CommandsAndQueries.Abstractions" Version="0.12.0" />
       <PackageReference Include="Firepuma.DatabaseRepositories.Abstractions" Version="0.14.1" />
       <PackageReference Include="Firepuma.DatabaseRepositories.MongoDb.Abstractions" Version="0.14.1" />
-      <PackageReference Include="Firepuma.Dtos.Email" Version="0.4.0" />
+      <PackageReference Include="Firepuma.Dtos.Notifications" Version="0.1.1" />
       <PackageReference Include="Firepuma.EventMediation.IntegrationEvents" Version="0.4.0" />
       <PackageReference Include="Firepuma.EventMediation.IntegrationEvents.CommandExecution" Version="0.4.0" />
       <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />

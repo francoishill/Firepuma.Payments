@@ -1,6 +1,6 @@
 ﻿using Firepuma.CommandsAndQueries.Abstractions.Commands;
 using Firepuma.CommandsAndQueries.Abstractions.Entities.Attributes;
-using Firepuma.Dtos.Email.BusMessages;
+using Firepuma.Dtos.Notifications.BusMessages;
 using Firepuma.EventMediation.IntegrationEvents.Abstractions;
 using MediatR;
 

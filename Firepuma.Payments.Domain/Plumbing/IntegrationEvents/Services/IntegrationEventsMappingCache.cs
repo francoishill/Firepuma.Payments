@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Firepuma.BusMessaging.Abstractions.Services.Results;
-using Firepuma.Dtos.Email.BusMessages;
+using Firepuma.Dtos.Notifications.BusMessages;
 using Firepuma.EventMediation.IntegrationEvents.Abstractions;
 using Firepuma.EventMediation.IntegrationEvents.ValueObjects;
 using Firepuma.Payments.Domain.Payments.Commands;
@@ -25,19 +25,19 @@ public class IntegrationEventsMappingCache :
         return IsIntegrationEventForFirepumaPayments(envelope.MessageType);
     }
 
-    public bool IsIntegrationEventForEmailService(string messageType)
+    public bool IsIntegrationEventForNotificationsService(string messageType)
     {
-        return messageType.StartsWith("Firepuma/EmailService/", StringComparison.OrdinalIgnoreCase);
+        return messageType.StartsWith("Firepuma/Request/Notifications/", StringComparison.OrdinalIgnoreCase);
     }
 
     public bool TryGetIntegrationEventType<TMessage>(TMessage messagePayload, [NotNullWhen(true)] out string? eventType)
     {
         eventType = messagePayload switch
         {
-            ValidatePaymentNotificationCommand.Result => "Firepuma/FirepumaPayments/Event/PaymentNotificationValidated",
+            ValidatePaymentNotificationCommand.Result => "Firepuma/Payments/Request/PaymentNotificationValidated",
 
             // events handled by external services
-            SendEmailRequest => "Firepuma/EmailService/SendEmail",
+            SendEmailRequest => "Firepuma/Request/Notifications/SendEmail",
 
             _ => null,
         };
@@ -51,7 +51,7 @@ public class IntegrationEventsMappingCache :
     {
         eventPayload = envelope.EventType switch
         {
-            "Firepuma/FirepumaPayments/Event/PaymentNotificationValidated" => DeserializePayload<ValidatePaymentNotificationCommand.Result>(envelope.EventPayload),
+            "Firepuma/Payments/Request/PaymentNotificationValidated" => DeserializePayload<ValidatePaymentNotificationCommand.Result>(envelope.EventPayload),
 
             _ => null,
         };

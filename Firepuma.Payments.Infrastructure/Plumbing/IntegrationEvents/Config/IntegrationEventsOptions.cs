@@ -11,8 +11,8 @@ public class IntegrationEventsOptions
     public string FirepumaPaymentsWorkerTopicId { get; init; } = null!;
 
     [Required]
-    public string EmailServiceProjectId { get; init; } = null!;
+    public string NotificationsServiceProjectId { get; init; } = null!;
 
     [Required]
-    public string EmailServiceTopicId { get; init; } = null!;
+    public string NotificationsServiceTopicId { get; init; } = null!;
 }

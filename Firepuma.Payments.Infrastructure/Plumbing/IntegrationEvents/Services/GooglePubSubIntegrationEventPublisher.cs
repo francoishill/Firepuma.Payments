@@ -22,7 +22,7 @@ public class GooglePubSubIntegrationEventPublisher : IIntegrationEventPublisher
     private readonly IPublisherClientCache _publisherClientCache;
     private readonly IIntegrationEventsMappingCache _mappingCache;
     private readonly TopicName _workerFirepumaPaymentsTopicName;
-    private readonly TopicName _emailServiceTopicName;
+    private readonly TopicName _notificationsServiceTopicName;
 
     private static readonly string _messageSourceId = Assembly.GetEntryAssembly()?.GetName().Name ?? throw new InvalidOperationException("Executing assembly FullName is required to be non-null");
 
@@ -37,7 +37,7 @@ public class GooglePubSubIntegrationEventPublisher : IIntegrationEventPublisher
         _mappingCache = mappingCache;
 
         _workerFirepumaPaymentsTopicName = TopicName.FromProjectTopic(options.Value.FirepumaPaymentsWorkerProjectId, options.Value.FirepumaPaymentsWorkerTopicId);
-        _emailServiceTopicName = TopicName.FromProjectTopic(options.Value.EmailServiceProjectId, options.Value.EmailServiceTopicId);
+        _notificationsServiceTopicName = TopicName.FromProjectTopic(options.Value.NotificationsServiceProjectId, options.Value.NotificationsServiceTopicId);
     }
 
     public async Task SendAsync(IntegrationEventEnvelope eventEnvelope, CancellationToken cancellationToken)
@@ -84,9 +84,9 @@ public class GooglePubSubIntegrationEventPublisher : IIntegrationEventPublisher
             return _workerFirepumaPaymentsTopicName;
         }
 
-        if (_mappingCache.IsIntegrationEventForEmailService(messageType))
+        if (_mappingCache.IsIntegrationEventForNotificationsService(messageType))
         {
-            return _emailServiceTopicName;
+            return _notificationsServiceTopicName;
         }
 
         _logger.LogError("Message type '{MessageType}' does not have a configured pubsub topic", messageType);

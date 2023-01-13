@@ -15,6 +15,7 @@ public static class SendEmailCommand
         public required string Subject { get; init; }
 
         public required string FromEmail { get; init; }
+        public required string? FromName { get; init; }
 
         public required string ToEmail { get; init; }
 
@@ -45,6 +46,7 @@ public static class SendEmailCommand
             {
                 Subject = payload.Subject,
                 FromEmail = payload.FromEmail,
+                FromName = payload.FromName,
                 ToEmail = payload.ToEmail,
                 TextBody = payload.TextBody,
             };

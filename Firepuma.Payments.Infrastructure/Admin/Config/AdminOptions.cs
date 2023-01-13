@@ -8,5 +8,8 @@ public class AdminOptions
     public string FromEmailAddress { get; set; } = null!;
 
     [Required]
+    public string FromName { get; set; } = null!;
+
+    [Required]
     public string ToEmailAddress { get; set; } = null!;
 }

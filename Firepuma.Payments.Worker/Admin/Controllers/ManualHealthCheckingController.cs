@@ -1,6 +1,6 @@
-﻿using Firepuma.Dtos.Notifications.BusMessages;
-using Firepuma.EventMediation.IntegrationEvents.Abstractions;
+﻿using Firepuma.Payments.Domain.Notifications.Commands;
 using Firepuma.Payments.Infrastructure.Admin.Config;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -12,19 +12,16 @@ public class ManualHealthCheckingController : ControllerBase
 {
     private readonly ILogger<ManualHealthCheckingController> _logger;
     private readonly IOptions<AdminOptions> _adminOptions;
-    private readonly IIntegrationEventEnvelopeFactory _envelopeFactory;
-    private readonly IIntegrationEventPublisher _integrationEventPublisher;
+    private readonly IMediator _mediator;
 
     public ManualHealthCheckingController(
         ILogger<ManualHealthCheckingController> logger,
         IOptions<AdminOptions> adminOptions,
-        IIntegrationEventEnvelopeFactory envelopeFactory,
-        IIntegrationEventPublisher integrationEventPublisher)
+        IMediator mediator)
     {
         _logger = logger;
         _adminOptions = adminOptions;
-        _envelopeFactory = envelopeFactory;
-        _integrationEventPublisher = integrationEventPublisher;
+        _mediator = mediator;
     }
 
     [HttpPost("write-dummy-error-log")]
@@ -38,17 +35,16 @@ public class ManualHealthCheckingController : ControllerBase
     public async Task<IActionResult> TestEmailsMicroservice(CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
-        var sendEmailRequest = new SendEmailRequest
+        var sendEmailCommand = new SendEmailCommand.Payload
         {
             Subject = $"Dummy email generated from Firepuma Payments service {now:yyyy-MM-dd HH:mm:ss}",
             FromEmail = _adminOptions.Value.FromEmailAddress,
+            FromName = _adminOptions.Value.FromName,
             ToEmail = _adminOptions.Value.ToEmailAddress,
             TextBody = $"This is a dummy email generated from Firepuma Payments service, to test the microservice communication with Email Service. It was generated on {now:yyyy-MM-dd HH:mm:ss}",
         };
 
-        var integrationEventEnvelope = _envelopeFactory.CreateEnvelopeFromObject(sendEmailRequest);
-
-        await _integrationEventPublisher.SendAsync(integrationEventEnvelope, cancellationToken);
+        await _mediator.Send(sendEmailCommand, cancellationToken);
 
         return Accepted("Accepted");
     }

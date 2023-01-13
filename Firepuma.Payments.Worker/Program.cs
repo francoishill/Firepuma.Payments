@@ -1,5 +1,5 @@
 using AutoMapper;
-using Firepuma.Payments.Domain.Notifications.Commands;
+using Firepuma.Payments.Domain.Payments.Commands;
 using Firepuma.Payments.Infrastructure.Admin;
 using Firepuma.Payments.Infrastructure.Gateways.PayFast;
 using Firepuma.Payments.Infrastructure.Payments;
@@ -29,7 +29,7 @@ builder.Services.AddMongoDbRepositories(mongoDbConfigSection, builder.Environmen
 
 var assembliesWithCommandHandlers = new[]
 {
-    typeof(SendEmailCommand).Assembly,
+    typeof(AddPaymentCommand).Assembly,
 }.Distinct().ToArray();
 
 builder.Services.AddCommandsAndQueriesFunctionality(

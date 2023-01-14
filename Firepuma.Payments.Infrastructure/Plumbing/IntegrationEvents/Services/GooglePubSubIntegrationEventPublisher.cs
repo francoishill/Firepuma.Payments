@@ -1,10 +1,10 @@
-﻿using System.Reflection;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Firepuma.BusMessaging.Abstractions.Services;
 using Firepuma.BusMessaging.Abstractions.Services.Requests;
 using Firepuma.BusMessaging.GooglePubSub.Services;
 using Firepuma.EventMediation.IntegrationEvents.Abstractions;
 using Firepuma.EventMediation.IntegrationEvents.ValueObjects;
+using Firepuma.Payments.Domain.Plumbing.IntegrationEvents;
 using Firepuma.Payments.Domain.Plumbing.IntegrationEvents.Abstractions;
 using Firepuma.Payments.Infrastructure.Plumbing.IntegrationEvents.Config;
 using Google.Cloud.PubSub.V1;
@@ -23,8 +23,6 @@ public class GooglePubSubIntegrationEventPublisher : IIntegrationEventPublisher
     private readonly IIntegrationEventsMappingCache _mappingCache;
     private readonly TopicName _workerFirepumaPaymentsTopicName;
     private readonly TopicName _notificationsServiceTopicName;
-
-    private static readonly string _messageSourceId = Assembly.GetEntryAssembly()?.GetName().Name ?? throw new InvalidOperationException("Executing assembly FullName is required to be non-null");
 
     public GooglePubSubIntegrationEventPublisher(
         ILogger<GooglePubSubIntegrationEventPublisher> logger,
@@ -46,7 +44,7 @@ public class GooglePubSubIntegrationEventPublisher : IIntegrationEventPublisher
 
         var request = new PopulateMessageAttributesRequest
         {
-            Source = _messageSourceId,
+            Source = IntegrationEventConstants.MESSAGE_PUBLISHER_SOURCE_ID,
             MessageType = messageType,
             ContentType = "application/json",
         };

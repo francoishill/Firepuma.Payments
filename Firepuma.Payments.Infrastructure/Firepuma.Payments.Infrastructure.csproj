@@ -11,6 +11,7 @@
       <PackageReference Include="Firepuma.BusMessaging.GooglePubSub" Version="0.9.0" />
       <PackageReference Include="Firepuma.CommandsAndQueries.MongoDb" Version="0.12.0" />
       <PackageReference Include="Firepuma.DatabaseRepositories.MongoDb" Version="0.15.1" />
+      <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore3" Version="5.1.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
       <PackageReference Include="PayFast.AspNetCore" Version="1.0.5" />
     </ItemGroup>

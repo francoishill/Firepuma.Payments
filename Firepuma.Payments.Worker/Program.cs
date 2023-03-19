@@ -4,12 +4,12 @@ using Firepuma.Payments.Infrastructure.Admin;
 using Firepuma.Payments.Infrastructure.Gateways.PayFast;
 using Firepuma.Payments.Infrastructure.Payments;
 using Firepuma.Payments.Infrastructure.Plumbing.CommandHandling;
+using Firepuma.Payments.Infrastructure.Plumbing.GoogleLogging;
 using Firepuma.Payments.Infrastructure.Plumbing.IntegrationEvents;
 using Firepuma.Payments.Infrastructure.Plumbing.MongoDb;
 using Firepuma.Payments.Worker.Admin.Controllers;
 using Firepuma.Payments.Worker.Plumbing.LocalDevelopment;
 using Firepuma.Payments.Worker.Plumbing.Middleware;
-using Google.Cloud.Diagnostics.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,19 +52,8 @@ builder.Services.AddPaymentWebhookUrlGeneration(paymentWebhookUrlsConfigSection)
 
 builder.Services.AddPayFastFeature();
 
-if (!builder.Environment.IsDevelopment())
-{
-    builder.Logging.ClearProviders();
-    builder.Logging.AddGoogle(new LoggingServiceOptions
-    {
-        ProjectId = null, // leave null because it is running in Google Cloud when in non-Development mode
-        Options = LoggingOptions.Create(
-            LogLevel.Trace,
-            retryOptions: RetryOptions.Retry(ExceptionHandling.Propagate),
-            bufferOptions: BufferOptions.NoBuffer() //refer to https://github.com/googleapis/google-cloud-dotnet/pull/7025
-        ),
-    });
-}
+var googleLoggingConfigSection = builder.Configuration.GetSection("Logging:GoogleLogging");
+builder.Logging.AddCustomGoogleLogging(googleLoggingConfigSection);
 
 if (builder.Environment.IsDevelopment())
 {
